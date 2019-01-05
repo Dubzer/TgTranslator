@@ -1,1 +1,1 @@
-web: python tran.py
+worker: python tran.py
