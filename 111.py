@@ -1,4 +1,12 @@
+import os
 import requests  
+import datetime
+from time import sleep
+
+#proxies = {
+#  'http': 'http://194.126.25.28:59710',
+#  'https': 'https://194.126.25.28:59710',
+#}
 
 class BotHandler:
 
@@ -65,7 +73,7 @@ def main():
     while 1:
         update = mybot.get_updates()
         if len(update) > 0:
-            mybot.send_message(666892256, str(update[0]))
+            mybot.send_message('@joji1337', str(update))
             if('message' in update[0]):
                 if ('text' in update[0]['message']):
                     text_for_translation = update[0]['message']['text']
@@ -73,11 +81,20 @@ def main():
                     reply_to_message_id = update[0]['message']['message_id']
                     lang = translator.detect(text_for_translation)['lang']
                     if (lang != 'en' and lang != ''):
-                        translated_text = translator.translate(text_for_translation)
-                        mybot.reply_to_message(chat_id, translated_text, reply_to_message_id)
+                        #translated_text = translator.translate(text_for_translation)
+                        #mybot.reply_to_message(chat_id, translated_text, reply_to_message_id)
+                #elif ('edited_message' in update[0]):
+                #    text_for_translation = update[0]['edited_message']['text']
+                #    chat_id = update[0]['edited_message']['chat']['id']
+                #    reply_to_message_id = update[0]['edited_message']['message_id']
+                #    lang = translator.detect(text_for_translation)['lang']
+                #    if (lang != 'en' and lang != ''):
+                #        translated_text = translator.translate(text_for_translation)
+                #        mybot.reply_to_message(chat_id, translated_text, reply_to_message_id)
 
 if __name__ == '__main__':  
     try:
         main()
     except KeyboardInterrupt:
         exit()
+
