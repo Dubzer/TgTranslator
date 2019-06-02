@@ -18,13 +18,39 @@ namespace translathor
         }
         public async void Bot_OnMessage(object sender, MessageEventArgs e)
         {
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + e.Message.Text);
+            LoggingService.Log($"Got: {e.Message.Text} by {e.Message.From.Username} from {e.Message.Chat.Id}");
+            string language;
 
-            string language = await translate.DetectLanguage(e.Message.Text);
-            if(Blacklists.Verify(language, Blacklists.languagesBlacklist))
+            try { language = await translate.DetectLanguage(e.Message.Text); }
+            catch (Exception exception)
             {
-                string translation = await translate.TranslateText(e.Message.Text, "en");
-                await Translathor.botClient.SendTextMessageAsync(e.Message.Chat.Id, translation, Telegram.Bot.Types.Enums.ParseMode.Default, true, true, e.Message.MessageId);
+                LoggingService.Log("Got exception while tried to detect language: \n" + exception.ToString());
+                return;
+            }
+
+            if (Blacklists.Verify(language, Blacklists.languagesBlacklist))
+            {
+                string translation;
+                try
+                {
+                    translation = await translate.TranslateText(e.Message.Text, "en");
+                }
+                catch(Exception exception)
+                {
+                    LoggingService.Log("Got exception while tried to translate message: \n" + exception.ToString());
+                    return;
+                }
+
+                LoggingService.Log($"Translated {e.Message.Text} ({language}) to {translation}");
+                try
+                {
+                    await Translathor.botClient.SendTextMessageAsync(e.Message.Chat.Id, translation, Telegram.Bot.Types.Enums.ParseMode.Default, true, true, e.Message.MessageId);
+                }
+                catch(Exception exception)
+                {
+                    LoggingService.Log("Got exception while tried to send message: \n" + exception.ToString());
+                    return;
+                }
             }
         }
     }
