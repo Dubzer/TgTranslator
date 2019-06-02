@@ -8,22 +8,22 @@ namespace translathor
 {
     class UpdateHandler
     {
-        YandexTranslateSdk wrapper;
+        YandexTranslateSdk translate;
 
         public UpdateHandler()
         {
-            wrapper = new YandexTranslateSdk();
+            translate = new YandexTranslateSdk();
 
-            wrapper.ApiKey = Translathor.Configuration["tokens:yandex"];
+            translate.ApiKey = Translathor.Configuration["tokens:yandex"];
         }
         public async void Bot_OnMessage(object sender, MessageEventArgs e)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + e.Message.Text);
 
-            string language = await wrapper.DetectLanguage(e.Message.Text);
+            string language = await translate.DetectLanguage(e.Message.Text);
             if(Blacklists.Verify(language, Blacklists.languagesBlacklist))
             {
-                string translation = await wrapper.TranslateText(e.Message.Text, "en");
+                string translation = await translate.TranslateText(e.Message.Text, "en");
                 await Translathor.botClient.SendTextMessageAsync(e.Message.Chat.Id, translation, Telegram.Bot.Types.Enums.ParseMode.Default, true, true, e.Message.MessageId);
             }
         }
