@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Telegram.Bot;
 
@@ -24,8 +21,6 @@ namespace translathor
         {
             var startup = new Translathor(args);
             await startup.RunAsync();
-
-
         }
 
         public async Task RunAsync()
