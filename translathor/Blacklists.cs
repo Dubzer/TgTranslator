@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
 namespace translathor
 {
@@ -20,17 +19,6 @@ namespace translathor
             }
 
             return true;
-        }
-
-        public static bool IsEnglish(string input)
-        {
-            Regex regex = new Regex(@"[A-Za-z0-9 .,-=@+(){}\[\]\\]");
-            MatchCollection matches = regex.Matches(input);
-
-            if (matches.Count.Equals(input.Length))
-                return true;
-            else
-                return false;
         }
     }
 }
