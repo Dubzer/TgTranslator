@@ -25,11 +25,11 @@ namespace translathor
 
         public async Task RunAsync()
         {
-            Console.WriteLine("Starting up...");
+            LoggingService.Log("Starting up...");
             botClient = new TelegramBotClient(Configuration["tokens:telegramapi"]);
 
             botClient.StartReceiving();
-            Console.WriteLine("Receiving messages...");
+            LoggingService.Log("Receiving messages...");
             UpdateHandler updateHandler = new UpdateHandler();
             botClient.OnMessage += updateHandler.Bot_OnMessage;
 
