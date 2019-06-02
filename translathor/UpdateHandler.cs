@@ -17,9 +17,17 @@ namespace translathor
 
         public async void Bot_OnMessage(object sender, MessageEventArgs e)
         {
-            LoggingService.Log($"Got: {e.Message.Text} by @{e.Message.From.Username} from {e.Message.Chat.Title}");
+            LoggingService.Log($"Got: {e.Message.Text} by {e.Message.From.Username} from {e.Message.Chat.Id}");
+            string language;
 
-            if (!Blacklists.IsEnglish(e.Message.Text))
+            try { language = await translate.DetectLanguage(e.Message.Text); }
+            catch (Exception exception)
+            {
+                LoggingService.Log("Got exception while tried to detect language: \n" + exception.ToString());
+                return;
+            }
+
+            if (Blacklists.Verify(language, Blacklists.languagesBlacklist))
             {
                 string translation;
                 try
@@ -32,7 +40,11 @@ namespace translathor
                     return;
                 }
 
+<<<<<<< HEAD
                 LoggingService.Log($"Translated {e.Message.Text} to {translation}");
+=======
+                LoggingService.Log($"Translated {e.Message.Text} ({language}) to {translation}");
+>>>>>>> parent of a64a34d... New language detection method
                 try
                 {
                     await Translathor.botClient.SendTextMessageAsync(e.Message.Chat.Id, translation, Telegram.Bot.Types.Enums.ParseMode.Default, true, true, e.Message.MessageId);
