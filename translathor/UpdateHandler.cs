@@ -9,11 +9,11 @@ namespace Translathor
 {
     class UpdateHandler
     {
-        YandexTranslateSdk translate;
+        readonly YandexTranslateSdk translate = new YandexTranslateSdk();
         
         public UpdateHandler()
         {
-            translate = new YandexTranslateSdk();
+            
 
             translate.ApiKey = Program.Configuration["tokens:yandex"];
         }

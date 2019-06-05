@@ -11,7 +11,7 @@ namespace Translathor
 
         public static IConfigurationRoot Configuration { get; set; }
 
-        static async Task Main(string[] args)
+        static async Task Main()
         {
             var builder = new ConfigurationBuilder().SetBasePath(AppContext.BaseDirectory).AddJsonFile("configuration.json");
             Configuration = builder.Build();
