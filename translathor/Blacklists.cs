@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Translathor
 {
@@ -9,13 +10,9 @@ namespace Translathor
 
         public static bool Verify(string text, List<string> blacklist)
         {
-            // Тут можно заюзать Linq, но мне лень 
-            foreach (var word in blacklist)
+            if(blacklist.Where(x => x == text).Any())
             {
-                if (text == word)
-                {
-                    return false;
-                }
+                return false;
             }
 
             return true;
