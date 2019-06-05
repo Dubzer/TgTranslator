@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 using Telegram.Bot.Args;
 using YandexTranslateCSharpSdk;
@@ -27,7 +25,7 @@ namespace Translathor
             {
                 LoggingService.Log("Got exception while tried to detect language: \n" + exception.ToString());
                 return;
-            } 
+            }
 
             if (Blacklists.Verify(language, Blacklists.languagesBlacklist))
             {
@@ -36,7 +34,7 @@ namespace Translathor
                 {
                     translation = await translate.TranslateText(e.Message.Text, "en");
                 }
-                catch(Exception exception)
+                catch (Exception exception)
                 {
                     LoggingService.Log("Got exception while tried to translate message: \n" + exception.ToString());
                     return;
@@ -47,7 +45,7 @@ namespace Translathor
                 {
                     await Translathor.botClient.SendTextMessageAsync(e.Message.Chat.Id, translation, Telegram.Bot.Types.Enums.ParseMode.Default, true, true, e.Message.MessageId);
                 }
-                catch(Exception exception)
+                catch (Exception exception)
                 {
                     LoggingService.Log("Got exception while tried to send message: \n" + exception.ToString());
                     return;
