@@ -9,12 +9,12 @@ namespace Translathor
     class UpdateHandler
     {
         YandexTranslateSdk translate;
-
+        
         public UpdateHandler()
         {
             translate = new YandexTranslateSdk();
 
-            translate.ApiKey = Translathor.Configuration["tokens:yandex"];
+            translate.ApiKey = Program.Configuration["tokens:yandex"];
         }
         public async void Bot_OnMessage(object sender, MessageEventArgs e)
         {
@@ -47,7 +47,7 @@ namespace Translathor
                 LoggingService.Log($"Translated {e.Message.Text} ({language}) to {translation}");
                 try
                 {
-                    await Translathor.botClient.SendTextMessageAsync(e.Message.Chat.Id, translation, Telegram.Bot.Types.Enums.ParseMode.Default, true, true, e.Message.MessageId);
+                    await Program.botClient.SendTextMessageAsync(e.Message.Chat.Id, translation, Telegram.Bot.Types.Enums.ParseMode.Default, true, true, e.Message.MessageId);
                 }
                 catch (Exception exception)
                 {
