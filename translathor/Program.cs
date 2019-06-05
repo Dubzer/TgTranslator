@@ -15,7 +15,7 @@ namespace Translathor
         {
             var builder = new ConfigurationBuilder().SetBasePath(AppContext.BaseDirectory).AddJsonFile("configuration.json");
             Configuration = builder.Build();
-            LoggingService loggingService = new LoggingService();
+            LoggingService.PrepareDirectory();
 
             LoggingService.Log("Starting up...");
             botClient = new TelegramBotClient(Configuration["tokens:telegramapi"]);
