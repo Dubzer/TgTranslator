@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Telegram.Bot.Args;
 using YandexTranslateCSharpSdk;
+using Extensions;
 
 namespace Translathor
 {
@@ -60,24 +61,14 @@ namespace Translathor
         public async Task<string> DetectLanguage(string text)
         {
             //  Text without English symbols
-            string textWOEng = Regex.Replace(RemoveLinks(text), @"[A-Za-z0-9 .,-=@+(){}\[\]\\]", "");
+            string textWOEng = Regex.Replace(text.WithoutLinks(), @"[A-Za-z0-9 .,-=@+(){}\[\]\\]", "");
 
             if (!string.IsNullOrWhiteSpace(textWOEng))
             {
                 return await translate.DetectLanguage(textWOEng);
             }
 
-            return await translate.DetectLanguage(RemoveLinks(text));
-        }
-
-        public string RemoveLinks(string text)
-        {
-            if (Regex.Matches(text, @"(http|ftp|https):\/\/([\w\-_]+(?:(?:\.[\w\-_]+)+))([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?").Count != 0)
-            {
-                return Regex.Replace(text, @"(http|ftp|https):\/\/([\w\-_]+(?:(?:\.[\w\-_]+)+))([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?", "");
-            }
-
-            return text;
+            return await translate.DetectLanguage(text.WithoutLinks());
         }
     }
 }
