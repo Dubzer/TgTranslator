@@ -12,7 +12,7 @@ namespace Translathor
             // Тут можно заюзать Linq, но мне лень 
             foreach (var word in blacklist)
             {
-                if (text.Contains(word))
+                if (text == word)
                 {
                     return false;
                 }
