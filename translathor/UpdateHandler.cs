@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Telegram.Bot.Args;
 using YandexTranslateCSharpSdk;
 
@@ -20,7 +21,10 @@ namespace Translathor
             LoggingService.Log($"Got: {e.Message.Text} by {e.Message.From.Username} from {e.Message.Chat.Id}");
             string language;
 
-            try { language = await translate.DetectLanguage(RemoveLinks(e.Message.Text)); }
+            try
+            {
+                language = await DetectLanguage(e.Message.Text);
+            }
             catch (Exception exception)
             {
                 LoggingService.Log("Got exception while tried to detect language: \n" + exception.ToString());
@@ -32,7 +36,7 @@ namespace Translathor
                 string translation;
                 try
                 {
-                    translation = await translate.TranslateText(e.Message.Text, "en");
+                    translation = await translate.TranslateText(e.Message.Text, $"{language}-en");
                 }
                 catch (Exception exception)
                 {
@@ -51,6 +55,19 @@ namespace Translathor
                     return;
                 }
             }
+        }
+
+        public async Task<string> DetectLanguage(string text)
+        {
+            //  Text without English symbols
+            string textWOEng = Regex.Replace(RemoveLinks(text), @"[A-Za-z0-9 .,-=@+(){}\[\]\\]", "");
+
+            if (!string.IsNullOrWhiteSpace(textWOEng))
+            {
+                return await translate.DetectLanguage(textWOEng);
+            }
+
+            return await translate.DetectLanguage(RemoveLinks(text));
         }
 
         public string RemoveLinks(string text)
