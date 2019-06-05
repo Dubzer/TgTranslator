@@ -10,7 +10,7 @@ namespace Translathor
 
         public static bool Verify(string text, List<string> blacklist)
         {
-            if(blacklist.Where(x => x == text).Any())
+            if (blacklist.Where(x => x == text).Any())
             {
                 return false;
             }
