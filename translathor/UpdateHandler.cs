@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using Telegram.Bot.Args;
 using YandexTranslateCSharpSdk;
 
@@ -21,7 +22,7 @@ namespace translathor
             LoggingService.Log($"Got: {e.Message.Text} by {e.Message.From.Username} from {e.Message.Chat.Id}");
             string language;
 
-            try { language = await translate.DetectLanguage(e.Message.Text); }
+            try { language = await translate.DetectLanguage(RemoveLinks(e.Message.Text)); }
             catch (Exception exception)
             {
                 LoggingService.Log("Got exception while tried to detect language: \n" + exception.ToString());
@@ -40,16 +41,8 @@ namespace translathor
                     LoggingService.Log("Got exception while tried to translate message: \n" + exception.ToString());
                     return;
                 }
-<<<<<<< HEAD
 
-<<<<<<< HEAD
-=======
-                
->>>>>>> parent of 070e6de... Cleared code
-                LoggingService.Log($"Translated {e.Message.Text} to {translation}");
-=======
                 LoggingService.Log($"Translated {e.Message.Text} ({language}) to {translation}");
->>>>>>> parent of a64a34d... New language detection method
                 try
                 {
                     await Translathor.botClient.SendTextMessageAsync(e.Message.Chat.Id, translation, Telegram.Bot.Types.Enums.ParseMode.Default, true, true, e.Message.MessageId);
@@ -60,6 +53,16 @@ namespace translathor
                     return;
                 }
             }
+        }
+
+        public string RemoveLinks(string text)
+        {
+            if (Regex.Matches(text, @"(http|ftp|https):\/\/([\w\-_]+(?:(?:\.[\w\-_]+)+))([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?").Count != 0)
+            {
+                return Regex.Replace(text, @"(http|ftp|https):\/\/([\w\-_]+(?:(?:\.[\w\-_]+)+))([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?", "");
+            }
+
+            return text;
         }
     }
 }
