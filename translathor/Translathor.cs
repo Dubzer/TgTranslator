@@ -3,7 +3,7 @@ using System;
 using System.Threading.Tasks;
 using Telegram.Bot;
 
-namespace translathor
+namespace Translathor
 {
     class Translathor
     {

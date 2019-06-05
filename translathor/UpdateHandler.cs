@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using Telegram.Bot.Args;
 using YandexTranslateCSharpSdk;
 
-namespace translathor
+namespace Translathor
 {
     class UpdateHandler
     {
@@ -27,7 +27,7 @@ namespace translathor
             {
                 LoggingService.Log("Got exception while tried to detect language: \n" + exception.ToString());
                 return;
-            }
+            } 
 
             if (Blacklists.Verify(language, Blacklists.languagesBlacklist))
             {

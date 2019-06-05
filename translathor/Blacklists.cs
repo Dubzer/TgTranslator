@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace translathor
+namespace Translathor
 {
     class Blacklists
     {
