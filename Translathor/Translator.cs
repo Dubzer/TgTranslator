@@ -17,8 +17,7 @@ namespace Translathor
         public async Task<string> DetectLanguage(string text)
         {
             // Text without English symbols
-            string textWOEng = Regex.Replace(text.WithoutLinks(), "[^a-zA-Z0-9 -]", "");
-
+            string textWOEng = Regex.Replace(text.WithoutLinks(), "[a-zA-Z0-9 -]", "");
             if (!string.IsNullOrWhiteSpace(textWOEng))
             {
                 return await yaTranslator.DetectLanguage(textWOEng);
