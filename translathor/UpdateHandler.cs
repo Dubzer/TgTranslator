@@ -1,74 +1,51 @@
 ﻿using System;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Telegram.Bot.Args;
-using YandexTranslateCSharpSdk;
-using Extensions;
 
 namespace Translathor
 {
     class UpdateHandler
     {
-        readonly YandexTranslateSdk translate = new YandexTranslateSdk();
-        
-        public UpdateHandler()
+        public static async void Bot_OnMessage(object sender, MessageEventArgs e)
         {
-            
-
-            translate.ApiKey = Program.Configuration["tokens:yandex"];
-        }
-        public async void Bot_OnMessage(object sender, MessageEventArgs e)
-        {
-            LoggingService.Log($"Got: {e.Message.Text} by {e.Message.From.Username} from {e.Message.Chat.Id}");
+            LoggingService.Log($"Got: [ {e.Message.Text} ] by {e.Message.From.Username} from {e.Message.Chat.Title}");
+            Translator translator = new Translator(Program.Configuration["tokens:yandex"]);
             string language;
 
             try
             {
-                language = await DetectLanguage(e.Message.Text);
+                language = await translator.DetectLanguage(e.Message.Text);
             }
-            catch (Exception exception)
+            catch (Exception exc)
             {
-                LoggingService.Log("Got exception while tried to detect language: \n" + exception.ToString());
+                LoggingService.Log($"Got an exception while tried to detect lang ({e.Message.Text}) \n\n {exc}");
                 return;
             }
 
             if (Blacklists.Verify(language, Blacklists.languagesBlacklist))
             {
                 string translation;
+
                 try
                 {
-                    translation = await translate.TranslateText(e.Message.Text, $"{language}-en");
+                    translation = await translator.TranslateText(e.Message.Text, language, "en");
                 }
-                catch (Exception exception)
+                catch (Exception exc)
                 {
-                    LoggingService.Log("Got exception while tried to translate message: \n" + exception.ToString());
+                    LoggingService.Log($"Got an exception while tried to translate ({e.Message.Text}) \n\n {exc}");
                     return;
                 }
 
-                LoggingService.Log($"Translated {e.Message.Text} ({language}) to {translation}");
                 try
                 {
                     await Program.botClient.SendTextMessageAsync(e.Message.Chat.Id, translation, Telegram.Bot.Types.Enums.ParseMode.Default, true, true, e.Message.MessageId);
+                    LoggingService.Log($"Sent translation to {e.Message.Chat.Title}");
                 }
-                catch (Exception exception)
+                catch (Exception exc)
                 {
-                    LoggingService.Log("Got exception while tried to send message: \n" + exception.ToString());
+                    LoggingService.Log($"Got an exception while tried to send ({translation}) to ({e.Message.Chat.Id})\n\n {exc}");
                     return;
                 }
             }
-        }
-
-        public async Task<string> DetectLanguage(string text)
-        {
-            // Text without English symbols
-            string textWOEng = Regex.Replace(text.WithoutLinks(), @"[A-Za-z0-9 .,-=@+(){}\[\]\\]", "");
-
-            if (!string.IsNullOrWhiteSpace(textWOEng))
-            {
-                return await translate.DetectLanguage(textWOEng);
-            }
-
-            return await translate.DetectLanguage(text.WithoutLinks());
         }
     }
 }

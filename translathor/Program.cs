@@ -20,11 +20,10 @@ namespace Translathor
             LoggingService.Log("Starting up...");
             botClient = new TelegramBotClient(Configuration["tokens:telegramapi"]);
 
+            botClient.OnMessage += UpdateHandler.Bot_OnMessage;
+
             botClient.StartReceiving();
             LoggingService.Log("Receiving messages...");
-            UpdateHandler updateHandler = new UpdateHandler();
-            botClient.OnMessage += updateHandler.Bot_OnMessage;
-
             await Task.Delay(-1);
 
         }
