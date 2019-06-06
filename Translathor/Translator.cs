@@ -18,7 +18,8 @@ namespace Translathor
         {
             // Text without English symbols
             string textWOEng = Regex.Replace(text.WithoutLinks(), "[a-zA-Z0-9 -]", "");
-            if (!string.IsNullOrWhiteSpace(textWOEng))
+
+            if (!string.IsNullOrWhiteSpace(textWOEng) && textWOEng.Length * 100 / text.Length > 8)
             {
                 return await yaTranslator.DetectLanguage(textWOEng);
             }
