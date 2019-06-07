@@ -19,6 +19,7 @@ namespace Translathor
             // Text without English symbols
             string textWOEng = Regex.Replace(text.WithoutLinks(), "[a-zA-Z0-9 -]", "");
 
+            // The second thing counts percentage of non-English symbols, and if it's > 8%, then translation is not required
             if (!string.IsNullOrWhiteSpace(textWOEng) && textWOEng.Length * 100 / text.Length > 8)
             {
                 return await yaTranslator.DetectLanguage(textWOEng);
