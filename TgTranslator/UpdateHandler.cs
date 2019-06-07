@@ -1,7 +1,7 @@
 ﻿using System;
 using Telegram.Bot.Args;
 
-namespace Translathor
+namespace TgTranslator
 {
     class UpdateHandler
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Translathor
+namespace TgTranslator
 {
     public class LoggingService
     {
