@@ -7,12 +7,13 @@ namespace TgTranslator.Settings
 {
     class Language : Setting
     {
-        public Language()
+        public Language(string itemTitle)
         {
+            this.itemTitle = itemTitle;
             message = "Here you can setup primary language for your group";
         }
 
-        protected override InlineKeyboardMarkup GenerateButtons()
+        public override InlineKeyboardMarkup GenerateButtons()
         {
             return base.GenerateButtons();
         }

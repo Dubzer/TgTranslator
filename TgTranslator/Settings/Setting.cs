@@ -8,9 +8,14 @@ namespace TgTranslator.Settings
     abstract class Setting
     {
         protected List<InlineKeyboardButton> buttons = new List<InlineKeyboardButton>();
-        protected string message;
+        public string message;
+        public string itemTitle;
 
-        protected virtual InlineKeyboardMarkup GenerateButtons()
+        public Setting()
+        {
+            this.itemTitle = itemTitle;
+        }
+        public virtual InlineKeyboardMarkup GenerateButtons()
         {
             buttons.Add(new InlineKeyboardButton { Text = "Back"});
             return new InlineKeyboardMarkup(buttons);
