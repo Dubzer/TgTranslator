@@ -10,13 +10,18 @@ namespace TgTranslator.Settings
         public Language(string itemTitle)
         {
             this.itemTitle = itemTitle;
-            command = "switchlang";
-            message = "Here you can setup primary language for your group";
+            command = "/switchlang ";
+            description = "Here you can setup primary language for your group. If you don't see your language, select **Other**";
+        }
+        public override void GenerateButtons()
+        {
+            base.GenerateButtons();
         }
 
-        public override InlineKeyboardMarkup GenerateButtons()
+        public override InlineKeyboardMarkup GenerateMarkup()
         {
-            return base.GenerateButtons();
+            GenerateButtons();
+            return base.GenerateMarkup();
         }
     }
 }

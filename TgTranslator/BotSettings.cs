@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Telegram.Bot.Args;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using TgTranslator.Settings;
 
@@ -9,7 +11,7 @@ namespace TgTranslator
 {
     class BotSettings
     {
-        List<Setting> settings;
+        static List<Setting> settings;
         MessageEventArgs args;
 
         public BotSettings(MessageEventArgs e)
@@ -29,7 +31,7 @@ namespace TgTranslator
             Console.WriteLine("Sent message with settings menu to " + args.Message.From.Username);
         }
 
-        InlineKeyboardMarkup GenerateButtons()
+        static InlineKeyboardMarkup GenerateButtons()
         {
             List<InlineKeyboardButton> buttons = new List<InlineKeyboardButton>();
             foreach (var setting in settings)
@@ -40,9 +42,20 @@ namespace TgTranslator
             return new InlineKeyboardMarkup(buttons);
         }
 
-        public static void SwitchItem(CallbackQueryEventArgs e, Setting item)
+        public static async Task SwitchItem(CallbackQueryEventArgs e)
         {
-            Program.botClient.EditMessageCaptionAsync(e.CallbackQuery.Message.Chat.Id, e.CallbackQuery.Message.MessageId, item.message, item.GenerateButtons());
+            Setting item = null;
+
+            foreach (Setting obj in settings)
+            {
+                if (obj.GetType().ToString() == e.CallbackQuery.Data)
+                {
+                    item = obj;
+                    break;
+                }
+            }
+
+            await Program.botClient.EditMessageTextAsync(e.CallbackQuery.Message.Chat.Id, e.CallbackQuery.Message.MessageId, item.description, ParseMode.Markdown, true, item.GenerateMarkup());
         }
     }
 }
