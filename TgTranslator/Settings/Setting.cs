@@ -10,13 +10,11 @@ namespace TgTranslator.Settings
         protected List<InlineKeyboardButton> buttons = new List<InlineKeyboardButton>();
         public string message;
         public string itemTitle;
+        public string command;
 
-        public Setting()
-        {
-            this.itemTitle = itemTitle;
-        }
         public virtual InlineKeyboardMarkup GenerateButtons()
         {
+            buttons.Add(new InlineKeyboardButton { Text = "Send command", SwitchInlineQuery = command });
             buttons.Add(new InlineKeyboardButton { Text = "Back"});
             return new InlineKeyboardMarkup(buttons);
         }
