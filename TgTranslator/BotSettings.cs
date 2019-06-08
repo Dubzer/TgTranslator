@@ -40,9 +40,9 @@ namespace TgTranslator
             return new InlineKeyboardMarkup(buttons);
         }
 
-        void SwitchItem(MessageEventArgs e, Setting item)
+        public static void SwitchItem(CallbackQueryEventArgs e, Setting item)
         {
-            Program.botClient.EditMessageCaptionAsync(e.Message.Chat.Id, e.Message.From.Id, item.message, item.GenerateButtons());
+            Program.botClient.EditMessageCaptionAsync(e.CallbackQuery.Message.Chat.Id, e.CallbackQuery.Message.MessageId, item.message, item.GenerateButtons());
         }
     }
 }

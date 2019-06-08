@@ -21,6 +21,7 @@ namespace TgTranslator
             botClient = new TelegramBotClient(Configuration["tokens:telegramapi"]);
 
             botClient.OnMessage += UpdateHandler.Bot_OnMessage;
+            botClient.OnCallbackQuery += BotClient_OnCallbackQuery;
             botClient.StartReceiving();
             LoggingService.Log("Receiving messages...");
             await Task.Delay(-1);
