@@ -23,11 +23,11 @@ namespace TgTranslator
                 new Language("Language")
             };
 
-            ShowMenu(settings[0]);
+            SendMenu(settings[0]);
         }
 
         
-        void ShowMenu(Setting mainMenu)
+        void SendMenu(Setting mainMenu)
         {
             Program.botClient.SendTextMessageAsync(args.Message.Chat.Id, mainMenu.description, ParseMode.Markdown, true, false, 0, mainMenu.GenerateMarkup());
         }
