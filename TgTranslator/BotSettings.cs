@@ -11,7 +11,7 @@ namespace TgTranslator
 {
     class BotSettings
     {
-        static List<Setting> settings;
+        public static List<Setting> settings;
         MessageEventArgs args;
 
         public BotSettings(MessageEventArgs e)
@@ -19,27 +19,17 @@ namespace TgTranslator
             args = e;
             settings = new List<Setting>()
             {
+                new MainMenu("Back"),
                 new Language("Language")
             };
 
-            ShowMenu();
+            ShowMenu(settings[0]);
         }
 
-        void ShowMenu()
+        
+        void ShowMenu(Setting mainMenu)
         {
-            Program.botClient.SendTextMessageAsync(args.Message.Chat, "That's some text", Telegram.Bot.Types.Enums.ParseMode.Markdown, true, false, 0, GenerateButtons());
-            Console.WriteLine("Sent message with settings menu to " + args.Message.From.Username);
-        }
-
-        static InlineKeyboardMarkup GenerateButtons()
-        {
-            List<InlineKeyboardButton> buttons = new List<InlineKeyboardButton>();
-            foreach (var setting in settings)
-            {
-                buttons.Add(new InlineKeyboardButton { Text = setting.itemTitle, CallbackData = setting.GetType().ToString() });
-            }
-
-            return new InlineKeyboardMarkup(buttons);
+            Program.botClient.SendTextMessageAsync(args.Message.Chat.Id, mainMenu.description, ParseMode.Markdown, true, false, 0, mainMenu.GenerateMarkup());
         }
 
         public static async Task SwitchItem(CallbackQueryEventArgs e)
@@ -48,7 +38,7 @@ namespace TgTranslator
 
             foreach (Setting obj in settings)
             {
-                if (obj.GetType().ToString() == e.CallbackQuery.Data)
+                if (obj.GetType().ToString().Contains(e.CallbackQuery.Data))
                 {
                     item = obj;
                     break;
