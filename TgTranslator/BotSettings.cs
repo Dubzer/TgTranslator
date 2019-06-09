@@ -20,7 +20,7 @@ namespace TgTranslator
                 new Language("Language")
             };
 
-            ShowMenu(settings[0]);
+            SendMenu(settings[0]);
         }
 
         void ShowMenu(Setting mainMenu)
