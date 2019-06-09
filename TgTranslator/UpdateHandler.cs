@@ -57,7 +57,7 @@ namespace TgTranslator
         }
 
         public static async void BotClient_OnCallbackQuery(object sender, CallbackQueryEventArgs e)
-        {   
+        {
             await BotSettings.SwitchItem(e);
         }
     }

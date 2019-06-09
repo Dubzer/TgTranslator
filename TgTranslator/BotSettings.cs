@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
 using TgTranslator.Settings;
 
 namespace TgTranslator
@@ -26,7 +23,6 @@ namespace TgTranslator
             ShowMenu(settings[0]);
         }
 
-        
         void ShowMenu(Setting mainMenu)
         {
             Program.botClient.SendTextMessageAsync(args.Message.Chat.Id, mainMenu.description, ParseMode.Markdown, true, false, 0, mainMenu.GenerateMarkup());
@@ -35,10 +31,17 @@ namespace TgTranslator
         public static async Task SwitchItem(CallbackQueryEventArgs e)
         {
             Setting item = null;
+            string arguments;
+
+            if (e.CallbackQuery.Data.Contains(' '))
+            {
+                arguments = e.CallbackQuery.Data.Split(' ')[1];
+                settings.Add(new ApplyMenu(arguments));
+            }
 
             foreach (Setting obj in settings)
             {
-                if (obj.GetType().ToString().Contains(e.CallbackQuery.Data))
+                if (e.CallbackQuery.Data.Contains(obj.GetType().Name))
                 {
                     item = obj;
                     break;

@@ -7,31 +7,29 @@ namespace TgTranslator.Settings
 {
     abstract class Setting
     {
-        protected List<InlineKeyboardButton> buttons;
+        protected List<IEnumerable<InlineKeyboardButton>> buttons = new List<IEnumerable<InlineKeyboardButton>>();
         public string description;
         public string itemTitle;
         public string command;
 
-        public virtual void GenerateButtons()
+        public Setting()
         {
-            buttons = new List<InlineKeyboardButton>
-            {
-                new InlineKeyboardButton { Text = "Back to the menu", CallbackData = "MainMenu"}
-            };
+
         }
 
-        public void GenerateApplyOrCancel()
+        public virtual void GenerateButtons()
         {
-            buttons = new List<InlineKeyboardButton>
-            {
-                new InlineKeyboardButton { Text = "Apply", SwitchInlineQuery = command },
-                new InlineKeyboardButton { Text = "Cancel", CallbackData = "MainMenu"}
-            };
+            buttons.Add(new List<InlineKeyboardButton>()
+                        {
+                            new InlineKeyboardButton { Text = "Back to the menu", CallbackData = "MainMenu"}
+                        });
         }
 
         public virtual InlineKeyboardMarkup GenerateMarkup()
         {
-            GenerateButtons();
+            if(buttons.Count == 0)
+                GenerateButtons();
+
             return new InlineKeyboardMarkup(buttons);
         }
     }
