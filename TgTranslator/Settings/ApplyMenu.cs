@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using Telegram.Bot.Types.ReplyMarkups;
+using TgTranslator.Interfaces;
 
 namespace TgTranslator.Settings
 {
-    class ApplyMenu : Setting
+    class ApplyMenu : Setting, ITakesArguments
     {
         public ApplyMenu(string command)
         {

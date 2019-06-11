@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types.Enums;
@@ -9,7 +10,7 @@ namespace TgTranslator
     class BotSettings
     {
         public static List<Setting> settings;
-        MessageEventArgs args;
+        private readonly MessageEventArgs args;
 
         public BotSettings(MessageEventArgs e)
         {
@@ -17,38 +18,34 @@ namespace TgTranslator
             settings = new List<Setting>()
             {
                 new MainMenu("Back"),
-                new Language("Language")
+                new Language("Main language")
             };
 
             SendMenu(settings[0]);
         }
 
-        void ShowMenu(Setting mainMenu)
+        private void SendMenu(Setting mainMenu)
         {
             Program.botClient.SendTextMessageAsync(args.Message.Chat.Id, mainMenu.description, ParseMode.Markdown, true, false, 0, mainMenu.GenerateMarkup());
         }
 
         public static async Task SwitchItem(CallbackQueryEventArgs e)
         {
-            Setting item = null;
-            string arguments;
+            if (e.CallbackQuery.Data.Contains("ApplyMenu"))
+                settings.Add(new ApplyMenu(GetArguments(e)));
 
-            if (e.CallbackQuery.Data.Contains(' '))
-            {
-                arguments = e.CallbackQuery.Data.Split(' ')[1];
-                settings.Add(new ApplyMenu(arguments));
-            }
-
-            foreach (Setting obj in settings)
-            {
-                if (e.CallbackQuery.Data.Contains(obj.GetType().Name))
-                {
-                    item = obj;
-                    break;
-                }
-            }
-
+            Setting item = FindSettingByName(e.CallbackQuery.Data, settings);
             await Program.botClient.EditMessageTextAsync(e.CallbackQuery.Message.Chat.Id, e.CallbackQuery.Message.MessageId, item.description, ParseMode.Markdown, true, item.GenerateMarkup());
+        }
+
+        private static string GetArguments(CallbackQueryEventArgs e)
+        {
+            return e.CallbackQuery.Data.Split(' ')[1];
+        }
+
+        private static Setting FindSettingByName(string name, List<Setting> list)
+        {
+            return list.Where(x => name.Contains(x.GetType().ToString())).FirstOrDefault();
         }
     }
 }
