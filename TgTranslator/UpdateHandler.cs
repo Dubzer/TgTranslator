@@ -40,7 +40,7 @@ namespace TgTranslator
 
                     try
                     {
-                        await Program.botClient.SendTextMessageAsync(e.Message.Chat.Id, translation, Telegram.Bot.Types.Enums.ParseMode.Default, true, true, e.Message.MessageId);
+                        await Program.botClient.SendTextMessageAsync(e.Message.Chat.Id, translation, ParseMode.Default, true, true, e.Message.MessageId);
                         LoggingService.Log($"Sent translation to {e.Message.Chat.Title}");
                     }
                     catch (Exception exc)
