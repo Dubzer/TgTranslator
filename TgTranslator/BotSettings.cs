@@ -45,7 +45,7 @@ namespace TgTranslator
 
         private static Setting FindSettingByName(string name, List<Setting> list)
         {
-            return list.Where(x => name.Contains(x.GetType().ToString())).FirstOrDefault();
+            return list.Where(x => x.GetType().ToString().Contains(name)).FirstOrDefault();
         }
     }
 }
