@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TgTranslator.Settings
@@ -12,11 +10,6 @@ namespace TgTranslator.Settings
         public string itemTitle;
         public string command;
 
-        public Setting()
-        {
-
-        }
-
         public virtual void GenerateButtons()
         {
             buttons.Add(new List<InlineKeyboardButton>()
@@ -27,7 +20,7 @@ namespace TgTranslator.Settings
 
         public virtual InlineKeyboardMarkup GenerateMarkup()
         {
-            if(buttons.Count == 0)
+            if (buttons.Count == 0)
                 GenerateButtons();
 
             return new InlineKeyboardMarkup(buttons);

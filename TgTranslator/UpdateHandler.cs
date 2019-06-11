@@ -8,6 +8,7 @@ namespace TgTranslator
     {
         public static async void Bot_OnMessage(object sender, MessageEventArgs e)
         {
+
             if (e.Message.Chat.Type == ChatType.Group || e.Message.Chat.Type == ChatType.Supergroup)
             {
                 LoggingService.Log($"Got: [ {e.Message.Text} ] by {e.Message.From.Username} from {e.Message.Chat.Title}");
