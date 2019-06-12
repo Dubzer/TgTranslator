@@ -9,7 +9,7 @@ namespace TgTranslator.Settings
         public ApplyMenu(string command)
         {
             description = "Everything is done. To apply settings, click on *Apply* button, or if you don't want to apply, click on **Cancel**";
-            this.command = command;
+            this.command = $"set:{command}";
         }
 
         public override void GenerateButtons()

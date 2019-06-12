@@ -8,7 +8,7 @@ namespace TgTranslator.Settings
         public Language(string itemTitle)
         {
             this.itemTitle = itemTitle;
-            command = "/switchlang=";
+            command = "lang=";
             description = "Here you can setup primary language for your group. If you don't see your language, select **Other**";
         }
 
