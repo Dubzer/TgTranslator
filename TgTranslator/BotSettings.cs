@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Extensions;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Bot.Args;
@@ -34,7 +35,7 @@ namespace TgTranslator
             if (e.CallbackQuery.Data.Contains("ApplyMenu"))
                 settings.Add(new ApplyMenu(GetArguments(e)));
 
-            Setting item = FindSettingByName(e.CallbackQuery.Data, settings);
+            Setting item = FindSettingByName(e.CallbackQuery.Data.WithoutArguments(), settings);
             await Program.botClient.EditMessageTextAsync(e.CallbackQuery.Message.Chat.Id, e.CallbackQuery.Message.MessageId, item.description, ParseMode.Markdown, true, item.GenerateMarkup());
         }
 

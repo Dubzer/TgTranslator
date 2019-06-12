@@ -17,6 +17,11 @@ namespace Extensions
 
             return inputString;
         }
+
+        public static string WithoutArguments(this string inputString)
+        {
+            return inputString.Split(' ')[0];
+        }
     }
 }
 
