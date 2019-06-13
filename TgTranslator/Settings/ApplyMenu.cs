@@ -12,9 +12,9 @@ namespace TgTranslator.Settings
             this.command = $"set:{command}";
         }
 
-        public override void GenerateButtons()
+        protected override void GenerateButtons()
         {
-            buttons.Add(new List<InlineKeyboardButton>()
+            buttons.Add(new List<InlineKeyboardButton>
                         {
                             new InlineKeyboardButton { Text = "Apply", SwitchInlineQuery = command },
                             new InlineKeyboardButton { Text = "Cancel", CallbackData = "MainMenu"}

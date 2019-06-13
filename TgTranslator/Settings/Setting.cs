@@ -2,23 +2,23 @@
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TgTranslator.Settings
-{
+{ 
     abstract class Setting
     {
         protected List<IEnumerable<InlineKeyboardButton>> buttons = new List<IEnumerable<InlineKeyboardButton>>();
         public string description;
         public string itemTitle;
-        public string command;
+        protected string command;
 
-        public virtual void GenerateButtons()
+        protected virtual void GenerateButtons()
         {
-            buttons.Add(new List<InlineKeyboardButton>()
+            buttons.Add(new List<InlineKeyboardButton>
                         {
                             new InlineKeyboardButton { Text = "Back to the menu", CallbackData = "MainMenu"}
                         });
         }
 
-        public virtual InlineKeyboardMarkup GenerateMarkup()
+        public InlineKeyboardMarkup GenerateMarkup()
         {
             if (buttons.Count == 0)
                 GenerateButtons();

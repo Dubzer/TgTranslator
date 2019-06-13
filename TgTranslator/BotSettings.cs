@@ -44,9 +44,9 @@ namespace TgTranslator
             return e.CallbackQuery.Data.Split(' ')[1];
         }
 
-        private static Setting FindSettingByName(string name, List<Setting> list)
+        private static Setting FindSettingByName(string name, IEnumerable<Setting> list)
         {
-            return list.Where(x => x.GetType().ToString().Contains(name)).FirstOrDefault();
+            return list.FirstOrDefault(x => x.GetType().ToString().Contains(name));
         }
     }
 }
