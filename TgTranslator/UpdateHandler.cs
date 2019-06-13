@@ -8,56 +8,66 @@ namespace TgTranslator
     {
         public static async void Bot_OnMessage(object sender, MessageEventArgs e)
         {
-            if (e.Message.Chat.Type == ChatType.Group || e.Message.Chat.Type == ChatType.Supergroup)
+            switch (e.Message.Chat.Type)
             {
-                LoggingService.Log($"Got: [ {e.Message.Text} ] by {e.Message.From.Username} from {e.Message.Chat.Title}");
-                Translator translator = new Translator(Program.Configuration["tokens:yandex"]);
-                string language;
-
-                try
+                case ChatType.Group:
+                case ChatType.Supergroup:
                 {
-                    language = await translator.DetectLanguage(e.Message.Text);
-                }
-                catch (Exception exc)
-                {
-                    LoggingService.Log($"Got an exception while tried to detect lang ({e.Message.Text}) \n\n {exc}");
-                    return;
-                }
-
-                if (Blacklists.Verify(language, Blacklists.languagesBlacklist))
-                {
-                    string translation;
+                    LoggingService.Log($"Got: [ {e.Message.Text} ] by {e.Message.From.Username} from {e.Message.Chat.Title}");
+                    Translator translator = new Translator(Program.Configuration["tokens:yandex"]);
+                    string language;
 
                     try
-                    {
-                        translation = await translator.TranslateText(e.Message.Text, language, "en");
+                    {    
+                        language = await translator.DetectLanguage(e.Message.Text);
                     }
                     catch (Exception exc)
                     {
-                        LoggingService.Log($"Got an exception while tried to translate ({e.Message.Text}) \n\n {exc}");
+                        LoggingService.Log($"Got an exception while tried to detect lang ({e.Message.Text}) \n\n {exc}");
                         return;
                     }
 
-                    try
+                    if (Blacklists.Verify(language, Blacklists.LanguagesBlacklist))
                     {
-                        await Program.botClient.SendTextMessageAsync(e.Message.Chat.Id, translation, ParseMode.Default, true, true, e.Message.MessageId);
-                        LoggingService.Log($"Sent translation to {e.Message.Chat.Title}");
+                        string translation;
+
+                        try
+                        {
+                            translation = await translator.TranslateText(e.Message.Text, language, "en");
+                        }
+                        catch (Exception exc)
+                        {
+                            LoggingService.Log($"Got an exception while tried to translate ({e.Message.Text}) \n\n {exc}");
+                            return;
+                        }
+
+                        try
+                        {
+                            await Program.botClient.SendTextMessageAsync(e.Message.Chat.Id, translation, ParseMode.Default, true, true, e.Message.MessageId);
+                            LoggingService.Log($"Sent translation to {e.Message.Chat.Title}");
+                        }
+                        catch (Exception exc)
+                        {
+                            LoggingService.Log($"Got an exception while tried to send ({translation}) to ({e.Message.Chat.Id})\n\n {exc}");
+                            return;
+                        }
                     }
-                    catch (Exception exc)
+
+                    break;
+                }
+
+                case ChatType.Private:
+                    switch (e.Message.Text)
                     {
-                        LoggingService.Log($"Got an exception while tried to send ({translation}) to ({e.Message.Chat.Id})\n\n {exc}");
-                        return;
+                        case "/settings":
+                            new BotSettings(e);
+                            break;
+                        default:
+                            
+                            break;
                     }
-                }
-            }
-            else if (e.Message.Chat.Type == ChatType.Private)
-            {
-                switch (e.Message.Text)
-                {
-                    case "/settings":
-                        new BotSettings(e);
-                        break;
-                }
+
+                    break;
             }
         }
 

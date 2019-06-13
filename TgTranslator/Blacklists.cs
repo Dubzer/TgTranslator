@@ -3,19 +3,14 @@ using System.Linq;
 
 namespace TgTranslator
 {
-    class Blacklists
+    static class Blacklists
     {
-        public static List<string> languagesBlacklist = new List<string> { "en", "" };
+        public static readonly List<string> LanguagesBlacklist = new List<string> { "en", "" };
         //public static List<string> wordsBlacklist = new List<string> { };
 
-        public static bool Verify(string text, List<string> blacklist)
+        public static bool Verify(string text, IEnumerable<string> blacklist)
         {
-            if (blacklist.Where(x => x == text).Any())
-            {
-                return false;
-            }
-
-            return true;
+            return blacklist.All(x => x != text);
         }
     }
 }

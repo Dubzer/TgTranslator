@@ -11,14 +11,14 @@ namespace TgTranslator.Settings
             description = "Some text that says something about settings";
         }
 
-        public override void GenerateButtons()
+        protected override void GenerateButtons()
         {
             foreach (var setting in BotSettings.settings)
             {
                 if (setting.GetType().ToString() == "TgTranslator.Settings.MainMenu")
                     continue;
 
-                buttons.Add(new List<InlineKeyboardButton>() { new InlineKeyboardButton { Text = setting.itemTitle, CallbackData = setting.GetType().ToString() } });
+                buttons.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = setting.itemTitle, CallbackData = setting.GetType().ToString() } });
             }
 
         }

@@ -11,7 +11,7 @@ namespace TgTranslator
 
         public static IConfigurationRoot Configuration { get; set; }
 
-        static async Task Main()
+        private static async Task Main()
         {
             var builder = new ConfigurationBuilder().SetBasePath(AppContext.BaseDirectory).AddJsonFile("configuration.json");
             Configuration = builder.Build();
