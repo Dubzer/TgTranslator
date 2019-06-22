@@ -25,7 +25,9 @@ namespace TgTranslator.Settings
 
         public InlineKeyboardMarkup GenerateMarkup(IEnumerable<Setting> settingsList)
         {
-            GenerateButtons(settingsList);
+            if (buttons.Count == 0)
+                GenerateButtons(settingsList);
+            
             return GenerateMarkup();
         }
     }
