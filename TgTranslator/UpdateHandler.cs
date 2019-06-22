@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types.Enums;
 
@@ -6,7 +7,9 @@ namespace TgTranslator
 {
     class UpdateHandler
     {
-        public static async void Bot_OnMessage(object sender, MessageEventArgs e)
+        private readonly BotSettings botSettings = new BotSettings();
+        
+        public async Task OnMessage(MessageEventArgs e)
         {
             switch (e.Message.Chat.Type)
             {
@@ -33,7 +36,7 @@ namespace TgTranslator
 
                         try
                         {
-                            translation = await translator.TranslateText(e.Message.Text, language, "en");
+                            translation = await translator.TranslateText(e.Message.Text, language, ConfigurationProcessor.GetGroupLanguage(e.Message.Chat.Id));
                         }
                         catch (Exception exc)
                         {
@@ -49,7 +52,6 @@ namespace TgTranslator
                         catch (Exception exc)
                         {
                             LoggingService.Log($"Got an exception while tried to send ({translation}) to ({e.Message.Chat.Id})\n\n {exc}");
-                            return;
                         }
                     }
 
@@ -60,7 +62,7 @@ namespace TgTranslator
                     switch (e.Message.Text)
                     {
                         case "/settings":
-                            new BotSettings(e);
+                            await botSettings.SendMenu(e.Message.Chat.Id);
                             break;
                         default:
                             
@@ -71,9 +73,9 @@ namespace TgTranslator
             }
         }
 
-        public static async void BotClient_OnCallbackQuery(object sender, CallbackQueryEventArgs e)
+        public async Task OnCallbackQuery(CallbackQueryEventArgs e)
         {
-            await BotSettings.SwitchItem(e);
+            await botSettings.SwitchItem(e);
         }
     }
 }

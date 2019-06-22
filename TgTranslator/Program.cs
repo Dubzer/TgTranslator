@@ -2,6 +2,7 @@
 using System;
 using System.Threading.Tasks;
 using Telegram.Bot;
+using Telegram.Bot.Types;
 
 namespace TgTranslator
 {
@@ -20,12 +21,11 @@ namespace TgTranslator
             LoggingService.Log("Starting up...");
             botClient = new TelegramBotClient(Configuration["tokens:telegramapi"]);
 
-            botClient.OnMessage += UpdateHandler.Bot_OnMessage;
-            botClient.OnCallbackQuery += UpdateHandler.BotClient_OnCallbackQuery;
+            botClient.OnMessage += async (sender, args) => { await new UpdateHandler().OnMessage(args); };
+            botClient.OnCallbackQuery += async (sender, args) => { await new UpdateHandler().OnCallbackQuery(args); };
             botClient.StartReceiving();
             LoggingService.Log("Receiving messages...");
             await Task.Delay(-1);
-
         }
     }
 }

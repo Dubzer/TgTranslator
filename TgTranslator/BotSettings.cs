@@ -1,4 +1,5 @@
-﻿using Extensions;
+﻿using System;
+using Extensions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,41 +11,47 @@ namespace TgTranslator
 {
     class BotSettings
     {
-        public static List<Setting> settings;
-        private readonly MessageEventArgs args;
+        public List<Setting> settings;
 
-        public BotSettings(MessageEventArgs e)
+        public BotSettings()
         {
-            args = e;
-            settings = new List<Setting>()
+            settings = new List<Setting>
             {
                 new MainMenu("Back"),
                 new Language("Main language")
             };
-
-            SendMenu(settings[0]);
         }
 
-        private void SendMenu(Setting mainMenu)
+        public async Task SendMenu(long chatId)
         {
-            Program.botClient.SendTextMessageAsync(args.Message.Chat.Id, mainMenu.description, ParseMode.Markdown, true, false, 0, mainMenu.GenerateMarkup());
+            MainMenu menu = (MainMenu)FindSettingByName("MainMenu", settings);
+            await Program.botClient.SendTextMessageAsync(chatId, menu.description, ParseMode.Markdown, true, false, 0, menu.GenerateMarkup(settings));
         }
 
-        public static async Task SwitchItem(CallbackQueryEventArgs e)
+        public async Task SwitchItem(CallbackQueryEventArgs e)
         {
+            if (e.CallbackQuery.Data.Contains("MainMenu"))
+            {
+                MainMenu mainMenu = (MainMenu)FindSettingByName(e.CallbackQuery.Data.WithoutArguments(), settings);
+                
+                await Program.botClient.EditMessageTextAsync(e.CallbackQuery.Message.Chat.Id, e.CallbackQuery.Message.MessageId, mainMenu.description, ParseMode.Markdown, true, mainMenu.GenerateMarkup(settings));
+                return;
+            }
+            
             if (e.CallbackQuery.Data.Contains("ApplyMenu"))
                 settings.Add(new ApplyMenu(GetArguments(e)));
+            
 
             Setting item = FindSettingByName(e.CallbackQuery.Data.WithoutArguments(), settings);
             await Program.botClient.EditMessageTextAsync(e.CallbackQuery.Message.Chat.Id, e.CallbackQuery.Message.MessageId, item.description, ParseMode.Markdown, true, item.GenerateMarkup());
         }
 
-        private static string GetArguments(CallbackQueryEventArgs e)
+        private string GetArguments(CallbackQueryEventArgs e)
         {
             return e.CallbackQuery.Data.Split(' ')[1];
         }
 
-        private static Setting FindSettingByName(string name, IEnumerable<Setting> list)
+        private Setting FindSettingByName(string name, IEnumerable<Setting> list)
         {
             return list.FirstOrDefault(x => x.GetType().ToString().Contains(name));
         }
