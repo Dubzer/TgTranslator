@@ -31,7 +31,7 @@ namespace TgTranslator
         public async Task<string> TranslateText(string text, string from, string to)
         {
             string translation = await yaTranslator.TranslateText(text, $"{from}-{to}");
-            LoggingService.Log($"Translated {text} ({from}) to {translation} ({to})");
+            LoggingService.Log($"Translated [ {text} ] ({from}) to [ {translation} ] ({to})");
 
             return translation;
         }
