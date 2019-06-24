@@ -11,7 +11,7 @@ namespace TgTranslator
 {
     class BotSettings
     {
-        public List<Setting> settings;
+        private List<Setting> settings;
 
         public BotSettings()
         {
