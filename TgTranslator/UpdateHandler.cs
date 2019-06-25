@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Extensions;
 using Telegram.Bot.Args;
 using Telegram.Bot.Requests;
 using Telegram.Bot.Types;
@@ -11,8 +12,8 @@ namespace TgTranslator
 {
     class UpdateHandler
     {
-        private readonly BotSettings botSettings = new BotSettings();
-        private readonly ConfigurationProcessor configurationProcessor = new ConfigurationProcessor();
+        private readonly SettingsMenu settingsMenu = new SettingsMenu();
+        private readonly SettingsProcessor settingsProcessor = new SettingsProcessor();
         
         public async Task OnMessage(MessageEventArgs e)
         {
@@ -23,15 +24,13 @@ namespace TgTranslator
                 {   
                     LoggingService.Log($"Got: [ {e.Message.Text} ] by {e.Message.From.Username} from {e.Message.Chat.Title}");
                     
-                    if (e.Message.Text.Contains($"{Program.botClient.GetMeAsync().Result.Username}") && e.Message.Text.Contains("set"))
+                    if (e.Message.Text.Contains($"{Program.botClient.GetMeAsync().Result.Username} set:"))
                     {
-                        ChatMember[] chatAdmins= await Program.botClient.GetChatAdministratorsAsync(e.Message.Chat.Id);
-                        
-                        if (chatAdmins.Any(x => x.User.Username == e.Message.From.Username))
+                        if (await e.Message.From.IsAdministrator(e.Message.Chat.Id))
                         {
-                            string tinyString = e.Message.Text.Replace("@grouptranslator_bot set:", "");
+                            string tinyString = e.Message.Text.Replace($"{Program.botClient.GetMeAsync().Result.Username} set:", "");
                             
-                            configurationProcessor.ChangeSetting(e.Message.Chat.Id, tinyString.Split('=')[0], tinyString.Split('=')[1]);
+                            settingsProcessor.ChangeSetting(e.Message.Chat.Id, tinyString.Split('=')[0], tinyString.Split('=')[1]);
                             await Program.botClient.SendTextMessageAsync(e.Message.Chat.Id, "Done!", ParseMode.Default, false, true, e.Message.MessageId);
                         }
                         else
@@ -56,13 +55,13 @@ namespace TgTranslator
                         return;
                     }
 
-                    if (language != configurationProcessor.GetGroupLanguage(e.Message.Chat.Id))
+                    if (language != settingsProcessor.GetGroupLanguage(e.Message.Chat.Id))
                     {
                         string translation;
 
                         try
                         {
-                            translation = await translator.TranslateText(e.Message.Text, language, configurationProcessor.GetGroupLanguage(e.Message.Chat.Id));
+                            translation = await translator.TranslateText(e.Message.Text, language, settingsProcessor.GetGroupLanguage(e.Message.Chat.Id));
                         }
                         catch (Exception exc)
                         {
@@ -88,7 +87,7 @@ namespace TgTranslator
                     switch (e.Message.Text)
                     {
                         case "/settings":
-                            await botSettings.SendMenu(e.Message.Chat.Id);
+                            await settingsMenu.SendMenu(e.Message.Chat.Id);
                             break;
                         default:
                             
@@ -101,7 +100,7 @@ namespace TgTranslator
 
         public async Task OnCallbackQuery(CallbackQueryEventArgs e)
         {
-            await botSettings.SwitchItem(e);
+            await settingsMenu.SwitchItem(e);
         }
     }
 }
