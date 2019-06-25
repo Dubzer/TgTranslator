@@ -9,11 +9,11 @@ using TgTranslator.Settings;
 
 namespace TgTranslator
 {
-    class BotSettings
+    class SettingsMenu
     {
         private List<Setting> settings;
 
-        public BotSettings()
+        public SettingsMenu()
         {
             settings = new List<Setting>
             {

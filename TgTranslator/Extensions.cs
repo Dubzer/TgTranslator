@@ -1,4 +1,8 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Telegram.Bot.Types;
+using TgTranslator;
 
 namespace Extensions
 {
@@ -21,6 +25,16 @@ namespace Extensions
         public static string WithoutArguments(this string inputString)
         {
             return inputString.Split(' ')[0];
+        }
+        
+        /// <summary>
+        /// Checks if user is an administrator
+        /// </summary>
+        public static async Task<bool> IsAdministrator(this User user, long chatId)
+        {
+            ChatMember[] chatAdmins= await Program.botClient.GetChatAdministratorsAsync(chatId);
+
+            return chatAdmins.Any(x => x.User.Username == user.Username);
         }
     }
 }

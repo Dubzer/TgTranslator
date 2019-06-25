@@ -3,12 +3,12 @@ using StackExchange.Redis;
 
 namespace TgTranslator
  {
-     public class ConfigurationProcessor
+     public class SettingsProcessor
      {
          private ConnectionMultiplexer redis;
          private IDatabase db;
 
-         public ConfigurationProcessor()
+         public SettingsProcessor()
          {
             redis = ConnectionMultiplexer.Connect("127.0.0.1"); 
             db = redis.GetDatabase();
