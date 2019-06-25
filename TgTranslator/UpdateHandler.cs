@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Extensions;
 using Telegram.Bot.Args;
-using Telegram.Bot.Requests;
-using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
 namespace TgTranslator
@@ -100,7 +96,15 @@ namespace TgTranslator
 
         public async Task OnCallbackQuery(CallbackQueryEventArgs e)
         {
-            await settingsMenu.SwitchItem(e);
+            string command = e.CallbackQuery.Data.Split(' ')[0];
+            
+            switch (command)
+            {
+                case "switch:":
+                    await settingsMenu.SwitchItem(e.CallbackQuery.Data.Replace($@"{command} ", ""), e.CallbackQuery.Message.Chat.Id,e.CallbackQuery.Message.MessageId);
+                    break;
+            }
+            
         }
     }
 }

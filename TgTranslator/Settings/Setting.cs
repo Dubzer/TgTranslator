@@ -14,7 +14,7 @@ namespace TgTranslator.Settings
         {
             buttons.Add(new List<InlineKeyboardButton>
                         {
-                            new InlineKeyboardButton { Text = "Back to the menu", CallbackData = "MainMenu"}
+                            new InlineKeyboardButton { Text = "Back to the menu", CallbackData = "switch: MainMenu"}
                         });
         }
 
