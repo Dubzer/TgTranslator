@@ -19,7 +19,7 @@ namespace TgTranslator.Settings
                 if (setting.GetType().ToString() == "TgTranslator.Settings.MainMenu")
                     continue;
 
-                buttons.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = setting.itemTitle, CallbackData = setting.GetType().ToString() } });
+                buttons.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = setting.itemTitle, CallbackData = $"switch: {setting.GetType()}" } });
             }
         }
 

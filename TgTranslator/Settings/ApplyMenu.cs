@@ -17,7 +17,7 @@ namespace TgTranslator.Settings
             buttons.Add(new List<InlineKeyboardButton>
                         {
                             new InlineKeyboardButton { Text = "Apply", SwitchInlineQuery = command },
-                            new InlineKeyboardButton { Text = "Cancel", CallbackData = "MainMenu"}
+                            new InlineKeyboardButton { Text = "Cancel", CallbackData = "switch: MainMenu"}
                         });
         }
     }

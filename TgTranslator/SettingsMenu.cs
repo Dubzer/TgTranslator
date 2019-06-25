@@ -1,5 +1,4 @@
-﻿using System;
-using Extensions;
+﻿using Extensions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,32 +27,32 @@ namespace TgTranslator
             await Program.botClient.SendTextMessageAsync(chatId, menu.description, ParseMode.Markdown, true, false, 0, menu.GenerateMarkup(settings));
         }
 
-        public async Task SwitchItem(CallbackQueryEventArgs e)
+        public async Task SwitchItem(string itemName, long chatId, int messageId)
         {
-            if (e.CallbackQuery.Data.Contains("MainMenu"))
+            if (itemName.Contains("MainMenu"))
             {
-                MainMenu mainMenu = (MainMenu)FindSettingByName(e.CallbackQuery.Data.WithoutArguments(), settings);
+                MainMenu mainMenu = (MainMenu)FindSettingByName(itemName.WithoutArguments(), settings);
                 
-                await Program.botClient.EditMessageTextAsync(e.CallbackQuery.Message.Chat.Id, e.CallbackQuery.Message.MessageId, mainMenu.description, ParseMode.Markdown, true, mainMenu.GenerateMarkup(settings));
+                await Program.botClient.EditMessageTextAsync(chatId, messageId, mainMenu.description, ParseMode.Markdown, true, mainMenu.GenerateMarkup(settings));
                 return;
             }
             
-            if (e.CallbackQuery.Data.Contains("ApplyMenu"))
-                settings.Add(new ApplyMenu(GetArguments(e)));
+            if (itemName.Contains("ApplyMenu"))
+                settings.Add(new ApplyMenu(GetArguments(itemName)));
             
 
-            Setting item = FindSettingByName(e.CallbackQuery.Data.WithoutArguments(), settings);
-            await Program.botClient.EditMessageTextAsync(e.CallbackQuery.Message.Chat.Id, e.CallbackQuery.Message.MessageId, item.description, ParseMode.Markdown, true, item.GenerateMarkup());
+            Setting item = FindSettingByName(itemName.WithoutArguments(), settings);
+            await Program.botClient.EditMessageTextAsync(chatId, messageId, item.description, ParseMode.Markdown, true, item.GenerateMarkup());
         }
 
-        private string GetArguments(CallbackQueryEventArgs e)
+        private string GetArguments(string itemName)
         {
-            return e.CallbackQuery.Data.Split(' ')[1];
+            return itemName.Split(' ')[0];
         }
 
         private Setting FindSettingByName(string name, IEnumerable<Setting> list)
         {
-            return list.FirstOrDefault(x => x.GetType().ToString().Contains(name));
+            return list.First(x => x.GetType().ToString().Contains(name));
         }
     }
 }
