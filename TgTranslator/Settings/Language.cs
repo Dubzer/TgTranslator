@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net.Sockets;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TgTranslator.Settings
@@ -14,10 +15,35 @@ namespace TgTranslator.Settings
 
         protected override void GenerateButtons()
         {
+            List<InlineKeyboardButton> tempKeyboard = new List<InlineKeyboardButton>();
+            
+            foreach (var language in Program.languages)
+            {
+                if (tempKeyboard.Count == 3)
+                {
+                    buttons.Add(tempKeyboard);
+                    tempKeyboard.Clear();
+                }
+                
+                tempKeyboard.Add(new InlineKeyboardButton { Text = $@"{language.Flag} {language.Name}",
+                                                            CallbackData = $"switch: ApplyMenu {command}{language.Code}"});
+            }
+
+
+
+
+            if(tempKeyboard.Count != 0)
+                buttons.Add(tempKeyboard);
+
+
+
+            /*
+             *                 //buttons.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = $@"{language.Flag} {language.Name}", CallbackData = $"switch: ApplyMenu {command}{language.Code}"} });
+
             buttons.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🇬🇧 English", CallbackData = $"switch: ApplyMenu {command}en" }, new InlineKeyboardButton { Text = "🇪🇸 Spanish", CallbackData = $"switch: ApplyMenu {command}es" }, new InlineKeyboardButton { Text = "🇷🇺 Russian", CallbackData = $"switch: ApplyMenu {command}ru" } });
             buttons.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🇩🇪 German", CallbackData = $"switch: ApplyMenu {command}de" }, new InlineKeyboardButton { Text = "🇫🇷 French", CallbackData = $"switch: ApplyMenu {command}fr" }, new InlineKeyboardButton { Text = "🇸🇪 Swedish", CallbackData = $"switch: ApplyMenu {command}sv" } });
             buttons.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🇨🇳 Chinese", CallbackData = $"switch: ApplyMenu {command}zh" }, new InlineKeyboardButton { Text = "🇮🇷 Persian", CallbackData = $"switch: ApplyMenu {command}fa" }, new InlineKeyboardButton { Text = "🇮🇳 Hindi", CallbackData = $"switch: ApplyMenu {command}hi" } });
-
+*/
             base.GenerateButtons();
         }
     }
