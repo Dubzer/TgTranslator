@@ -22,17 +22,15 @@ namespace TgTranslator
                     
                     if (e.Message.Text.Contains($"{Program.botClient.GetMeAsync().Result.Username} set:"))
                     {
-                        if (await e.Message.From.IsAdministrator(e.Message.Chat.Id))
-                        {
-                            string tinyString = e.Message.Text.Replace($"{Program.botClient.GetMeAsync().Result.Username} set:", "");
-                            
-                            settingsProcessor.ChangeSetting(e.Message.Chat.Id, tinyString.Split('=')[0], tinyString.Split('=')[1]);
-                            await Program.botClient.SendTextMessageAsync(e.Message.Chat.Id, "Done!", ParseMode.Default, false, true, e.Message.MessageId);
-                        }
-                        else
+                        if (!await e.Message.From.IsAdministrator(e.Message.Chat.Id))
                         {
                             await Program.botClient.SendTextMessageAsync(e.Message.Chat.Id, "Hey, only admins can change settings of this bot!", ParseMode.Default, false, true, e.Message.MessageId);
                         }
+
+                        string tinyString = e.Message.Text.Replace($"{Program.botClient.GetMeAsync().Result.Username} set:", "");
+                            
+                        settingsProcessor.ChangeSetting(e.Message.Chat.Id, tinyString.Split('=')[0], tinyString.Split('=')[1]);
+                        await Program.botClient.SendTextMessageAsync(e.Message.Chat.Id, "Done!", ParseMode.Default, false, true, e.Message.MessageId);
 
                         break;
                     }
@@ -103,7 +101,7 @@ namespace TgTranslator
                 case "switch:":
                     await settingsMenu.SwitchItem(e.CallbackQuery.Data.Replace($@"{command} ", ""), e.CallbackQuery.Message.Chat.Id,e.CallbackQuery.Message.MessageId);
                     break;
-            }
+            }    
             
         }
     }
