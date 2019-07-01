@@ -9,32 +9,36 @@ namespace TgTranslator.Settings
         public Language(string itemTitle)
         {
             this.itemTitle = itemTitle;
-            command = "lang=";
-            description = "Here you can setup primary language for your group. If you don't see your language, select **Other**";
+            command = "lang";
+            description = "Here you can setup primary language for your group:";
         }
 
         protected override void GenerateButtons()
         {
-            List<InlineKeyboardButton> tempKeyboard = new List<InlineKeyboardButton>();
+            List<InlineKeyboardButton> buffer = new List<InlineKeyboardButton>();
 
             foreach (var language in Program.languages)
             {
-                if (tempKeyboard.Count == 3)
-                {
-                    buttons.Add(tempKeyboard.ToList());
-                    tempKeyboard.Clear();
+                // Adds new row of buttons that already created before
+                if (buffer.Count == 3)
+                {    
+                    buttons.Add(buffer.ToList());
+                    buffer.Clear();
                 }
                 
-                tempKeyboard.Add(new InlineKeyboardButton
+                buffer.Add(new InlineKeyboardButton
                             {
                                 Text = $@"{language.Flag} {language.Name}",
-                                CallbackData = $"switch: ApplyMenu {command}{language.Code}"
+                                CallbackData = $"switch: ApplyMenu {command}={language.Code}"
                             });
             }
             
             // Adds remaining languages
-            if(tempKeyboard.Count != 0)
-                buttons.Add(tempKeyboard);
+            if (buffer.Count != 0)
+            {
+                buttons.Add(buffer.ToList());
+                buffer.Clear();
+            }
             
             base.GenerateButtons();
         }
