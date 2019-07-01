@@ -29,6 +29,8 @@ namespace TgTranslator
 
         public async Task SwitchItem(string itemName, long chatId, int messageId)
         {
+            #region Exceptional cases 
+
             if (itemName.Contains("MainMenu"))
             {
                 MainMenu mainMenu = (MainMenu)FindSettingByName(itemName.WithoutArguments(), settings);
@@ -36,9 +38,17 @@ namespace TgTranslator
                 await Program.botClient.EditMessageTextAsync(chatId, messageId, mainMenu.description, ParseMode.Markdown, true, mainMenu.GenerateMarkup(settings));
                 return;
             }
-            
+
             if (itemName.Contains("ApplyMenu"))
+            {
+                Setting applyMenu = FindSettingByName(itemName, settings);
+                if (applyMenu != null)
+                    settings.Remove(applyMenu);
+                
                 settings.Add(new ApplyMenu(GetArguments(itemName)));
+            }
+
+            #endregion
             
 
             Setting item = FindSettingByName(itemName.WithoutArguments(), settings);
