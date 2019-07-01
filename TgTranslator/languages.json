@@ -106,13 +106,6 @@
      },
      {
         "language":{
-             "name":"Welsh",
-             "code":"cy",
-             "flag":"en"
-         }
-     },
-     {
-        "language":{
              "name":"Hungarian",
              "code":"hu",
              "flag":"🇭🇺"

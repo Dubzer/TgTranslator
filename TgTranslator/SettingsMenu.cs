@@ -41,7 +41,7 @@ namespace TgTranslator
 
             if (itemName.Contains("ApplyMenu"))
             {
-                Setting applyMenu = FindSettingByName(itemName, settings);
+                Setting applyMenu = FindSettingByName(itemName.WithoutArguments(), settings);
                 if (applyMenu != null)
                     settings.Remove(applyMenu);
                 
@@ -54,15 +54,15 @@ namespace TgTranslator
             Setting item = FindSettingByName(itemName.WithoutArguments(), settings);
             await Program.botClient.EditMessageTextAsync(chatId, messageId, item.description, ParseMode.Markdown, true, item.GenerateMarkup());
         }
-
+        
         private string GetArguments(string itemName)
         {
-            return itemName.Split(' ')[0];
+            return itemName.Split(' ')[1];
         }
 
         private Setting FindSettingByName(string name, IEnumerable<Setting> list)
         {
-            return list.First(x => x.GetType().ToString().Contains(name));
+            return list.FirstOrDefault(x => x.GetType().ToString().Contains(name));
         }
     }
 }
