@@ -1,7 +1,8 @@
 {
   "tokens": {
-    "telegramapi": "TELEGRAMAPITOKENHERE",
-      "yandex":  "YANDEXAPITOKENHERE"
+    "telegramapi": "TelegramApiTokenHere",
+    "yandex":  "YandexTranslatorApiTokenHere",
+    "redisip": "RedisServerIpHere"
   }
 
 }
