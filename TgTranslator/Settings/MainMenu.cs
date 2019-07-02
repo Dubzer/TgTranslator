@@ -9,7 +9,7 @@ namespace TgTranslator.Settings
         public MainMenu(string itemTitle)
         {
             this.itemTitle = itemTitle;
-            description = "Here are the settings that are available for you:";
+            description = "There are the available settings:";
         }
 
         private void GenerateButtons(IEnumerable<Setting> settingsList)
