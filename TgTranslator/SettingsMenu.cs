@@ -24,7 +24,7 @@ namespace TgTranslator
         public async Task SendMenu(long chatId)
         {
             MainMenu menu = (MainMenu)FindSettingByName("MainMenu", settings);
-            await Program.botClient.SendTextMessageAsync(chatId, menu.description, ParseMode.Markdown, true, false, 0, menu.GenerateMarkup(settings));
+            await Program.BotClient.SendTextMessageAsync(chatId, menu.description, ParseMode.Markdown, true, false, 0, menu.GenerateMarkup(settings));
         }
 
         public async Task SwitchItem(string itemName, long chatId, int messageId)
@@ -35,7 +35,7 @@ namespace TgTranslator
             {
                 MainMenu mainMenu = (MainMenu)FindSettingByName(itemName.WithoutArguments(), settings);
                 
-                await Program.botClient.EditMessageTextAsync(chatId, messageId, mainMenu.description, ParseMode.Markdown, true, mainMenu.GenerateMarkup(settings));
+                await Program.BotClient.EditMessageTextAsync(chatId, messageId, mainMenu.description, ParseMode.Markdown, true, mainMenu.GenerateMarkup(settings));
                 return;
             }
 
@@ -52,7 +52,7 @@ namespace TgTranslator
             
 
             Setting item = FindSettingByName(itemName.WithoutArguments(), settings);
-            await Program.botClient.EditMessageTextAsync(chatId, messageId, item.description, ParseMode.Markdown, true, item.GenerateMarkup());
+            await Program.BotClient.EditMessageTextAsync(chatId, messageId, item.description, ParseMode.Markdown, true, item.GenerateMarkup());
         }
         
         private string GetArguments(string itemName)
