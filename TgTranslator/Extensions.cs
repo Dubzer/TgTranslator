@@ -32,9 +32,9 @@ namespace Extensions
         /// </summary>
         public static async Task<bool> IsAdministrator(this User user, long chatId)
         {
-            ChatMember[] chatAdmins= await Program.botClient.GetChatAdministratorsAsync(chatId);
+            ChatMember[] chatAdmins = await Program.BotClient.GetChatAdministratorsAsync(chatId);
 
-            return chatAdmins.Any(x => x.User.Username == user.Username);
+            return chatAdmins.Any(x => x.User.Id == user.Id);
         }
     }
 }

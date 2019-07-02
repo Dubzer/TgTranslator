@@ -10,8 +10,8 @@ namespace TgTranslator
 {
     class Program
     {
-        public static ITelegramBotClient botClient;
-        public static IConfigurationRoot Configuration { get; set; }
+        public static ITelegramBotClient BotClient { get; private set; }
+        public static IConfigurationRoot Configuration { get; private set; }
 
         public static List<Language> languages;
         private static async Task Main()
@@ -23,15 +23,15 @@ namespace TgTranslator
             LoggingService.PrepareDirectory();
 
             LoggingService.Log("Starting up...");
-            botClient = new TelegramBotClient(Configuration["tokens:telegramapi"]);
+            BotClient = new TelegramBotClient(Configuration["tokens:telegramapi"]);
 
-            botClient.OnMessage += async (sender, args) => { await updateHandler.OnMessage(args); };
-            botClient.OnCallbackQuery += async (sender, args) => { await updateHandler.OnCallbackQuery(args); };
+            BotClient.OnMessage += async (sender, args) => { await updateHandler.OnMessage(args); };
+            BotClient.OnCallbackQuery += async (sender, args) => { await updateHandler.OnCallbackQuery(args); };
             
             LoggingService.Log("Parsing languages list...");
             languages = ParseLanguagesCollection("languages.json");
 
-            botClient.StartReceiving();
+            BotClient.StartReceiving();
             LoggingService.Log("Receiving messages...");
             await Task.Delay(-1);
         }
