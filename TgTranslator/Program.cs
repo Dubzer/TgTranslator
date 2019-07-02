@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Telegram.Bot;
-using Telegram.Bot.Args;
-using Telegram.Bot.Types;
+using TgTranslator.Types;
 
 namespace TgTranslator
 {
@@ -11,7 +12,8 @@ namespace TgTranslator
     {
         public static ITelegramBotClient botClient;
         public static IConfigurationRoot Configuration { get; set; }
-        
+
+        public static List<Language> languages;
         private static async Task Main()
         {
             UpdateHandler updateHandler = new UpdateHandler();
@@ -25,9 +27,27 @@ namespace TgTranslator
 
             botClient.OnMessage += async (sender, args) => { await updateHandler.OnMessage(args); };
             botClient.OnCallbackQuery += async (sender, args) => { await updateHandler.OnCallbackQuery(args); };
+            
+            LoggingService.Log("Parsing languages list...");
+            languages = ParseLanguagesCollection("languages.json");
+
             botClient.StartReceiving();
             LoggingService.Log("Receiving messages...");
             await Task.Delay(-1);
+        }
+        
+        private static List<Language> ParseLanguagesCollection(string jsonFilePath)
+        {
+            List<Language> result = new List<Language>();
+            
+            string json = System.IO.File.ReadAllText(jsonFilePath);
+            List<LanguageJson> langsJson = JsonConvert.DeserializeObject<List<LanguageJson>>(json);
+            foreach (var language in langsJson)
+            {
+                result.Add(language.Language);
+            }
+
+            return result;
         }
     }
 }
