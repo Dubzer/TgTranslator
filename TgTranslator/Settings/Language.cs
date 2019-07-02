@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TgTranslator.Settings
@@ -8,16 +9,37 @@ namespace TgTranslator.Settings
         public Language(string itemTitle)
         {
             this.itemTitle = itemTitle;
-            command = "lang=";
-            description = "Here you can setup primary language for your group. If you don't see your language, select **Other**";
+            command = "lang";
+            description = "Here you can setup primary language for your group:";
         }
 
         protected override void GenerateButtons()
         {
-            buttons.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🇬🇧 English", CallbackData = $"switch: ApplyMenu {command}en" }, new InlineKeyboardButton { Text = "🇪🇸 Spanish", CallbackData = $"switch: ApplyMenu {command}es" }, new InlineKeyboardButton { Text = "🇷🇺 Russian", CallbackData = $"switch: ApplyMenu {command}ru" } });
-            buttons.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🇩🇪 German", CallbackData = $"switch: ApplyMenu {command}de" }, new InlineKeyboardButton { Text = "🇫🇷 French", CallbackData = $"switch: ApplyMenu {command}fr" }, new InlineKeyboardButton { Text = "🇸🇪 Swedish", CallbackData = $"switch: ApplyMenu {command}sv" } });
-            buttons.Add(new List<InlineKeyboardButton> { new InlineKeyboardButton { Text = "🇨🇳 Chinese", CallbackData = $"switch: ApplyMenu {command}zh" }, new InlineKeyboardButton { Text = "🇮🇷 Persian", CallbackData = $"switch: ApplyMenu {command}fa" }, new InlineKeyboardButton { Text = "🇮🇳 Hindi", CallbackData = $"switch: ApplyMenu {command}hi" } });
+            List<InlineKeyboardButton> buffer = new List<InlineKeyboardButton>();
 
+            foreach (var language in Program.languages)
+            {
+                // Adds new row of buttons that already created before
+                if (buffer.Count == 3)
+                {    
+                    buttons.Add(buffer.ToList());
+                    buffer.Clear();
+                }
+                
+                buffer.Add(new InlineKeyboardButton
+                            {
+                                Text = $@"{language.Flag} {language.Name}",
+                                CallbackData = $"switch: ApplyMenu {command}={language.Code}"
+                            });
+            }
+            
+            // Adds remaining languages
+            if (buffer.Count != 0)
+            {
+                buttons.Add(buffer.ToList());
+                buffer.Clear();
+            }
+            
             base.GenerateButtons();
         }
     }
