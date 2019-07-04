@@ -13,6 +13,9 @@ namespace TgTranslator
         
         public async Task OnMessage(MessageEventArgs e)
         {
+            if (e.Message.Type != MessageType.Text)
+                return;
+
             switch (e.Message.Chat.Type)
             {
                 case ChatType.Group:
@@ -25,7 +28,7 @@ namespace TgTranslator
                         if (!await e.Message.From.IsAdministrator(e.Message.Chat.Id))
                         {
                             await Program.BotClient.SendTextMessageAsync(e.Message.Chat.Id, "Hey, only admins can change settings of this bot!", ParseMode.Default, false, true, e.Message.MessageId);
-                        }
+                        }   
 
                         string tinyString = e.Message.Text.Replace($"@{Program.BotClient.GetMeAsync().Result.Username} set:", "");
                         
@@ -89,13 +92,13 @@ namespace TgTranslator
                     switch (e.Message.Text)
                     {
                         case "/start":
-                            await Program.BotClient.SendTextMessageAsync(e.Message.Chat.Id, "You should to add this bot in a group. Then, you can configure it in this chat.");
+                            await Program.BotClient.SendTextMessageAsync(e.Message.Chat.Id, "You should to add this bot in a group. Then, you can configure it in this chat by typing /settings");
                             break;
                         case "/settings":
                             await botMenu.SendSettingsMenu(e.Message.Chat.Id);
                             break;
                         default:
-                            await Program.BotClient.SendTextMessageAsync(e.Message.Chat.Id, "Unknown command. Type /start to get help");
+                            await Program.BotClient.SendTextMessageAsync(e.Message.Chat.Id, "Unknown command. Type /start to get help.");
                             break;
                     }
 
