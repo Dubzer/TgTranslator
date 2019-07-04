@@ -16,7 +16,6 @@ namespace TgTranslator
         public static List<Language> languages;
         private static async Task Main()
         {
-            UpdateHandler updateHandler = new UpdateHandler();
             
             var builder = new ConfigurationBuilder().SetBasePath(AppContext.BaseDirectory).AddJsonFile("configuration.json");
             Configuration = builder.Build();
@@ -24,6 +23,7 @@ namespace TgTranslator
 
             LoggingService.Log("Starting up...");
             BotClient = new TelegramBotClient(Configuration["tokens:telegramapi"]);
+            UpdateHandler updateHandler = new UpdateHandler();
 
             BotClient.OnMessage += async (sender, args) => { await updateHandler.OnMessage(args); };
             BotClient.OnCallbackQuery += async (sender, args) => { await updateHandler.OnCallbackQuery(args); };
