@@ -27,7 +27,6 @@ namespace TgTranslator
 
             BotClient.OnMessage += async (sender, args) => { await updateHandler.OnMessage(args); };
             BotClient.OnCallbackQuery += async (sender, args) => { await updateHandler.OnCallbackQuery(args); };
-            
             LoggingService.Log("Parsing languages list...");
             languages = ParseLanguagesCollection("languages.json");
 
