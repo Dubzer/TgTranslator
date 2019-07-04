@@ -8,7 +8,7 @@ namespace TgTranslator
 {
     class UpdateHandler
     {
-        private readonly SettingsMenu settingsMenu = new SettingsMenu();
+        private readonly BotMenu botMenu = new BotMenu();
         private readonly SettingsProcessor settingsProcessor = new SettingsProcessor();
         
         public async Task OnMessage(MessageEventArgs e)
@@ -27,10 +27,11 @@ namespace TgTranslator
                             await Program.BotClient.SendTextMessageAsync(e.Message.Chat.Id, "Hey, only admins can change settings of this bot!", ParseMode.Default, false, true, e.Message.MessageId);
                         }
 
-                        string tinyString = e.Message.Text.Replace($"{Program.BotClient.GetMeAsync().Result.Username} set:", "");
+                        string tinyString = e.Message.Text.Replace($"@{Program.BotClient.GetMeAsync().Result.Username} set:", "");
                         
                         string param = tinyString.Split('=')[0];
                         string value = tinyString.Split('=')[1];
+                        
                         if (!settingsProcessor.ValidateLanguage(value, Program.languages))
                         {
                             await Program.BotClient.SendTextMessageAsync(e.Message.Chat.Id, "It seems that this language is not supported", ParseMode.Default, false, true, e.Message.MessageId);
@@ -91,7 +92,7 @@ namespace TgTranslator
                             await Program.BotClient.SendTextMessageAsync(e.Message.Chat.Id, "You should to add this bot in a group. Then, you can configure it in this chat.");
                             break;
                         case "/settings":
-                            await settingsMenu.SendMenu(e.Message.Chat.Id);
+                            await botMenu.SendSettingsMenu(e.Message.Chat.Id);
                             break;
                         default:
                             await Program.BotClient.SendTextMessageAsync(e.Message.Chat.Id, "Unknown command. Type /start to get help");
@@ -111,7 +112,7 @@ namespace TgTranslator
                 switch (command)
                 {
                     case "switch:":
-                        await settingsMenu.SwitchItem(e.CallbackQuery.Data.Replace($@"{command} ", ""), e.CallbackQuery.Message.Chat.Id,e.CallbackQuery.Message.MessageId);
+                        await botMenu.SwitchItem(e.CallbackQuery.Data.Replace($@"{command} ", ""), e.CallbackQuery.Message.Chat.Id,e.CallbackQuery.Message.MessageId);
                         break;
                 }  
             }
