@@ -8,11 +8,11 @@ using TgTranslator.Settings;
 
 namespace TgTranslator
 {
-    class SettingsMenu
+    class BotMenu
     {
         private List<Setting> settings;
 
-        public SettingsMenu()
+        public BotMenu()
         {
             settings = new List<Setting>
             {
@@ -21,7 +21,7 @@ namespace TgTranslator
             };
         }
 
-        public async Task SendMenu(long chatId)
+        public async Task SendSettingsMenu(long chatId)
         {
             MainMenu menu = (MainMenu)FindSettingByName("MainMenu", settings);
             await Program.BotClient.SendTextMessageAsync(chatId, menu.description, ParseMode.Markdown, true, false, 0, menu.GenerateMarkup(settings));
@@ -50,7 +50,6 @@ namespace TgTranslator
 
             #endregion
             
-
             Setting item = FindSettingByName(itemName.WithoutArguments(), settings);
             await Program.BotClient.EditMessageTextAsync(chatId, messageId, item.description, ParseMode.Markdown, true, item.GenerateMarkup());
         }
