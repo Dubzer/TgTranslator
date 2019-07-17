@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Telegram.Bot;
 using TgTranslator.Types;
+using System.Net;
+using System.Text;
 
 namespace TgTranslator
 {
@@ -16,7 +18,6 @@ namespace TgTranslator
         public static List<Language> languages;
         private static async Task Main()
         {
-            
             var builder = new ConfigurationBuilder().SetBasePath(AppContext.BaseDirectory).AddJsonFile("configuration.json");
             Configuration = builder.Build();
             LoggingService.PrepareDirectory();
