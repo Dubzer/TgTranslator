@@ -1,20 +1,21 @@
-﻿using Extensions;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Extensions;
+using TgTranslator.Interfaces;
 using YandexTranslateCSharpSdk;
 
 namespace TgTranslator
 {
-    class Translator
+    public class YandexLanguageDetector : ILanguageDetector
     {
         YandexTranslateSdk yaTranslator = new YandexTranslateSdk();
 
-        public Translator(string apiKey)
+        public YandexLanguageDetector(string apiKey)
         {
             yaTranslator.ApiKey = apiKey;
         }
 
-        public async Task<string> DetectLanguage(string text)
+        public async Task<string> DetectLanguageAsync(string text)
         {
             // Text without English symbols
             string textWOEng = Regex.Replace(text.WithoutLinks(), "[a-zA-Z0-9 -]", "");
@@ -26,14 +27,7 @@ namespace TgTranslator
             }
 
             return await yaTranslator.DetectLanguage(text.WithoutLinks());
-        }
 
-        public async Task<string> TranslateText(string text, string from, string to)
-        {
-            string translation = await yaTranslator.TranslateText(text, $"{from}-{to}");
-            LoggingService.Log($"Translated [ {text} ] ({from}) to [ {translation} ] ({to})");
-
-            return translation;
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Extensions;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types.Enums;
+using TgTranslator.Interfaces;
 
 namespace TgTranslator
 {
@@ -47,12 +48,12 @@ namespace TgTranslator
                     }
                     
                     
-                    Translator translator = new Translator(Program.Configuration["tokens:yandex"]);
+                    ILanguageDetector detector = new YandexLanguageDetector(Program.Configuration["tokens:yandex"]);
                     string language;
 
                     try
                     {    
-                        language = await translator.DetectLanguage(e.Message.Text);
+                        language = await detector.DetectLanguageAsync(e.Message.Text);
                     }
                     catch (Exception exc)
                     {
@@ -60,16 +61,17 @@ namespace TgTranslator
                         return;
                     }
 
+                    ITranslator translator = new YandexTranslator(Program.Configuration["tokens:yandex"]);
                     if (language != settingsProcessor.GetGroupLanguage(e.Message.Chat.Id))
                     {
                         string translation;
 
                         try
                         {
-                            translation = await translator.TranslateText(e.Message.Text, language, settingsProcessor.GetGroupLanguage(e.Message.Chat.Id));
+                            translation = await translator.TranslateTextAsync(e.Message.Text, language, settingsProcessor.GetGroupLanguage(e.Message.Chat.Id));
                         }
                         catch (Exception exc)
-                        {
+                        {    
                             LoggingService.Log($"Got an exception while tried to translate ({e.Message.Text}) \n\n {exc}");
                             return;
                         }
