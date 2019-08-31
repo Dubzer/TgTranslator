@@ -2,13 +2,17 @@
 ===============
 
 TgTranslator is a telegram bot that translates messages in groups. 
-You can see how it works in the [Fluid Navigation Gestures group](https://t.me/FluidNG_Group)
+You can see how it works in the [Fluid Navigation Gestures group](https://t.me/FluidNG_Group):
 
-![alt text](https://i.imgur.com/crG471u.png "Example")
+![alt text](https://raw.githubusercontent.com/Dubzer/TgTranslator/master/screenshots/1.png "Example")
 
 It also has cool configuration menu with buttons:
 
-![alt text](https://i.imgur.com/Zr22DlO.png "Main menu") ![alt text](https://i.imgur.com/7Uqy58w.png "Main language setting") ![alt text](https://i.imgur.com/YqrrIBc.png "Apply menu")
+![alt text](https://raw.githubusercontent.com/Dubzer/TgTranslator/master/screenshots/2.png "Main menu") 
+
+![alt text](https://raw.githubusercontent.com/Dubzer/TgTranslator/master/screenshots/3.png "Main language setting") 
+
+![alt text](https://raw.githubusercontent.com/Dubzer/TgTranslator/master/screenshots/4.png "Apply menu")
 
 ## 🛠 Tools that project uses
 
@@ -20,8 +24,11 @@ It also has cool configuration menu with buttons:
 
 [Redis](https://redis.io) — Used as in-memory key-value database.
 
+[Yandex.Translate](https://translate.yandex.com/developers) — Universal text translation tool that uses machine translation technology developed at Yandex.
 ## ▶️ Build
 You need .NET Core SDK 3.0+. [Download it here](https://dotnet.microsoft.com/download/dotnet-core/3.0)
+
+You also need Redis database. [Learn more](https://redis.io)
 
 1. Clone repository and open directory:
    ```sh
@@ -31,7 +38,6 @@ You need .NET Core SDK 3.0+. [Download it here](https://dotnet.microsoft.com/dow
     dotnet publish -c Release
 3. Navigate to the directory that specified in the console:
    ```sh
-
    cd ./src/bin/Release/netcoreapp3.0/publish/
 4. Create **configuration.json**, paste this text and insert your values:
    ```sh
