@@ -28,7 +28,7 @@ It also has cool configuration menu with buttons:
 ## ▶️ Build
 You need .NET Core SDK 3.0+. [Download it here](https://dotnet.microsoft.com/download/dotnet-core/3.0)
 
-You also need Redis database. [Learn more](https://redis.io)
+You also need Redis database to store settings. [Learn more](https://redis.io)
 
 1. Clone repository and open directory:
    ```sh
