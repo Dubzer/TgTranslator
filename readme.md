@@ -8,7 +8,11 @@ You can see how it works in the [Fluid Navigation Gestures group](https://t.me/F
 
 It also has cool configuration menu with buttons:
 
-![alt text](https://i.imgur.com/Zr22DlO.png "Main menu") ![alt text](https://i.imgur.com/7Uqy58w.png "Main language setting") ![alt text](https://i.imgur.com/YqrrIBc.png "Apply menu")
+![alt text](https://i.imgur.com/Zr22DlO.png "Main menu") 
+
+![alt text](https://i.imgur.com/7Uqy58w.png "Main language setting") 
+
+![alt text](https://i.imgur.com/YqrrIBc.png "Apply menu")
 
 ## 🛠 Tools that project uses
 
