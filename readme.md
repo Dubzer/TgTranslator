@@ -19,6 +19,8 @@ It also has cool configuration menu with buttons:
 
 [.NET Core](https://dot.net) — Cross-platform general-purpose development platform.
 
+[ASP.NET Core](https://dotnet.microsoft.com/apps/aspnet) - A framework for building web apps and services with .NET and C#
+
 [.NET Extensions](https://github.com/aspnet/Extensions) — An open-source, cross-platform set of APIs for commonly used programming patterns and utilities.
 
 [Telegram.Bot](https://github.com/TelegramBots/Telegram.Bot) — .NET Client for Telegram Bot API.
@@ -26,6 +28,9 @@ It also has cool configuration menu with buttons:
 [Redis](https://redis.io) — Used as in-memory key-value database.
 
 [Yandex.Translate](https://translate.yandex.com/developers) — Universal text translation tool that uses machine translation technology developed at Yandex.
+
+[Prometheus](https://prometheus.io/) — Used for event monitoring and alerting.
+
 ## ▶️ Build
 You need .NET Core SDK 3.0+. [Download it here](https://dotnet.microsoft.com/download/dotnet-core/3.0)
 
