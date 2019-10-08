@@ -45,16 +45,8 @@ You also need Redis database to store settings. [Learn more](https://redis.io)
 3. Navigate to the directory that specified in the console:
    ```sh
    cd ./src/bin/Release/netcoreapp3.0/publish/
-4. Create **configuration.json**, paste this text and insert your values:
-   ```sh
-    {
-     "tokens": {
-     "telegramapi": "Bot token. Get it at @BotFather",
-     "yandex":  "YandexTranslator Api Token. Learn more: https://translate.yandex.com/developers",
-     "redisip": "Redis database IP"
-    }
-
-   }
+4. Insert your values in appsettings.json
+   
 5. Run:
     ```sh
     dotnet ./TgTranslator.dll
