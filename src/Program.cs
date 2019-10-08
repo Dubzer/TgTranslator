@@ -1,53 +1,62 @@
-﻿using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Telegram.Bot;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Serilog;
+using System.Collections.Generic;
+using System.Linq;
 using TgTranslator.Types;
-using System.Net;
-using System.Text;
+using Newtonsoft.Json;
+using TgTranslator.Extensions;
 
 namespace TgTranslator
 {
-    class Program
+    public class Program
     {
-        public static ITelegramBotClient BotClient { get; private set; }
-        public static IConfigurationRoot Configuration { get; private set; }
-
         public static List<Language> languages;
-        private static async Task Main()
+
+        public static async Task Main(string[] args)
         {
-            var builder = new ConfigurationBuilder().SetBasePath(AppContext.BaseDirectory).AddJsonFile("configuration.json");
-            Configuration = builder.Build();
-            LoggingService.PrepareDirectory();
+            // TODO: move to builder
+            languages = ParseLanguagesCollection(AppDomain.CurrentDomain.BaseDirectory + "languages.json");
 
-            LoggingService.Log("Starting up...");
-            BotClient = new TelegramBotClient(Configuration["tokens:telegramapi"]);
-            UpdateHandler updateHandler = new UpdateHandler();
-
-            BotClient.OnMessage += async (sender, args) => { await updateHandler.OnMessage(args); };
-            BotClient.OnCallbackQuery += async (sender, args) => { await updateHandler.OnCallbackQuery(args); };
-            LoggingService.Log("Parsing languages list...");
-            languages = ParseLanguagesCollection("languages.json");
-
-            BotClient.StartReceiving();
-            LoggingService.Log("Receiving messages...");
-            await Task.Delay(-1);
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                .AddJsonFile("appsettings.json", false)
+                .AddJsonFile("blacklists.json", false);
+            
+            var configuration = builder.Build();
+            var polling = configuration.GetValue<bool>("telegram:polling");
+            if (polling)
+            {
+                await new HostBuilder()
+                    .ConfigureServices((hostContext, services) =>
+                    {
+                        services.RegisterSerilog(configuration);
+                        services.RegisterServices(configuration);
+                    })
+                    .RunConsoleAsync();
+            }
+            else
+            {
+                await WebHost.CreateDefaultBuilder(args)
+                    .ConfigureAppConfiguration(config => { config.AddJsonFile("blacklists.json");})
+                    .UseStartup<Startup>()
+                    .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration))
+                    .Build()
+                    .RunAsync();
+            }
         }
-        
+
         private static List<Language> ParseLanguagesCollection(string jsonFilePath)
         {
-            List<Language> result = new List<Language>();
-            
             string json = System.IO.File.ReadAllText(jsonFilePath);
             List<LanguageJson> langsJson = JsonConvert.DeserializeObject<List<LanguageJson>>(json);
-            foreach (var language in langsJson)
-            {
-                result.Add(language.Language);
-            }
 
-            return result;
+            return langsJson.Select(language => language.Language).ToList();
         }
     }
 }

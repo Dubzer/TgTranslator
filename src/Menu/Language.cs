@@ -2,13 +2,13 @@
 using System.Linq;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace TgTranslator.Settings
+namespace TgTranslator.Menu
 {
-    class Language : Setting
+    class Language : MenuItem
     {
-        public Language(string itemTitle)
+        public Language(string[] arguments = null) 
         {
-            this.itemTitle = itemTitle;
+            itemTitle = "Group main language";
             command = "lang";
             description = "Here you can setup primary language for your group:";
         }
@@ -29,7 +29,7 @@ namespace TgTranslator.Settings
                 buffer.Add(new InlineKeyboardButton
                             {
                                 Text = $@"{language.Flag} {language.Name}",
-                                CallbackData = $"switch: ApplyMenu {command}={language.Code}"
+                                CallbackData = $"switch {typeof(ApplyMenu)}#{command}={language.Code}"
                             });
             }
             
