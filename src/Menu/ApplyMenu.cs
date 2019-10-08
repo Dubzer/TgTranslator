@@ -1,15 +1,14 @@
 ﻿using System.Collections.Generic;
 using Telegram.Bot.Types.ReplyMarkups;
-using TgTranslator.Interfaces;
 
-namespace TgTranslator.Settings
+namespace TgTranslator.Menu
 {
-    class ApplyMenu : Setting, ITakesArguments
+    class ApplyMenu : MenuItem
     {
-        public ApplyMenu(string command)
+        public ApplyMenu(string[] arguments)
         {
             description = "Everything is done. To apply settings, click on *Apply* button and choose your chat, otherwise click on *Cancel*";
-            this.command = $"set:{command}";
+            command = $"set:{arguments[0]}";
         }
 
         protected override void GenerateButtons()
@@ -17,7 +16,7 @@ namespace TgTranslator.Settings
             buttons.Add(new List<InlineKeyboardButton>
                         {
                             new InlineKeyboardButton { Text = "Apply", SwitchInlineQuery = command },
-                            new InlineKeyboardButton { Text = "Cancel", CallbackData = "switch: MainMenu"}
+                            new InlineKeyboardButton { Text = "Cancel", CallbackData = "switch " + typeof(MainMenu)}
                         });
         }
     }

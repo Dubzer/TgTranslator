@@ -7,17 +7,18 @@ namespace TgTranslator
  {
      public class SettingsProcessor
      {
-         private readonly IDatabase database;
+         private readonly IDatabase _database;
+         private readonly List<Language> _languages;
 
-         public SettingsProcessor()
+         public SettingsProcessor(IDatabase database, List<Language> languages)
          {
-             var redis = ConnectionMultiplexer.Connect(Program.Configuration["tokens:redisip"]);
-             database = redis.GetDatabase();
+            _database = database;
+            _languages = languages;
          }
          
          public string GetGroupLanguage(long chatId)
          {
-             var key = database.StringGet($"{chatId}:lang");
+             var key = _database.StringGet($"{chatId}:lang");
 
              if (key.IsNullOrEmpty)
              {
@@ -30,12 +31,12 @@ namespace TgTranslator
 
          public void ChangeSetting(long chatId, string param, string value)
          {
-             database.StringSet($"{chatId}:{param}", value);
+            _database.StringSet($"{chatId}:{param}", value);
          }
 
-         public bool ValidateLanguage(string languageCode, IEnumerable<Language> languagesList)
+         public bool ValidateLanguage(string languageCode)
          {
-             return languagesList.Any(x => x.Code == languageCode);
+             return _languages.Any(x => x.Code == languageCode);
          }
      }
  } 
