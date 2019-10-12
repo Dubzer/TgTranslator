@@ -66,7 +66,7 @@ namespace TgTranslator.Controllers
             {
                 Log.Error(exception, "Got a CallbackQuery with unsupported message");
             }
-            catch (MessageIsNotModifiedException exception) { }
+            catch (MessageIsNotModifiedException) { }
             
         }
 
@@ -88,7 +88,6 @@ namespace TgTranslator.Controllers
                         ? $"Got an exception while tried to handle Message: {message.Text} by {message.From.Id} from {message.Chat.Id}"
                         : "Got an exception while tried to handle Message");
             }
-
         }
     }
 }
