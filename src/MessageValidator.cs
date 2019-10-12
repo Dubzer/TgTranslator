@@ -18,8 +18,8 @@ namespace TgTranslator
         public bool GroupMessageValid(Message message)
         {
             return !_blacklist.IsGroupBlocked(message.Chat.Id)
-                   && message.Text.Length <= _charLimit
                    && message.Type == MessageType.Text
+                   && message.Text.Length <= _charLimit
                    && _blacklist.IsTextAllowed(message.Text)
                    && !message.IsLink()
                    && !message.IsHashtag();
