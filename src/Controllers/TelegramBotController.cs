@@ -66,6 +66,8 @@ namespace TgTranslator.Controllers
             {
                 Log.Error(exception, "Got a CallbackQuery with unsupported message");
             }
+            catch (MessageIsNotModifiedException exception) { }
+            
         }
 
         private async Task OnMessage(Message message)
