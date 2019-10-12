@@ -1,16 +1,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using StackExchange.Redis;
+using TgTranslator.Models;
+using TgTranslator.Services;
 using TgTranslator.Types;
 
 namespace TgTranslator
  {
      public class SettingsProcessor
      {
-         private readonly IDatabase _database;
+         private readonly GroupDatabaseService _database;
          private readonly List<Language> _languages;
 
-         public SettingsProcessor(IDatabase database, List<Language> languages)
+         public SettingsProcessor(GroupDatabaseService database, List<Language> languages)
          {
             _database = database;
             _languages = languages;
@@ -18,20 +20,17 @@ namespace TgTranslator
          
          public string GetGroupLanguage(long chatId)
          {
-             var key = _database.StringGet($"{chatId}:lang");
+             var group = _database.Get(chatId);
+             
+             if (group == null)
+                 return _database.Create(new Group(chatId)).Language;
 
-             if (key.IsNullOrEmpty)
-             {
-                 ChangeSetting(chatId, "lang", "en");
-                 return "en";
-             }
-
-             return key;
+             return group.Language; 
          }
 
-         public void ChangeSetting(long chatId, string param, string value)
+         public void ChangeLanguage(long chatId, string language)
          {
-            _database.StringSet($"{chatId}:{param}", value);
+            _database.UpdateLanguage(_database.Get(chatId), language);
          }
 
          public bool ValidateLanguage(string languageCode)
