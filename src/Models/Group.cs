@@ -5,27 +5,27 @@ namespace TgTranslator.Models
 {
     public class Group
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string _id { get; set; }
+        [BsonId] [BsonRepresentation(BsonType.ObjectId)]
+        public string objectId;
 
-        [BsonElement("GroupId")]
-        public long groupGroupId;
-        
+        [BsonElement("Id")]
+        public long Id;
+
         [BsonElement("Language")]
-        public string Language;
-
-        public Group(long groupId, string language = "en")
+        public readonly string Language;
+        
+        public Group(long chatId, string language = "en")
         {
-            groupGroupId = groupId;
+            Id = chatId;
+            Language = language;
+        }
+        
+        public Group(string objectId, long chatId, string language = "en")
+        {
+            this.objectId = objectId;
+            Id = chatId;
             Language = language;
         }
 
-        public Group(string objectId, long groupId, string language = "en")
-        {
-            _id = objectId;
-            groupGroupId = groupId;
-            Language = language;
-        }
     }
 }
