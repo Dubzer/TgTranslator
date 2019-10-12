@@ -70,7 +70,7 @@ namespace TgTranslator.Services.Handlers
 
             if (message.Text.Contains($"{_botUsername} set:lang"))
             {
-                await HandleSettingChanging(message);
+                await HandleLanguageChanging(message);
                 return;
             }
             
@@ -114,15 +114,14 @@ namespace TgTranslator.Services.Handlers
             Log.Information($"Sent translation to {message.Chat.Id} | {message.From.Id}");
         }
 
-        private async Task HandleSettingChanging(Message message)
+        private async Task HandleLanguageChanging(Message message)
         {
             if (!await message.From.IsAdministrator(message.Chat.Id, _client))
-                await _client.SendTextMessageAsync(message.Chat.Id, "Hey! Only admins can change settings of this bot!",
+                await _client.SendTextMessageAsync(message.Chat.Id, "Hey! Only admins can change main language of this bot!",
                     ParseMode.Default, replyToMessageId: message.MessageId);
 
             string tinyString = message.Text.Replace($"@{_botUsername} set:", "");
 
-            string param = tinyString.Split('=')[0];
             string value = tinyString.Split('=')[1];
 
             if (!_settingsProcessor.ValidateLanguage(value))
@@ -132,7 +131,7 @@ namespace TgTranslator.Services.Handlers
                 return;
             }
 
-            _settingsProcessor.ChangeSetting(message.Chat.Id, param, value);
+            _settingsProcessor.ChangeLanguage(message.Chat.Id, value);
             await _client.SendTextMessageAsync(message.Chat.Id, "Done!", ParseMode.Default, false, true,
                 message.MessageId);
         }

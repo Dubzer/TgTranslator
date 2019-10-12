@@ -3,12 +3,13 @@ using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Serilog;
-using StackExchange.Redis;
 using Telegram.Bot;
 using TgTranslator.Controllers;
 using TgTranslator.Menu;
+using TgTranslator.Models;
 using TgTranslator.Services;
 using TgTranslator.Services.Handlers;
 using TgTranslator.Translation;
@@ -24,10 +25,13 @@ namespace TgTranslator.Extensions
             var botToken = configuration.GetValue<string>("telegram:botToken");
 
             var yandexToken = configuration.GetValue<string>("yandex:TranslatorToken");
-            
-            var redisIp = configuration.GetValue<string>("redis:ip");
-            var redis = ConnectionMultiplexer.Connect(redisIp);
 
+            services.Configure<GroupDatabaseSettings>(configuration.GetSection("MongoDB"));
+            services.AddSingleton<IGroupDatabaseSettings>(provider =>
+                provider.GetRequiredService<IOptions<GroupDatabaseSettings>>().Value);
+
+            services.AddSingleton(ctx => new GroupDatabaseService(ctx.GetService<IGroupDatabaseSettings>()));
+            
             services.AddSingleton(new TelegramBotClient(botToken));
             
             services.AddSingleton(ctx => 
@@ -38,7 +42,7 @@ namespace TgTranslator.Extensions
             
             services.AddSingleton(ctx =>
             {
-                var database = redis.GetDatabase();
+                var database = ctx.GetService<GroupDatabaseService>();
                 var languages = ParseLanguagesCollection("languages.json");
                 return new SettingsProcessor(database, languages);
             });
