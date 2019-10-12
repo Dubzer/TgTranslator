@@ -74,7 +74,7 @@ namespace TgTranslator.Services.Handlers
                 return;
             }
             
-            if (await RequireTranslation(message.Text, _settingsProcessor.GetGroupLanguage(message.Chat.Id)))
+            if (await RequireTranslation(message.Text, await _settingsProcessor.GetGroupLanguage(message.Chat.Id)))
             {
                 await HandleTranslation(message);
             }
@@ -103,7 +103,7 @@ namespace TgTranslator.Services.Handlers
         private async Task HandleTranslation(Message message)
         {
             string translation = await _translator.TranslateTextAsync(message.Text, "",
-                _settingsProcessor.GetGroupLanguage(message.Chat.Id));
+                await _settingsProcessor.GetGroupLanguage(message.Chat.Id));
 
             if (message.Text == translation)
                 return;
@@ -131,7 +131,7 @@ namespace TgTranslator.Services.Handlers
                 return;
             }
 
-            _settingsProcessor.ChangeLanguage(message.Chat.Id, value);
+            await _settingsProcessor.ChangeLanguage(message.Chat.Id, value);
             await _client.SendTextMessageAsync(message.Chat.Id, "Done!", ParseMode.Default, false, true,
                 message.MessageId);
         }
