@@ -105,7 +105,7 @@ namespace TgTranslator.Services.Handlers
             string translation = await _translator.TranslateTextAsync(message.Text, "",
                 await _settingsProcessor.GetGroupLanguage(message.Chat.Id));
 
-            if (message.Text == translation)
+            if (string.IsNullOrEmpty(translation) || message.Text == translation)
                 return;
 
             await _client.SendTextMessageAsync(message.Chat.Id, translation, ParseMode.Default, true, true,

@@ -22,7 +22,8 @@ namespace TgTranslator
                    && message.Text.Length <= _charLimit
                    && _blacklist.IsTextAllowed(message.Text)
                    && !message.IsLink()
-                   && !message.IsHashtag();
+                   && !message.IsHashtag()
+                   && !message.IsOnlyMention();
         }
     }
 }

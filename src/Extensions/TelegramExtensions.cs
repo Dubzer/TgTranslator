@@ -31,6 +31,15 @@ namespace TgTranslator.Extensions
 
             return message.Entities[0].Type == MessageEntityType.BotCommand;
         }
+        
+        public static bool IsOnlyMention(this Message message)
+        {
+            if (message.Entities == null)
+                return false;
+
+            return message.Entities[0].Type == MessageEntityType.Mention || message.Entities[0].Length == message.Text.Length;
+        }
+
 
         /// <summary>
         /// Checks if user is an administrator
