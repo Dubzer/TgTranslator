@@ -37,7 +37,7 @@ namespace TgTranslator.Extensions
             if (message.Entities == null)
                 return false;
 
-            return message.Entities[0].Type == MessageEntityType.Mention || message.Entities[0].Length == message.Text.Length;
+            return message.Entities[0].Type == MessageEntityType.Mention && message.Entities[0].Length == message.Text.Length;
         }
 
 
