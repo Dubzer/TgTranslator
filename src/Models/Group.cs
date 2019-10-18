@@ -12,7 +12,7 @@ namespace TgTranslator.Models
         public long Id;
 
         [BsonElement("Language")]
-        public readonly string Language;
+        public string Language;
         
         public Group(long chatId, string language = "en")
         {
