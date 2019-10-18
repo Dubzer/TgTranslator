@@ -117,8 +117,12 @@ namespace TgTranslator.Services.Handlers
         private async Task HandleLanguageChanging(Message message)
         {
             if (!await message.From.IsAdministrator(message.Chat.Id, _client))
+            {
                 await _client.SendTextMessageAsync(message.Chat.Id, "Hey! Only admins can change main language of this bot!",
                     ParseMode.Default, replyToMessageId: message.MessageId);
+                
+                return;
+            }
 
             string tinyString = message.Text.Replace($"@{_botUsername} set:", "");
 
@@ -128,6 +132,7 @@ namespace TgTranslator.Services.Handlers
             {
                 await _client.SendTextMessageAsync(message.Chat.Id, "It seems that this language is not supported",
                     ParseMode.Default, false, true, message.MessageId);
+                
                 return;
             }
 
