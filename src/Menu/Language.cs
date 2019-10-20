@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -6,8 +7,20 @@ namespace TgTranslator.Menu
 {
     class Language : MenuItem
     {
-        public Language(string[] arguments = null) 
+        private const byte LangsOnPage = 31;
+        private const byte Columns = 2;
+        private readonly int PagesNeeded;
+
+        private int _currentPage;
+
+        public Language(IReadOnlyList<string> arguments)
         {
+            _currentPage = (arguments?.Count).GetValueOrDefault(0) > 0
+                    ? byte.Parse(arguments[0])
+                    : _currentPage = 1;
+
+            PagesNeeded = (int)Math.Ceiling(Program.languages.Count / (double) LangsOnPage);
+            
             itemTitle = "Group main language";
             command = "lang";
             description = "Here you can setup primary language for your group:";
@@ -17,20 +30,30 @@ namespace TgTranslator.Menu
         {
             List<InlineKeyboardButton> buffer = new List<InlineKeyboardButton>();
 
-            foreach (var language in Program.languages)
+            int previousPage = _currentPage - 1;
+            int nextPage = _currentPage + 1;
+            int displayedLanguages = previousPage * LangsOnPage;
+            int languagesLeft = Program.languages.Count - displayedLanguages;
+
+            int until = _currentPage == PagesNeeded // Is this the last page?
+                ? displayedLanguages + languagesLeft
+                : LangsOnPage * nextPage; 
+            
+            for (int i = displayedLanguages; i < until; i++)
             {
                 // Adds new row of buttons that already created before
-                if (buffer.Count == 3)
+                if (buffer.Count == Columns)
                 {    
                     buttons.Add(buffer.ToList());
                     buffer.Clear();
                 }
-                
+
+                var language = Program.languages[i];
                 buffer.Add(new InlineKeyboardButton
-                            {
-                                Text = $@"{language.Flag} {language.Name}",
-                                CallbackData = $"switch {typeof(ApplyMenu)}#{command}={language.Code}"
-                            });
+                {
+                    Text = $@"{language.Flag} {language.Name}",
+                    CallbackData = $"switch {typeof(ApplyMenu)}#{command}={language.Code}"
+                });
             }
             
             // Adds remaining languages
@@ -40,7 +63,22 @@ namespace TgTranslator.Menu
                 buffer.Clear();
             }
             
-            base.GenerateButtons();
+            AddNavigateButtons();
+        }
+
+        private void AddNavigateButtons()
+        {
+            List<InlineKeyboardButton> controlButtons = new List<InlineKeyboardButton>();
+            
+            if(_currentPage > 1)
+                controlButtons.Add(new InlineKeyboardButton { Text = "⬅", CallbackData = $"switch {typeof(Language)}#{_currentPage - 1}"});
+            
+            controlButtons.Add(new InlineKeyboardButton { Text = "❌ Back", CallbackData = $"switch {typeof(MainMenu)}"}); 
+
+            if(_currentPage < PagesNeeded)
+                controlButtons.Add(new InlineKeyboardButton { Text = "➡", CallbackData = $"switch {typeof(Language)}#{_currentPage + 1}"});
+            
+            buttons.Add(controlButtons);
         }
     }
 }
