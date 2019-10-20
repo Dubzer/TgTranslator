@@ -4,13 +4,12 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TgTranslator.Menu
 { 
-    abstract class MenuItem
+    public abstract class MenuItem
     {
         protected List<IEnumerable<InlineKeyboardButton>> buttons = new List<IEnumerable<InlineKeyboardButton>>();
         public string description;
         protected string itemTitle;
         protected string command;
-        
         /// <summary>
         /// Generates default buttons
         /// </summary>
@@ -39,12 +38,9 @@ namespace TgTranslator.Menu
             }
         }
 
-        public InlineKeyboardMarkup GenerateMarkup(IEnumerable<Type> settingsList)
+        public InlineKeyboardMarkup GenerateMarkup()
         {
-            if (settingsList == null)
-                GenerateButtons();
-            else
-                GenerateButtons(settingsList);
+            GenerateButtons();
 
             return new InlineKeyboardMarkup(buttons);
         }

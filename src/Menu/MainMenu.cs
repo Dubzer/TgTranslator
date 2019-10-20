@@ -1,12 +1,26 @@
-﻿namespace TgTranslator.Menu
+using System;
+using System.Collections.Generic;
+
+namespace TgTranslator.Menu
 {
-    class MainMenu : MenuItem
+    public class MainMenu : MenuItem
     {
-        public MainMenu(string[] arguments = null)
+        private List<Type> _mainMenuItems;
+
+        public MainMenu(IReadOnlyList<string> arguments)
         {
-            itemTitle = "Back";
-            description = "There are the available settings:";
+            description = "Choose what you want:";
+            itemTitle = "MainMenu";
+            
+            _mainMenuItems = new List<Type>
+            {
+                typeof(Language)
+            };
+        }
+
+        protected override void GenerateButtons()
+        {
+            base.GenerateButtons(_mainMenuItems);
         }
     }
 }
-    

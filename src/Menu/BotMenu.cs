@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading.Tasks;
@@ -11,21 +12,15 @@ namespace TgTranslator.Menu
     public class BotMenu
     {
         private readonly TelegramBotClient _client;
-        private List<Type> _mainMenuItems;
-        private ImmutableHashSet<Type> _availableMenus;
+        private readonly ImmutableHashSet<Type> _availableMenus;
         
         public BotMenu(TelegramBotClient client)
         {
             _client = client;
-            
-            // Menus that shows in Main Menu
-            _mainMenuItems = new List<Type>
-            {
-                typeof(Language)
-            };
-            
+
             _availableMenus = new HashSet<Type>
             {
+                typeof(MainMenu),
                 typeof(ApplyMenu),
                 typeof(BotMenu),
                 typeof(Language),
@@ -33,9 +28,9 @@ namespace TgTranslator.Menu
             }.ToImmutableHashSet();
         }
         
-        public async Task SendSettingsMenu(long chatId)
+        public async Task SendMainMenu(long chatId)
         {
-            MainMenu menu = new MainMenu();
+            MainMenu menu = new MainMenu(null);
             await _client.SendTextMessageAsync(chatId, menu.description, 
                                                 ParseMode.Markdown,  
                                                 replyMarkup:menu.GenerateMarkup(_mainMenuItems));
@@ -46,16 +41,13 @@ namespace TgTranslator.Menu
             MenuItem item = GetMenuItem(menuType, arguments);
             await _client.EditMessageTextAsync(chatId, messageId, item.description, 
                                                 ParseMode.Markdown, 
-                                                replyMarkup: item.GenerateMarkup(
-                                                    item.GetType().ToString().Contains("MainMenu") 
-                                                        ? _mainMenuItems 
-                                                        : null));
+                                                replyMarkup: item.GenerateMarkup());
         }
 
-        private MenuItem GetMenuItem(Type menuType, string[] arguments)
+        private MenuItem GetMenuItem(Type menuType, IEnumerable arguments)
         {
             if(_availableMenus.Contains(menuType))
-                return (MenuItem)Activator.CreateInstance(menuType, new object[] {arguments});
+                return (MenuItem)Activator.CreateInstance(menuType, arguments);
 
             throw new UnsupportedMenuItem(menuType.ToString());
         }
