@@ -5,7 +5,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TgTranslator.Menu
 {
-    class Language : MenuItem
+    class LanguageMenu : MenuItem
     {
         private const byte LangsOnPage = 31;
         private const byte Columns = 2;
@@ -13,7 +13,7 @@ namespace TgTranslator.Menu
 
         private readonly int _currentPage;
 
-        public Language(IReadOnlyList<string> arguments)
+        public LanguageMenu(IReadOnlyList<string> arguments)
         {
             _currentPage = (arguments?.Count).GetValueOrDefault(0) > 0
                     ? byte.Parse(arguments[0])
@@ -71,12 +71,12 @@ namespace TgTranslator.Menu
             List<InlineKeyboardButton> controlButtons = new List<InlineKeyboardButton>();
             
             if(_currentPage > 1)
-                controlButtons.Add(new InlineKeyboardButton { Text = "⬅", CallbackData = $"switch {typeof(Language)}#{_currentPage - 1}"});
+                controlButtons.Add(new InlineKeyboardButton { Text = "⬅", CallbackData = $"switch {typeof(LanguageMenu)}#{_currentPage - 1}"});
             
             controlButtons.Add(new InlineKeyboardButton { Text = "❌ Back", CallbackData = $"switch {typeof(MainMenu)}"}); 
 
             if(_currentPage < PagesNeeded)
-                controlButtons.Add(new InlineKeyboardButton { Text = "➡", CallbackData = $"switch {typeof(Language)}#{_currentPage + 1}"});
+                controlButtons.Add(new InlineKeyboardButton { Text = "➡", CallbackData = $"switch {typeof(LanguageMenu)}#{_currentPage + 1}"});
             
             buttons.Add(controlButtons);
         }

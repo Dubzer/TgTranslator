@@ -23,7 +23,7 @@ namespace TgTranslator.Menu
                 typeof(MainMenu),
                 typeof(ApplyMenu),
                 typeof(BotMenu),
-                typeof(Language),
+                typeof(LanguageMenu),
                 typeof(MainMenu)
             }.ToImmutableHashSet();
         }
