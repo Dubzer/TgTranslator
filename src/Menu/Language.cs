@@ -11,7 +11,7 @@ namespace TgTranslator.Menu
         private const byte Columns = 2;
         private readonly int PagesNeeded;
 
-        private int _currentPage;
+        private readonly int _currentPage;
 
         public Language(IReadOnlyList<string> arguments)
         {
@@ -21,7 +21,7 @@ namespace TgTranslator.Menu
 
             PagesNeeded = (int)Math.Ceiling(Program.languages.Count / (double) LangsOnPage);
             
-            itemTitle = "Group main language";
+            itemTitle = "Change group language";
             command = "lang";
             description = "Here you can setup primary language for your group:";
         }

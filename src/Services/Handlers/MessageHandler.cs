@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using System;
+using Serilog;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Telegram.Bot;
@@ -6,6 +7,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TgTranslator.Extensions;
 using TgTranslator.Menu;
+using TgTranslator.Stats;
 using TgTranslator.Translation;
 
 namespace TgTranslator.Services.Handlers
@@ -16,6 +18,7 @@ namespace TgTranslator.Services.Handlers
         private readonly BotMenu _botMenu;
         private readonly SettingsProcessor _settingsProcessor;
         private readonly ITranslator _translator;
+        private readonly IMetrics _metrics;
         private readonly ILanguageDetector _languageDetector;
         private readonly Blacklist _blacklist;
         private readonly MessageValidator _validator;
@@ -23,12 +26,13 @@ namespace TgTranslator.Services.Handlers
         private readonly string _botUsername;
         
         public MessageHandler(TelegramBotClient client, BotMenu botMenu, SettingsProcessor settingsProcessor,
-            ILanguageDetector languageLanguageDetector, ITranslator translator, Blacklist blacklist, MessageValidator validator)
+            ILanguageDetector languageLanguageDetector, ITranslator translator, IMetrics metrics, Blacklist blacklist, MessageValidator validator)
         {
             _client = client;
             _botMenu = botMenu;
             _settingsProcessor = settingsProcessor;
             _translator = translator;
+            _metrics = metrics;
             _languageDetector = languageLanguageDetector;
             _blacklist = blacklist;
             _validator = validator;
@@ -38,6 +42,7 @@ namespace TgTranslator.Services.Handlers
 
         public async Task HandleMessageAsync(Message message)
         {
+            _metrics.HandleMessage();
             if (_blacklist.IsUserBlocked(message.From.Id))
                 return;
             
@@ -58,6 +63,8 @@ namespace TgTranslator.Services.Handlers
         {
             if (!_validator.GroupMessageValid(message))
                 return;
+            
+            _metrics.HandleGroupMessage(message.Chat.Id, message.Text.Length);
             
             if (message.IsCommand())
             {
@@ -80,32 +87,19 @@ namespace TgTranslator.Services.Handlers
             }
         }
 
-
         private async Task HandlePrivateMessage(Message message)
         {
             Log.Information($"Got: [ {message.Text} ] by {message.From.Username} from PM CHAT");
-
-            switch (message.Text)
-            {
-                case "/start":
-                    await _client.SendTextMessageAsync(message.Chat.Id,
-                        "You should to add this bot in a group. Then, you can configure it in this chat by typing /settings");
-                    break;
-                case "/settings":
-                    await _botMenu.SendSettingsMenu(message.Chat.Id);
-                    break;
-                default:
-                    await _client.SendTextMessageAsync(message.Chat.Id, "Unknown command. Type /start to get help.");
-                    break;
-            }
+            await _botMenu.SendMainMenu(message.Chat.Id);
         }
 
         private async Task HandleTranslation(Message message)
         {
+            _metrics.HandleTranslatorApiCall(message.Chat.Id, message.Text.Length);
             string translation = await _translator.TranslateTextAsync(message.Text, "",
                 await _settingsProcessor.GetGroupLanguage(message.Chat.Id));
 
-            if (string.IsNullOrEmpty(translation) || message.Text == translation)
+            if (string.IsNullOrEmpty(translation) || string.Equals(message.Text, translation, StringComparison.CurrentCultureIgnoreCase))
                 return;
 
             await _client.SendTextMessageAsync(message.Chat.Id, translation, ParseMode.Default, true, true,
@@ -115,7 +109,7 @@ namespace TgTranslator.Services.Handlers
         }
 
         private async Task HandleLanguageChanging(Message message)
-        {
+        {    
             if (!await message.From.IsAdministrator(message.Chat.Id, _client))
             {
                 await _client.SendTextMessageAsync(message.Chat.Id, "Hey! Only admins can change main language of this bot!",
