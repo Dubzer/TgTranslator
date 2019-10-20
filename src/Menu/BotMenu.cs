@@ -33,7 +33,7 @@ namespace TgTranslator.Menu
             MainMenu menu = new MainMenu(null);
             await _client.SendTextMessageAsync(chatId, menu.description, 
                                                 ParseMode.Markdown,  
-                                                replyMarkup:menu.GenerateMarkup(_mainMenuItems));
+                                                replyMarkup:menu.GenerateMarkup());
         }
 
         public async Task SwitchMenu(Type menuType, string[] arguments, long chatId, int messageId)
