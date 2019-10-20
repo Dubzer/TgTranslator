@@ -24,7 +24,7 @@ namespace TgTranslator.Menu
         /// <summary>
         /// Generates buttons for navigation menu from list of menus
         /// </summary>
-        protected virtual void GenerateButtons(IEnumerable<Type> menuItems)
+        protected void GenerateButtons(IEnumerable<Type> menuItems)
         {
             foreach (var menuItem in menuItems)
             {

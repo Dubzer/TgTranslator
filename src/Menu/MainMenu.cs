@@ -14,7 +14,7 @@ namespace TgTranslator.Menu
             
             _mainMenuItems = new List<Type>
             {
-                typeof(Language)
+                typeof(LanguageMenu)
             };
         }
 
