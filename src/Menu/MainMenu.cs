@@ -9,12 +9,13 @@ namespace TgTranslator.Menu
 
         public MainMenu(IReadOnlyList<string> arguments)
         {
-            description = "Choose what you want:";
+            description = "You must add this bot to your group. Then, you can configure it here:";
             itemTitle = "MainMenu";
             
             _mainMenuItems = new List<Type>
             {
-                typeof(LanguageMenu)
+                typeof(LanguageMenu),
+                typeof(ModeMenu)
             };
         }
 

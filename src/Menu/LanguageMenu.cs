@@ -7,7 +7,7 @@ namespace TgTranslator.Menu
 {
     class LanguageMenu : MenuItem
     {
-        private const byte LangsOnPage = 31;
+        private const byte LangsOnPage = 30;
         private const byte Columns = 2;
         private readonly int PagesNeeded;
 
@@ -31,13 +31,12 @@ namespace TgTranslator.Menu
             List<InlineKeyboardButton> buffer = new List<InlineKeyboardButton>();
 
             int previousPage = _currentPage - 1;
-            int nextPage = _currentPage + 1;
             int displayedLanguages = previousPage * LangsOnPage;
             int languagesLeft = Program.languages.Count - displayedLanguages;
 
-            int until = _currentPage == PagesNeeded // Is this the last page?
+            int until = _currentPage == PagesNeeded    // Is this the last page?
                 ? displayedLanguages + languagesLeft
-                : LangsOnPage * nextPage; 
+                : displayedLanguages + LangsOnPage; 
             
             for (int i = displayedLanguages; i < until; i++)
             {
