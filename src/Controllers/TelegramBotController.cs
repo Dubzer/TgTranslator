@@ -78,15 +78,24 @@ namespace TgTranslator.Controllers
             }
             catch (ApiRequestException exception)
             {
-                if (exception.Message.Contains("Bad Request: have no rights to send a message") && message.Chat.Type == ChatType.Group || message.Chat.Type == ChatType.Supergroup)
+                if (exception.Message.Contains("Bad Request: have no rights to send a message") &&
+                    message.Chat.Type == ChatType.Group || message.Chat.Type == ChatType.Supergroup)
                     await _client.LeaveChatAsync(message.Chat.Id);
             }
-            catch (Exception exception)
+            catch (InvalidSettingException)
             {
-                Log.Error(exception,
-                    message.Type == MessageType.Text
-                        ? $"Got an exception while tried to handle Message: {message.Text} by {message.From.Id} from {message.Chat.Id}"
-                        : "Got an exception while tried to handle Message");
+                await _client.SendTextMessageAsync(message.Chat.Id, "It seems that this setting is not supported",
+                    replyToMessageId: message.MessageId);
+            }
+            catch (InvalidSettingValueException)
+            {
+                await _client.SendTextMessageAsync(message.Chat.Id, "It seems that this value is not supported",
+                    replyToMessageId: message.MessageId);
+            }
+            catch (UnauthorizedSettingChangingException)
+            {
+                await _client.SendTextMessageAsync(message.Chat.Id, "Hey! Only admins can change settings of this bot!",
+                    ParseMode.Default, replyToMessageId: message.MessageId);
             }
         }
     }

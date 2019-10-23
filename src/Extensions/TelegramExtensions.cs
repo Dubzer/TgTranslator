@@ -8,38 +8,23 @@ namespace TgTranslator.Extensions
 {
     public static class TelegramExtensions
     {
-        public static bool IsLink(this Message message)
+        public static bool IsOnlyLinks(this Message message)
         {
             if (message.Entities == null)
                 return false;
+
+            var linksArray = message.Entities.Where(e => e.Type == MessageEntityType.Url
+                                                         || e.Type == MessageEntityType.Mention
+                                                         || e.Type == MessageEntityType.Cashtag
+                                                         || e.Type == MessageEntityType.Email
+                                                         || e.Type == MessageEntityType.BotCommand
+                                                         || e.Type == MessageEntityType.PhoneNumber);
             
-            return message.Entities[0].Type == MessageEntityType.Url && message.Entities[0].Length == message.Text.Length;
+            string withoutLinks = linksArray.Reverse()
+                .Aggregate(message.Text, (current, e) => current.Remove(e.Offset, e.Length));
+
+            return !withoutLinks.Any(char.IsLetterOrDigit);
         }
-
-        public static bool IsHashtag(this Message message)
-        {
-            if (message.Entities == null)
-                return false;
-            
-            return message.Entities[0].Type == MessageEntityType.Hashtag && message.Entities[0].Length == message.Text.Length;
-        }
-
-        public static bool IsCommand(this Message message)
-        {
-            if (message.Entities == null)
-                return false;
-
-            return message.Entities[0].Type == MessageEntityType.BotCommand;
-        }
-        
-        public static bool IsOnlyMention(this Message message)
-        {
-            if (message.Entities == null)
-                return false;
-
-            return message.Entities[0].Type == MessageEntityType.Mention && message.Entities[0].Length == message.Text.Length;
-        }
-
 
         /// <summary>
         /// Checks if user is an administrator
