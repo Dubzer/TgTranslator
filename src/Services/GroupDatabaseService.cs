@@ -1,7 +1,9 @@
 using System.Threading.Tasks;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
+using TgTranslator.Menu;
 using TgTranslator.Models;
+using TgTranslator.Types;
 
 namespace TgTranslator.Services
 {
@@ -17,9 +19,14 @@ namespace TgTranslator.Services
             _groups = database.GetCollection<Group>(settings.GroupsCollectionName);
         }
 
-        public async Task<Group> Get(long chatId) => await _groups.AsQueryable()
-                .Where(group => group.Id == chatId)
-                .FirstOrDefaultAsync();
+        public async Task<Group> Get(long chatId)
+        {
+            var group = await _groups.AsQueryable().Where(grp => grp.Id == chatId)
+                            .FirstOrDefaultAsync() ?? await Create(new Group(chatId));
+
+            return group;
+        }
+            
 
         public async Task<Group> Create(Group group)
         {
@@ -29,5 +36,8 @@ namespace TgTranslator.Services
 
         public Task UpdateLanguage(Group groupIn, string language) =>
             _groups.ReplaceOneAsync(group => group.Id == groupIn.Id, new Group(groupIn.objectId, groupIn.Id, language));
+        
+        public Task UpdateMode(Group groupIn, TranslationMode mode) =>
+            _groups.ReplaceOneAsync(group => group.Id == groupIn.Id, new Group(groupIn.objectId, groupIn.Id, groupIn.Language, mode));
     }
 }

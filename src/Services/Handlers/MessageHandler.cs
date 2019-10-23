@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
 using Serilog;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using TgTranslator.Exceptions;
 using TgTranslator.Extensions;
 using TgTranslator.Menu;
 using TgTranslator.Stats;
@@ -66,19 +68,24 @@ namespace TgTranslator.Services.Handlers
             
             _metrics.HandleGroupMessage(message.Chat.Id, message.Text.Length);
             
-            if (message.IsCommand())
+            if (message.Text.Contains($"{_botUsername} set:"))
             {
-                if (message.Text == "/settings@" + _botUsername)
-                    await _client.SendTextMessageAsync(message.Chat.Id, "Write me in PM and I will help you!",
-                        ParseMode.Default, replyToMessageId: message.MessageId);
-
+                await HandleSettingChanging(message);
                 return;
             }
 
-            if (message.Text.Contains($"{_botUsername} set:lang"))
+            switch (await _settingsProcessor.GetTranslationMode(message.Chat.Id))
             {
-                await HandleLanguageChanging(message);
-                return;
+                case TranslationMode.Forwards:
+                    if(message.ForwardSenderName == null)
+                        return;
+                    break;
+                case TranslationMode.Manual:
+                    if (message.ReplyToMessage == null) return;
+                    if(message.Text == _botUsername || message.Text == "!translate" || await RequireTranslation(message.Text, await _settingsProcessor.GetGroupLanguage(message.Chat.Id)))
+                        await HandleTranslation(message.ReplyToMessage);
+                    
+                    return;
             }
             
             if (await RequireTranslation(message.Text, await _settingsProcessor.GetGroupLanguage(message.Chat.Id)))
@@ -108,31 +115,32 @@ namespace TgTranslator.Services.Handlers
             Log.Information($"Sent translation to {message.Chat.Id} | {message.From.Id}");
         }
 
-        private async Task HandleLanguageChanging(Message message)
+        private async Task HandleSettingChanging(Message message)
         {    
             if (!await message.From.IsAdministrator(message.Chat.Id, _client))
-            {
-                await _client.SendTextMessageAsync(message.Chat.Id, "Hey! Only admins can change main language of this bot!",
-                    ParseMode.Default, replyToMessageId: message.MessageId);
-                
-                return;
-            }
+                throw new UnauthorizedSettingChangingException();
 
             string tinyString = message.Text.Replace($"@{_botUsername} set:", "");
 
-            string value = tinyString.Split('=')[1];
+            (string param, string value) = (tinyString.Split('=')[0], tinyString.Split('=')[1]);
 
-            if (!_settingsProcessor.ValidateLanguage(value))
+            if (!Enum.TryParse(param, true, out Setting setting) || !Enum.IsDefined(typeof(Setting), setting))
+                throw new InvalidSettingException();
+            
+            if (!_settingsProcessor.ValidateSettings(Enum.Parse<Setting>(value, true), value))
+                throw new InvalidSettingValueException();
+
+            switch (setting)
             {
-                await _client.SendTextMessageAsync(message.Chat.Id, "It seems that this language is not supported",
-                    ParseMode.Default, false, true, message.MessageId);
-                
-                return;
+                case Setting.Language:
+                    await _settingsProcessor.ChangeLanguage(message.Chat.Id, value);
+                    break;
+                case Setting.Mode:
+                    await _settingsProcessor.ChangeMode(message.Chat.Id, Enum.Parse<TranslationMode>(value, true));
+                    break;
             }
-
-            await _settingsProcessor.ChangeLanguage(message.Chat.Id, value);
-            await _client.SendTextMessageAsync(message.Chat.Id, "Done!", ParseMode.Default, false, true,
-                message.MessageId);
+            
+            await _client.SendTextMessageAsync(message.Chat.Id, "Done!", replyToMessageId: message.MessageId);
         }
 
         private async Task<bool> RequireTranslation(string text, string mainLanguage)

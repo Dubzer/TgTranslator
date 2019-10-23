@@ -24,7 +24,8 @@ namespace TgTranslator.Menu
                 typeof(ApplyMenu),
                 typeof(BotMenu),
                 typeof(LanguageMenu),
-                typeof(MainMenu)
+                typeof(MainMenu),
+                typeof(ModeMenu)
             }.ToImmutableHashSet();
         }
         
@@ -51,6 +52,5 @@ namespace TgTranslator.Menu
 
             throw new UnsupportedMenuItem(menuType.ToString());
         }
-                
     }
 }
