@@ -25,16 +25,16 @@ It also has cool configuration menu with buttons:
 
 [Telegram.Bot](https://github.com/TelegramBots/Telegram.Bot) — .NET Client for Telegram Bot API.
 
-[Redis](https://redis.io) — Used as in-memory key-value database.
+[MongoDB](https://www.mongodb.com/) — General purpose, document-based, distributed database. Used to store groups settings.
 
 [Yandex.Translate](https://translate.yandex.com/developers) — Universal text translation tool that uses machine translation technology developed at Yandex.
 
 [Prometheus](https://prometheus.io/) — Used for event monitoring and alerting.
 
 ## ▶️ Build
-You need .NET Core SDK 3.0+. [Download it here](https://dotnet.microsoft.com/download/dotnet-core/3.0)
+You need .NET Core SDK 3.1+. [Download it here](https://dotnet.microsoft.com/download/dotnet-core/3.1)
 
-You also need Redis database to store settings. [Learn more](https://redis.io)
+You also need MongoDB to store groups settings. [Learn more](https://www.mongodb.com/)
 
 1. Clone repository and open directory:
    ```sh
