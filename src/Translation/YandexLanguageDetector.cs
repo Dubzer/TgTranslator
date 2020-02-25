@@ -5,16 +5,14 @@ namespace TgTranslator.Translation
 {
     public class YandexLanguageDetector : ILanguageDetector
     {
-        readonly YandexTranslateSdk _yaTranslator = new YandexTranslateSdk();
+        private readonly YandexTranslateSdk _yaTranslator = new YandexTranslateSdk();
 
-        public YandexLanguageDetector(string apiKey)
-        {
-            _yaTranslator.ApiKey = apiKey;
-        }
+        public YandexLanguageDetector(string apiKey) => _yaTranslator.ApiKey = apiKey;
 
-        public async Task<string> DetectLanguageAsync(string text)
-        {
-            return await _yaTranslator.DetectLanguage(text);
-        }
+        #region ILanguageDetector Members
+
+        public async Task<string> DetectLanguageAsync(string text) => await _yaTranslator.DetectLanguage(text);
+
+        #endregion
     }
 }

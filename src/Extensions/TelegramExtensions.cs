@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Bot;
@@ -13,13 +14,13 @@ namespace TgTranslator.Extensions
             if (message.Entities == null)
                 return false;
 
-            var linksArray = message.Entities.Where(e => e.Type == MessageEntityType.Url
-                                                         || e.Type == MessageEntityType.Mention
-                                                         || e.Type == MessageEntityType.Cashtag
-                                                         || e.Type == MessageEntityType.Email
-                                                         || e.Type == MessageEntityType.BotCommand
-                                                         || e.Type == MessageEntityType.PhoneNumber);
-            
+            IEnumerable<MessageEntity> linksArray = message.Entities.Where(e => e.Type == MessageEntityType.Url
+                                                                                || e.Type == MessageEntityType.Mention
+                                                                                || e.Type == MessageEntityType.Cashtag
+                                                                                || e.Type == MessageEntityType.Email
+                                                                                || e.Type == MessageEntityType.BotCommand
+                                                                                || e.Type == MessageEntityType.PhoneNumber);
+
             string withoutLinks = linksArray.Reverse()
                 .Aggregate(message.Text, (current, e) => current.Remove(e.Offset, e.Length));
 

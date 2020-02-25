@@ -1,17 +1,20 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace TgTranslator.Menu
 {
     public class MainMenu : MenuItem
     {
-        private List<Type> _mainMenuItems;
+        private readonly List<Type> _mainMenuItems;
 
+        [SuppressMessage("ReSharper", "UnusedParameter.Local")]
         public MainMenu(IReadOnlyList<string> arguments)
         {
-            description = "You must add this bot to your group. Then, you can configure it here:";
-            itemTitle = "MainMenu";
-            
+            Description =
+                "You must add this bot to your group. Type /help to learn how. \nThen, you can configure it here:";
+            ItemTitle = "MainMenu";
+
             _mainMenuItems = new List<Type>
             {
                 typeof(LanguageMenu),
@@ -19,9 +22,6 @@ namespace TgTranslator.Menu
             };
         }
 
-        protected override void GenerateButtons()
-        {
-            base.GenerateButtons(_mainMenuItems);
-        }
+        protected override void GenerateButtons() => base.GenerateButtons(_mainMenuItems);
     }
 }

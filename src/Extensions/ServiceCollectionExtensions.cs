@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,57 +13,58 @@ using TgTranslator.Menu;
 using TgTranslator.Models;
 using TgTranslator.Services;
 using TgTranslator.Services.Handlers;
+using TgTranslator.Stats;
 using TgTranslator.Translation;
 using TgTranslator.Types;
-using Language = TgTranslator.Types.Language;
 
 namespace TgTranslator.Extensions
-{ 
-    public static class IServiceCollectionExtensions
+{
+    public static class ServiceCollectionExtensions
     {
         public static IServiceCollection RegisterServices(this IServiceCollection services, IConfiguration configuration)
         {
-            var botToken = configuration.GetValue<string>("telegram:botToken");
+            string botToken = configuration.GetValue<string>("telegram:botToken");
 
-            var yandexToken = configuration.GetValue<string>("yandex:TranslatorToken");
+            string yandexToken = configuration.GetValue<string>("yandex:TranslatorToken");
 
             services.Configure<GroupDatabaseSettings>(configuration.GetSection("MongoDB"));
-            services.AddSingleton<IGroupDatabaseSettings>(provider =>
-                provider.GetRequiredService<IOptions<GroupDatabaseSettings>>().Value);
+            services.AddSingleton<IGroupDatabaseSettings>(provider => provider.GetRequiredService<IOptions<GroupDatabaseSettings>>().Value);
 
             services.AddSingleton(ctx => new GroupDatabaseService(ctx.GetService<IGroupDatabaseSettings>()));
-            
+
             services.AddSingleton(new TelegramBotClient(botToken));
-            
-            services.AddSingleton(ctx => 
+
+
+            services.AddSingleton<IMetrics>(new Metrics());
+            services.AddSingleton(ctx =>
             {
                 var telegramClient = ctx.GetService<TelegramBotClient>();
-                return new BotMenu(telegramClient);
+                string caption = configuration.GetValue<string>("helpmenu:videourl");
+                return new BotMenu(telegramClient, caption);
             });
-            
+
             services.AddSingleton(ctx =>
             {
                 var database = ctx.GetService<GroupDatabaseService>();
-                var languages = ParseLanguagesCollection("languages.json");
+                List<Language> languages = ParseLanguagesCollection("languages.json");
                 return new SettingsProcessor(database, languages);
             });
-            
+
             services.AddSingleton<ILanguageDetector>(new YandexLanguageDetector(yandexToken));
-            services.AddSingleton<ITranslator>(new YandexTranslator(yandexToken));
-            
+            services.AddSingleton<ITranslator>(new TranslatorMicroservice("t393dK*IE*^bjzEPScV6D8fgT@$Cenhf"));
             services.AddSingleton(ctx =>
             {
-                var groupsBlacklist = configuration.GetSection("blacklists:groups").Get<long[]>().ToImmutableHashSet();
-                var usersBlacklist = configuration.GetSection("blacklists:users").Get<int[]>().ToImmutableHashSet();
-                var textsBlacklist = configuration.GetSection("blacklists:texts").Get<string[]>().ToImmutableHashSet();
+                ImmutableHashSet<long> groupsBlacklist = configuration.GetSection("blacklists:groups").Get<long[]>().ToImmutableHashSet();
+                ImmutableHashSet<int> usersBlacklist = configuration.GetSection("blacklists:users").Get<int[]>().ToImmutableHashSet();
+                ImmutableHashSet<string> textsBlacklist = configuration.GetSection("blacklists:texts").Get<string[]>().ToImmutableHashSet();
 
                 return new Blacklist(groupsBlacklist, usersBlacklist, textsBlacklist);
             });
-            
+
             services.AddSingleton(ctx =>
             {
                 var blacklist = ctx.GetService<Blacklist>();
-                var charLimit = configuration.GetValue<uint>("tgtranslator:charlimit");
+                uint charLimit = configuration.GetValue<uint>("tgtranslator:charlimit");
                 return new MessageValidator(blacklist, charLimit);
             });
 
@@ -75,17 +77,19 @@ namespace TgTranslator.Extensions
                 var settingsProcessor = ctx.GetService<SettingsProcessor>();
                 var languageDetector = ctx.GetService<ILanguageDetector>();
                 var translator = ctx.GetService<ITranslator>();
+                var metrics = ctx.GetService<IMetrics>();
                 var blacklist = ctx.GetService<Blacklist>();
                 var validator = ctx.GetService<MessageValidator>();
-                
-                return new MessageHandler(telegramClient, botMenu, settingsProcessor, languageDetector, translator, blacklist, validator);
+
+                return new MessageHandler(telegramClient, botMenu, settingsProcessor, languageDetector, translator, metrics, blacklist, validator);
             });
 
-            services.AddSingleton<ICallbackQueryHandler>(ctx => 
+            services.AddSingleton<ICallbackQueryHandler>(ctx =>
             {
                 var botMenu = ctx.GetService<BotMenu>();
+                var telegramClient = ctx.GetService<TelegramBotClient>();
 
-                return new CallbackQueryHandler(botMenu);
+                return new CallbackQueryHandler(botMenu, telegramClient);
             });
 
             #endregion
@@ -95,18 +99,17 @@ namespace TgTranslator.Extensions
                 var telegramClient = ctx.GetService<TelegramBotClient>();
                 var messageHandler = ctx.GetService<IMessageHandler>();
                 var callbackQueryHandler = ctx.GetService<ICallbackQueryHandler>();
-                
+
                 return new TelegramBotController(telegramClient, messageHandler, callbackQueryHandler);
             });
-
             services.AddHostedService<TelegramBotHostedService>();
             return services;
         }
 
         private static List<Language> ParseLanguagesCollection(string jsonFilePath)
         {
-            string json = System.IO.File.ReadAllText(jsonFilePath);
-            List<LanguageJson> langsJson = JsonConvert.DeserializeObject<List<LanguageJson>>(json);
+            string json = File.ReadAllText(jsonFilePath);
+            var langsJson = JsonConvert.DeserializeObject<List<LanguageJson>>(json);
 
             return langsJson.Select(language => language.Language).ToList();
         }

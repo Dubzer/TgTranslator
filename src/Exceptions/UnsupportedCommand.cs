@@ -6,7 +6,6 @@ namespace TgTranslator.Exceptions
     {
         public UnsupportedCommand(string request) : base($@"Command {request} is not supported")
         {
-            
         }
     }
 }
