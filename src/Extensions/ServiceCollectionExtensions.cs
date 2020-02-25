@@ -51,7 +51,7 @@ namespace TgTranslator.Extensions
             });
 
             services.AddSingleton<ILanguageDetector>(new YandexLanguageDetector(yandexToken));
-            services.AddSingleton<ITranslator>(new TranslatorMicroservice("t393dK*IE*^bjzEPScV6D8fgT@$Cenhf"));
+            services.AddSingleton<ITranslator>(new YandexTranslator(yandexToken));
             services.AddSingleton(ctx =>
             {
                 ImmutableHashSet<long> groupsBlacklist = configuration.GetSection("blacklists:groups").Get<long[]>().ToImmutableHashSet();
