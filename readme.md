@@ -44,7 +44,7 @@ You also need MongoDB to store groups settings. [Learn more](https://www.mongodb
     dotnet publish -c Release
 3. Navigate to the directory that specified in the console:
    ```sh
-   cd ./src/bin/Release/netcoreapp3.0/publish/
+   cd ./src/bin/Release/netcoreapp3.1/publish/
 4. Insert your values in appsettings.json
    
 5. Run:
