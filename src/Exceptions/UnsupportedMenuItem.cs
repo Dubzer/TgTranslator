@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 
 namespace TgTranslator.Exceptions
 {
@@ -7,7 +6,6 @@ namespace TgTranslator.Exceptions
     {
         public UnsupportedMenuItem(string name) : base($@"Menu {name} is not supported")
         {
-            
         }
     }
 }

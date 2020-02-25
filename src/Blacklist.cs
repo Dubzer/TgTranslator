@@ -4,9 +4,9 @@ namespace TgTranslator
 {
     public class Blacklist
     {
-        private readonly ImmutableHashSet<int> _usersBlacklist;
         private readonly ImmutableHashSet<long> _groupsBlacklist;
         private readonly ImmutableHashSet<string> _textsBlacklist;
+        private readonly ImmutableHashSet<int> _usersBlacklist;
 
         public Blacklist(ImmutableHashSet<long> groupsBlacklist, ImmutableHashSet<int> usersBlacklist, ImmutableHashSet<string> textsBlacklist)
         {
@@ -15,19 +15,10 @@ namespace TgTranslator
             _textsBlacklist = textsBlacklist;
         }
 
-        public bool IsGroupBlocked(long id)
-        {
-            return _groupsBlacklist.Contains(id);
-        }
-        
-        public bool IsUserBlocked(int id)
-        {
-            return _usersBlacklist.Contains(id);
-        }
+        public bool IsGroupBlocked(long id) => _groupsBlacklist.Contains(id);
 
-        public bool IsTextAllowed(string text)
-        {
-            return !_textsBlacklist.Contains(text);
-        }
+        public bool IsUserBlocked(int id) => _usersBlacklist.Contains(id);
+
+        public bool IsTextAllowed(string text) => !_textsBlacklist.Contains(text);
     }
 }
