@@ -6,22 +6,24 @@ namespace TgTranslator.Menu
 {
     public abstract class MenuItem
     {
-        protected List<IEnumerable<InlineKeyboardButton>> Buttons = new List<IEnumerable<InlineKeyboardButton>>();
+        protected readonly List<IEnumerable<InlineKeyboardButton>> Buttons = new List<IEnumerable<InlineKeyboardButton>>();
         protected string Command;
         public string Description;
         protected string ItemTitle;
 
         /// <summary>
-        ///     Generates default buttons
+        /// Generates default buttons
         /// </summary>
-        protected virtual void GenerateButtons() =>
+        protected virtual void GenerateButtons()
+        {
             Buttons.Add(new List<InlineKeyboardButton>
             {
                 new InlineKeyboardButton {Text = "❌ Back", CallbackData = "switch " + typeof(MainMenu)}
             });
+        }
 
         /// <summary>
-        ///     Generates buttons for navigation menu from list of menus
+        /// Generates buttons for navigation menu from list of menus
         /// </summary>
         protected void GenerateButtons(IEnumerable<Type> menuItems)
         {
@@ -39,7 +41,6 @@ namespace TgTranslator.Menu
         public InlineKeyboardMarkup GenerateMarkup()
         {
             GenerateButtons();
-
             return new InlineKeyboardMarkup(Buttons);
         }
     }
