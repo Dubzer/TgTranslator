@@ -22,6 +22,9 @@ namespace TgTranslator.Menu
             };
         }
 
-        protected override void GenerateButtons() => base.GenerateButtons(_mainMenuItems);
+        protected override void GenerateButtons()
+        {
+            base.GenerateButtons(_mainMenuItems);
+        }
     }
 }

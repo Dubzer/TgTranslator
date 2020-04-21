@@ -38,18 +38,28 @@ namespace TgTranslator.Services
             return Task.CompletedTask;
         }
 
-        public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
 
         #endregion
 
-        private async void OnMessage(object sender, MessageEventArgs e) => await _controller.Post(new Update {Message = e.Message});
+        private async void OnMessage(object sender, MessageEventArgs e)
+        {
+            await _controller.Post(new Update {Message = e.Message});
+        }
 
         private async void OnCallbackQuery(object sender, CallbackQueryEventArgs e) => await _controller.Post(new Update {CallbackQuery = e.CallbackQuery});
 
-        private void OnReceiveError(object sender, ReceiveErrorEventArgs e) =>
-            Log.Error(e.ApiRequestException,
-                $"OnReceiveError: {e.ApiRequestException.ErrorCode} - {e.ApiRequestException.Message}");
+        private void OnReceiveError(object sender, ReceiveErrorEventArgs e)
+        {
+            Log.Error(e.ApiRequestException, $"OnReceiveError: {e.ApiRequestException.ErrorCode} - {e.ApiRequestException.Message}");
+        }
 
-        private void OnReceiveGeneralError(object sender, ReceiveGeneralErrorEventArgs e) => Log.Error(e.Exception, nameof(OnReceiveGeneralError));
+        private void OnReceiveGeneralError(object sender, ReceiveGeneralErrorEventArgs e)
+        {
+            Log.Error(e.Exception, nameof(OnReceiveGeneralError));
+        }
     }
 }

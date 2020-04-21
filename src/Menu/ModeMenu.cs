@@ -20,7 +20,7 @@ namespace TgTranslator.Menu
                           "*Forwards* — translates only forwarded messages that require it \n" +
                           "*Manual* — translates *only* by replying on message with `@grouptransalor_bot` or `!translate`";
 
-            Command = Setting.Mode.ToString().ToLowerInvariant();
+            Command = nameof(Setting.Mode).ToLowerInvariant();
         }
 
         protected override void GenerateButtons()

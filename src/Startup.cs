@@ -31,7 +31,7 @@ namespace TgTranslator
             app.UseMvcWithDefaultRoute();
             app.Map("/metrics", metricsApp =>
             {
-                metricsApp.UseMiddleware<BasicAuthMiddleware>(_configuration.GetValue<string>("prometheus:login"), 
+                metricsApp.UseMiddleware<BasicAuthMiddleware>(_configuration.GetValue<string>("prometheus:login"),
                     _configuration.GetValue<string>("prometheus:password"));
                 metricsApp.UseMetricServer("");
             });
