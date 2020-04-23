@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Serilog;
 using Telegram.Bot;
+using Telegram.Bot.Requests;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TgTranslator.Exceptions;
@@ -69,6 +70,9 @@ namespace TgTranslator.Services.Handlers
             if (!_validator.GroupMessageValid(message))
                 return;
 
+            if (message.Entities.Length == 1 && message.Entities[0].Type == MessageEntityType.BotCommand)
+                await HandleCommand(message);
+            
             _metrics.HandleGroupMessage(message.Chat.Id, message.Text.Length);
 
             if (message.Text.Contains($"{_botUsername} set:"))
@@ -150,6 +154,16 @@ namespace TgTranslator.Services.Handlers
             }
 
             await _client.SendTextMessageAsync(message.Chat.Id, "Done!", replyToMessageId: message.MessageId);
+        }
+
+        private async Task HandleCommand(Message message)
+        {
+            ChatType chatType = message.Chat.Type;
+            switch (message.Text[1..])
+            {
+                default:
+                    return;
+            }
         }
 
         private async Task<bool> RequireTranslation(string text, string mainLanguage)
