@@ -21,6 +21,6 @@ namespace TgTranslator
             && message.Text.Length <= _charLimit
             && _blacklist.IsTextAllowed(message.Text)
             && !message.IsOnlyLinks()
-            && message.Text[0] == '.';
+            && message.Text[0] != '.';
     }
 }
