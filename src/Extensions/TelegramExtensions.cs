@@ -18,8 +18,8 @@ namespace TgTranslator.Extensions
                                                                                 || e.Type == MessageEntityType.Mention
                                                                                 || e.Type == MessageEntityType.Cashtag
                                                                                 || e.Type == MessageEntityType.Email
-                                                                                || e.Type == MessageEntityType.BotCommand
-                                                                                || e.Type == MessageEntityType.PhoneNumber);
+                                                                                || e.Type == MessageEntityType.PhoneNumber
+                                                                                || e.Type == MessageEntityType.Hashtag);
 
             string withoutLinks = linksArray.Reverse()
                 .Aggregate(message.Text, (current, e) => current.Remove(e.Offset, e.Length));
@@ -27,6 +27,7 @@ namespace TgTranslator.Extensions
             return !withoutLinks.Any(char.IsLetterOrDigit);
         }
 
+        
         /// <summary>
         /// Checks if user is an administrator
         /// </summary>
