@@ -3,9 +3,9 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Serilog;
 using Telegram.Bot;
-using Telegram.Bot.Requests;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 using TgTranslator.Exceptions;
 using TgTranslator.Extensions;
 using TgTranslator.Menu;
@@ -67,14 +67,17 @@ namespace TgTranslator.Services.Handlers
 
         private async Task HandleGroupMessage(Message message)
         {
+            _metrics.HandleGroupMessage(message.Chat.Id, message.Text.Length);
             if (!_validator.GroupMessageValid(message))
                 return;
 
-            if (message.Entities.Length == 1 && message.Entities[0].Type == MessageEntityType.BotCommand)
+            if (message.IsCommand())
+            {
                 await HandleCommand(message);
+                return;
+            }
+                
             
-            _metrics.HandleGroupMessage(message.Chat.Id, message.Text.Length);
-
             if (message.Text.Contains($"{_botUsername} set:"))
             {
                 await HandleSettingChanging(message);
@@ -103,10 +106,9 @@ namespace TgTranslator.Services.Handlers
 
         private async Task HandlePrivateMessage(Message message)
         {
-            Log.Information("[PM][{Username}] {Text}", message.From, message.Text);
-            if (message.Text == "/help")
+            if (message.IsCommand())
             {
-                await _client.SendVideoAsync(message.Chat.Id, "https://dubzer.dev/TgTranslatorHelp.mp4");
+                await HandleCommand(message);
                 return;
             }
 
@@ -159,8 +161,37 @@ namespace TgTranslator.Services.Handlers
         private async Task HandleCommand(Message message)
         {
             ChatType chatType = message.Chat.Type;
-            switch (message.Text[1..])
+            string command = message.Text[1..];
+            
+            if (command.Contains("@"))
             {
+                int indexOfAt = command.IndexOf('@');
+                if(command.Substring(indexOfAt + 1) != _botUsername)
+                    return;
+                
+                command = command[..indexOfAt];
+            }
+
+            switch (command)
+            {
+                case "settings" when chatType == ChatType.Group || chatType == ChatType.Supergroup:
+                    if(!await message.From.IsAdministrator(message.Chat.Id, _client))
+                        throw new UnauthorizedSettingChangingException();
+                    
+                    const string text = "You can access settings in the PM:";
+                    await _client.SendTextMessageAsync(message.Chat.Id, text, replyMarkup: new InlineKeyboardMarkup(new InlineKeyboardButton
+                    {
+                        Text = "Open settings",
+                        Url = $"https://t.me/{_botUsername}?start=s"
+                    }));
+                    
+                    break;
+                case "settings" when chatType == ChatType.Private:
+                    await _botMenu.SendMainMenu(message.Chat.Id);
+                    break;
+                case "help" when chatType == ChatType.Private:
+                    await _client.SendVideoAsync(message.Chat.Id, "https://dubzer.dev/TgTranslatorHelp.mp4");
+                    break;
                 default:
                     return;
             }
