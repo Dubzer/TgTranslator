@@ -37,5 +37,8 @@ namespace TgTranslator.Extensions
 
             return chatAdmins.Any(x => x.User.Id == user.Id);
         }
+
+        public static bool IsCommand(this Message message) => 
+            message.Entities?.Length == 1 && message.Entities[0].Type == MessageEntityType.BotCommand;
     }
 }
