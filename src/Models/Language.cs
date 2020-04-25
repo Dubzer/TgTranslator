@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace TgTranslator.Types
+namespace TgTranslator.Models
 {
     public class LanguageJson
     {

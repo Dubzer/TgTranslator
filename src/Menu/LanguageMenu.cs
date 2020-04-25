@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Telegram.Bot.Types.ReplyMarkups;
-using TgTranslator.Types;
+using TgTranslator.Models;
+using TgTranslator.Services;
 
 namespace TgTranslator.Menu
 {
