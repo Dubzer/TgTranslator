@@ -1,13 +1,11 @@
+using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using TgTranslator.Menu;
 using TgTranslator.Models;
-using TgTranslator.Services;
-using TgTranslator.Types;
 
-namespace TgTranslator
+namespace TgTranslator.Services
 {
     public enum Setting
     {
@@ -19,39 +17,41 @@ namespace TgTranslator
     {
         private readonly GroupDatabaseService _database;
         private readonly List<Language> _languages;
-        private readonly ImmutableDictionary<string, TranslationMode> _modes;
 
         public SettingsProcessor(GroupDatabaseService database, List<Language> languages)
         {
             _database = database;
             _languages = languages;
-
-            _modes = new Dictionary<string, TranslationMode>
-            {
-                {"auto", TranslationMode.Auto},
-                {"forwards", TranslationMode.Forwards},
-                {"manual", TranslationMode.Manual}
-            }.ToImmutableDictionary();
         }
 
         public async Task<string> GetGroupLanguage(long chatId)
         {
-            Group group = await _database.Get(chatId);
+            Group group = await _database.GetAsync(chatId);
             return group.Language;
         }
 
         public async Task<TranslationMode> GetTranslationMode(long chatId)
         {
-            Group group = await _database.Get(chatId);
-            return group.Mode;
+            Group group = await _database.GetAsync(chatId);
+            return group.TranslationMode;
         }
 
-        public async Task ChangeLanguage(long chatId, string language) => await _database.UpdateLanguage(_database.Get(chatId).Result, language);
+        public async Task ChangeLanguage(long chatId, string language)
+        {
+            Group group = await _database.GetAsync(chatId);
+            if (group.Language == language)
+                return;
+            
+            await _database.UpdateLanguageAsync(group, language);
+        }
 
         public async Task ChangeMode(long chatId, TranslationMode mode)
         {
-            Group group = await _database.Get(chatId);
-            await _database.UpdateMode(group, mode);
+            Group group = await _database.GetAsync(chatId);
+            if (group.TranslationMode == mode)
+                return;
+            
+            await _database.UpdateModeAsync(group, mode);
         }
 
         public bool ValidateSettings(Setting setting, string value) =>

@@ -1,6 +1,7 @@
+using System.Linq;
 using System.Threading.Tasks;
-using MongoDB.Driver;
-using MongoDB.Driver.Linq;
+using Microsoft.EntityFrameworkCore;
+using TgTranslator.Data;
 using TgTranslator.Menu;
 using TgTranslator.Models;
 
@@ -8,35 +9,41 @@ namespace TgTranslator.Services
 {
     public class GroupDatabaseService
     {
-        private readonly IMongoCollection<Group> _groups;
-
-        public GroupDatabaseService(IGroupDatabaseSettings settings)
+        private readonly TgTranslatorContext _databaseContext;
+        
+        public GroupDatabaseService(TgTranslatorContext databaseContext)
         {
-            var client = new MongoClient(settings.ConnectionString);
-            IMongoDatabase database = client.GetDatabase(settings.DatabaseName);
-
-            _groups = database.GetCollection<Group>(settings.GroupsCollectionName);
+            _databaseContext = databaseContext;
         }
 
-        public async Task<Group> Get(long chatId)
+        public async Task<Group> GetAsync(long chatId)
         {
-            Group group = await _groups.AsQueryable().Where(grp => grp.Id == chatId)
-                .FirstOrDefaultAsync() ?? await Create(new Group(chatId));
-
+            Group group = await _databaseContext.Groups
+                .Where(grp => grp.GroupId == chatId)
+                .FirstOrDefaultAsync() ?? await AddAsync(new Group { GroupId = chatId });
+            
             return group;
         }
 
-
-        public async Task<Group> Create(Group group)
+        private async Task<Group> AddAsync(Group group)
         {
-            await _groups.InsertOneAsync(group);
-            return group;
+            await _databaseContext.AddAsync(group);
+            await _databaseContext.SaveChangesAsync();
+            return await GetAsync(group.GroupId);
         }
 
-        public Task UpdateLanguage(Group groupIn, string language) =>
-            _groups.ReplaceOneAsync(group => group.Id == groupIn.Id, new Group(groupIn.objectId, groupIn.Id, language));
+        public async Task UpdateLanguageAsync(Group groupIn, string language)
+        {
+            groupIn.Language = language;
+            _databaseContext.Update(groupIn);
+            await _databaseContext.SaveChangesAsync();
+        }
 
-        public Task UpdateMode(Group groupIn, TranslationMode mode) =>
-            _groups.ReplaceOneAsync(group => group.Id == groupIn.Id, new Group(groupIn.objectId, groupIn.Id, groupIn.Language, mode));
+        public async Task UpdateModeAsync(Group groupIn, TranslationMode mode)
+        {
+            groupIn.TranslationMode = mode;
+            _databaseContext.Update(groupIn);
+            await _databaseContext.SaveChangesAsync();
+        }
     }
 }

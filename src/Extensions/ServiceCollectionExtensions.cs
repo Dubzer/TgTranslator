@@ -2,20 +2,20 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Serilog;
 using Telegram.Bot;
 using TgTranslator.Controllers;
+using TgTranslator.Data;
 using TgTranslator.Menu;
 using TgTranslator.Models;
 using TgTranslator.Services;
 using TgTranslator.Services.Handlers;
 using TgTranslator.Stats;
 using TgTranslator.Translation;
-using TgTranslator.Types;
 
 namespace TgTranslator.Extensions
 {
@@ -27,13 +27,12 @@ namespace TgTranslator.Extensions
 
             string yandexToken = configuration.GetValue<string>("yandex:TranslatorToken");
 
-            services.Configure<GroupDatabaseSettings>(configuration.GetSection("MongoDB"));
-            services.AddSingleton<IGroupDatabaseSettings>(provider => provider.GetRequiredService<IOptions<GroupDatabaseSettings>>().Value);
-
-            services.AddSingleton(ctx => new GroupDatabaseService(ctx.GetService<IGroupDatabaseSettings>()));
+            services.AddDbContext<TgTranslatorContext>(builder => builder
+                .UseNpgsql(configuration.GetConnectionString("TgTranslatorContext")), ServiceLifetime.Singleton);
+            
+            services.AddSingleton<GroupDatabaseService>();
 
             services.AddSingleton(new TelegramBotClient(botToken));
-
 
             services.AddSingleton<IMetrics>(new Metrics());
             services.AddSingleton(ctx =>
