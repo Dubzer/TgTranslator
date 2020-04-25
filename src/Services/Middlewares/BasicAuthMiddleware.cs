@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 
-namespace TgTranslator
+namespace TgTranslator.Services.Middlewares
 {
     internal sealed class BasicAuthMiddleware
     {

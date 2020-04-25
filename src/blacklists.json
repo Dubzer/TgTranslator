@@ -1,12 +1,12 @@
 {
   "blacklists": {
-    "groups" : [
+    "GroupIdsBlacklist" : [
       1
     ],
-    "users" : [
+    "UserIdsBlacklist" : [
       1
     ],
-    "texts": [
+    "TextsBlacklist": [
       "¯\\_(ツ)_/¯"
     ]
   }

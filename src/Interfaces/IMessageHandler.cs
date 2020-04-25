@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Telegram.Bot.Types;
 
-namespace TgTranslator.Services.Handlers
+namespace TgTranslator.Interfaces
 {
     public interface IMessageHandler
     {

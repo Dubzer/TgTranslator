@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TgTranslator.Exceptions;
+using TgTranslator.Interfaces;
 using TgTranslator.Menu;
 
 namespace TgTranslator.Services.Handlers

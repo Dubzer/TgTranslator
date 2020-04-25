@@ -21,7 +21,7 @@ namespace TgTranslator.Menu
                 ? byte.Parse(arguments[0])
                 : _currentPage = 1;
 
-            _pagesNeeded = (int) Math.Ceiling(Program.languages.Count / (double) LangsOnPage);
+            _pagesNeeded = (int) Math.Ceiling(Program.Languages.Count / (double) LangsOnPage);
 
             ItemTitle = "Change group language";
             Command = Setting.Language.ToString().ToLowerInvariant();
@@ -34,7 +34,7 @@ namespace TgTranslator.Menu
 
             int previousPage = _currentPage - 1;
             int displayedLanguages = previousPage * LangsOnPage;
-            int languagesLeft = Program.languages.Count - displayedLanguages;
+            int languagesLeft = Program.Languages.Count - displayedLanguages;
 
             int until = _currentPage == _pagesNeeded // Is this the last page?
                 ? displayedLanguages + languagesLeft
@@ -49,7 +49,7 @@ namespace TgTranslator.Menu
                     buffer.Clear();
                 }
 
-                Language language = Program.languages[i];
+                Language language = Program.Languages[i];
                 buffer.Add(new InlineKeyboardButton
                 {
                     Text = $@"{language.Flag} {language.Name}",

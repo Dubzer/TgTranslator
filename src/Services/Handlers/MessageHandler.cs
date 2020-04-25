@@ -1,22 +1,24 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Serilog;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
+using TgTranslator.Data.Options;
 using TgTranslator.Exceptions;
 using TgTranslator.Extensions;
+using TgTranslator.Interfaces;
 using TgTranslator.Menu;
-using TgTranslator.Stats;
-using TgTranslator.Translation;
+using TgTranslator.Validation;
 
 namespace TgTranslator.Services.Handlers
 {
     public class MessageHandler : IMessageHandler
     {
-        private readonly Blacklist _blacklist;
+        private readonly Blacklists _blacklist;
         private readonly BotMenu _botMenu;
 
         private readonly string _botUsername;
@@ -27,8 +29,8 @@ namespace TgTranslator.Services.Handlers
         private readonly ITranslator _translator;
         private readonly MessageValidator _validator;
 
-        public MessageHandler(TelegramBotClient client, BotMenu botMenu, SettingsProcessor settingsProcessor,
-            ILanguageDetector languageLanguageDetector, ITranslator translator, IMetrics metrics, Blacklist blacklist, MessageValidator validator)
+        public MessageHandler(TelegramBotClient client, BotMenu botMenu, SettingsProcessor settingsProcessor, ILanguageDetector languageLanguageDetector, 
+            ITranslator translator, IMetrics metrics, IOptions<Blacklists> blacklistsOptions, MessageValidator validator)
         {
             _client = client;
             _botMenu = botMenu;
@@ -36,7 +38,7 @@ namespace TgTranslator.Services.Handlers
             _translator = translator;
             _metrics = metrics;
             _languageDetector = languageLanguageDetector;
-            _blacklist = blacklist;
+            _blacklist = blacklistsOptions.Value;
             _validator = validator;
 
             _botUsername = _client.GetMeAsync().Result.Username;
@@ -47,7 +49,7 @@ namespace TgTranslator.Services.Handlers
         public async Task HandleMessageAsync(Message message)
         {
             _metrics.HandleMessage();
-            if (_blacklist.IsUserBlocked(message.From.Id))
+            if (_blacklist.UserIdsBlacklist.Contains(message.From.Id))
                 return;
 
             switch (message.Chat.Type)
@@ -76,9 +78,6 @@ namespace TgTranslator.Services.Handlers
                 await HandleCommand(message);
                 return;
             }
-                
-            
-            if (message.Text.Contains($"{_botUsername} set:"))
 
             if (message.Text.StartsWith($"@{_botUsername} set:"))
             {
