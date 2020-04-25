@@ -57,8 +57,8 @@ namespace TgTranslator
         public bool ValidateSettings(Setting setting, string value) =>
             setting switch
             {
-                Setting.Language => _languages.Any(x => x.Code == value),
-                Setting.Mode => _modes.Any(x => x.Key == value),
+                Setting.Language => _languages.Select(l => l.Code).Contains(value),
+                Setting.Mode => Enum.TryParse(typeof(TranslationMode), value, true, out _),
                 _ => false
             };
     }
