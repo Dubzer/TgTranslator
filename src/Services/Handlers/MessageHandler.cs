@@ -79,6 +79,8 @@ namespace TgTranslator.Services.Handlers
                 
             
             if (message.Text.Contains($"{_botUsername} set:"))
+
+            if (message.Text.StartsWith($"@{_botUsername} set:"))
             {
                 await HandleSettingChanging(message);
                 return;
