@@ -3,8 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
+using TgTranslator.Data.Options;
 using TgTranslator.Exceptions;
 
 namespace TgTranslator.Menu
@@ -18,10 +20,10 @@ namespace TgTranslator.Menu
         private readonly TelegramBotClient _client;
         private readonly string _helpVideoUrl;
 
-        public BotMenu(TelegramBotClient client, string helpVideoUrl)
+        public BotMenu(TelegramBotClient client, IOptions<HelpmenuOptions> helpmenuOptions)
         {
             _client = client;
-            _helpVideoUrl = helpVideoUrl;
+            _helpVideoUrl = helpmenuOptions.Value.VideoUrl;
 
             _availableMenus = new HashSet<Type>
             {

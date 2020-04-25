@@ -1,7 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using TgTranslator.Data.Options;
 using TgTranslator.Menu;
 using TgTranslator.Models;
 
@@ -16,12 +17,14 @@ namespace TgTranslator.Services
     public class SettingsProcessor
     {
         private readonly GroupDatabaseService _database;
-        private readonly List<Language> _languages;
+        private readonly LanguagesList _languages;
 
-        public SettingsProcessor(GroupDatabaseService database, List<Language> languages)
+        public SettingsProcessor(GroupDatabaseService database, IOptions<LanguagesList> languages)
         {
             _database = database;
-            _languages = languages;
+            _languages = languages.Value;
+            // TODO: Refactor it
+            Program.Languages = languages.Value;
         }
 
         public async Task<string> GetGroupLanguage(long chatId)

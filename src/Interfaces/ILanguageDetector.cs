@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace TgTranslator.Translation
+namespace TgTranslator.Interfaces
 {
     public interface ILanguageDetector
     {

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using TgTranslator.Interfaces;
 using YandexTranslateCSharpSdk;
 
 namespace TgTranslator.Translation

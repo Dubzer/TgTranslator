@@ -8,6 +8,7 @@ using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TgTranslator.Exceptions;
+using TgTranslator.Interfaces;
 using TgTranslator.Services.Handlers;
 
 namespace TgTranslator.Controllers

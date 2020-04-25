@@ -1,4 +1,4 @@
-namespace TgTranslator.Stats
+namespace TgTranslator.Interfaces
 {
     public interface IMetrics
     {

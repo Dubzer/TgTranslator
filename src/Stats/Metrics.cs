@@ -1,4 +1,5 @@
 using Prometheus;
+using TgTranslator.Interfaces;
 
 namespace TgTranslator.Stats
 {

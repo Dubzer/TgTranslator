@@ -1,10 +1,13 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Prometheus;
+using TgTranslator.Data.Options;
 using TgTranslator.Extensions;
+using TgTranslator.Services.Middlewares;
 
 namespace TgTranslator
 {
@@ -17,15 +20,20 @@ namespace TgTranslator
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.RegisterSerilog(_configuration);
             services.RegisterServices(_configuration);
-            services.AddMvc(options => { options.EnableEndpointRouting = false; }).AddNewtonsoftJson();
+            services.AddMvc(options => { options.EnableEndpointRouting = false; })
+                .AddNewtonsoftJson();
+            
+            services.Configure<KestrelServerOptions>(_configuration.GetSection("Kestrel"));
+            services.Configure<LanguagesList>(_configuration.GetSection("languages"));
+            services.Configure<TgTranslatorOptions>(_configuration.GetSection("TgTranslator"));
+            services.Configure<Blacklists>(_configuration.GetSection("blacklists"));
+            services.Configure<HelpmenuOptions>(_configuration.GetSection("helpmenu"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            //app.UseHttpsRedirection();
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseMvcWithDefaultRoute();
