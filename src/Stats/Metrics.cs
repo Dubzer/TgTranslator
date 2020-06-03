@@ -21,7 +21,7 @@ namespace TgTranslator.Stats
             _translatorApiCalls = Prometheus.Metrics.CreateCounter("translator_api_calls", "Translator API calls", "group_id");
             _translatorApiCharacters = Prometheus.Metrics.CreateCounter("translator_api_characters", "Translator API characters", "group_id");
         }
-
+        
         #region IMetrics Members
 
         public void HandleMessage() => TotalMessagesInc();
