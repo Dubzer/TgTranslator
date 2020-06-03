@@ -14,7 +14,7 @@ namespace TgTranslator
     public class Startup
     {
         private readonly IConfiguration _configuration;
-
+ 
         public Startup(IConfiguration configuration) => _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -22,6 +22,7 @@ namespace TgTranslator
         {
             services.RegisterServices(_configuration);
             services.AddMvc(options => { options.EnableEndpointRouting = false; })
+                .AddControllersAsServices()
                 .AddNewtonsoftJson();
             
             services.Configure<KestrelServerOptions>(_configuration.GetSection("Kestrel"));

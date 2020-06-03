@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Telegram.Bot;
@@ -12,13 +13,13 @@ namespace TgTranslator.Services
 {
     public class TelegramBotHostedService : IHostedService
     {
+        private readonly IServiceScopeFactory _scopeFactory;
         private readonly TelegramBotClient _client;
-        private readonly TelegramBotController _controller;
 
-        public TelegramBotHostedService(TelegramBotClient client, TelegramBotController controller)
+        public TelegramBotHostedService(IServiceScopeFactory scopeFactory, TelegramBotClient client)
         {
+            _scopeFactory = scopeFactory;
             _client = client;
-            _controller = controller;
 
             #region Events
 
@@ -47,10 +48,19 @@ namespace TgTranslator.Services
 
         private async void OnMessage(object sender, MessageEventArgs e)
         {
-            await _controller.Post(new Update {Message = e.Message});
+            using IServiceScope scope = _scopeFactory.CreateScope();
+            var controller = scope.ServiceProvider.GetRequiredService<TelegramBotController>();
+            
+            await controller.Post(new Update {Message = e.Message});
         }
 
-        private async void OnCallbackQuery(object sender, CallbackQueryEventArgs e) => await _controller.Post(new Update {CallbackQuery = e.CallbackQuery});
+        private async void OnCallbackQuery(object sender, CallbackQueryEventArgs e)
+        {
+            using IServiceScope scope = _scopeFactory.CreateScope();
+            var controller = scope.ServiceProvider.GetRequiredService<TelegramBotController>();
+
+            await controller.Post(new Update {CallbackQuery = e.CallbackQuery});   
+        }
 
         private void OnReceiveError(object sender, ReceiveErrorEventArgs e)
         {

@@ -21,9 +21,9 @@ namespace TgTranslator.Extensions
             string botToken = configuration.GetValue<string>("telegram:botToken");
 
             services.AddDbContext<TgTranslatorContext>(builder => builder
-                .UseNpgsql(configuration.GetConnectionString("TgTranslatorContext")), ServiceLifetime.Singleton);
+                .UseNpgsql(configuration.GetConnectionString("TgTranslatorContext")));
             
-            services.AddSingleton<GroupDatabaseService>();
+            services.AddTransient<GroupDatabaseService>();
 
             services.AddSingleton(new TelegramBotClient(botToken));
 
@@ -34,12 +34,12 @@ namespace TgTranslator.Extensions
             services.AddSingleton<ITranslator, YandexTranslator>();
 
             services.AddSingleton<MessageValidator>();
-            services.AddSingleton<SettingsProcessor>();
+            services.AddTransient<SettingsProcessor>();
             
-            services.AddSingleton<IMessageHandler, MessageHandler>();
+            services.AddTransient<IMessageHandler, MessageHandler>();
             services.AddSingleton<ICallbackQueryHandler, CallbackQueryHandler>();
             
-            services.AddSingleton<TelegramBotController>();
+            
             services.AddHostedService<TelegramBotHostedService>();
             return services;
         }
