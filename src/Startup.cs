@@ -29,6 +29,7 @@ namespace TgTranslator
             services.Configure<TgTranslatorOptions>(_configuration.GetSection("TgTranslator"));
             services.Configure<Blacklists>(_configuration.GetSection("blacklists"));
             services.Configure<HelpmenuOptions>(_configuration.GetSection("helpmenu"));
+            services.Configure<HelpmenuOptions>(_configuration.GetSection("yandex"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
