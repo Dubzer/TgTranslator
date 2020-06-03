@@ -20,8 +20,6 @@ namespace TgTranslator.Extensions
         {
             string botToken = configuration.GetValue<string>("telegram:botToken");
 
-            string yandexToken = configuration.GetValue<string>("yandex:TranslatorToken");
-
             services.AddDbContext<TgTranslatorContext>(builder => builder
                 .UseNpgsql(configuration.GetConnectionString("TgTranslatorContext")), ServiceLifetime.Singleton);
             
@@ -32,8 +30,8 @@ namespace TgTranslator.Extensions
             services.AddSingleton<IMetrics>(new Metrics());
             services.AddSingleton<BotMenu>();
             
-            services.AddSingleton<ILanguageDetector>(new YandexLanguageDetector(yandexToken));
-            services.AddSingleton<ITranslator>(new YandexTranslator(yandexToken));
+            services.AddSingleton<ILanguageDetector, YandexLanguageDetector>();
+            services.AddSingleton<ITranslator, YandexTranslator>();
 
             services.AddSingleton<MessageValidator>();
             services.AddSingleton<SettingsProcessor>();

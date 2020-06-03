@@ -1,4 +1,6 @@
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using TgTranslator.Data.Options;
 using TgTranslator.Interfaces;
 using YandexTranslateCSharpSdk;
 
@@ -8,12 +10,14 @@ namespace TgTranslator.Translation
     {
         private readonly YandexTranslateSdk _yaTranslator = new YandexTranslateSdk();
 
-        public YandexTranslator(string apiKey) => _yaTranslator.ApiKey = apiKey;
+        public YandexTranslator(IOptions<YandexOptions> options)
+        {
+            _yaTranslator.ApiKey = options.Value.TranslatorToken;
+        }
 
-        #region ITranslator Members
-
-        public async Task<string> TranslateTextAsync(string text, string to) => await _yaTranslator.TranslateText(text, to);
-
-        #endregion
+        public Task<string> TranslateTextAsync(string text, string to)
+        {
+            return _yaTranslator.TranslateText(text, to);
+        }
     }
 }
