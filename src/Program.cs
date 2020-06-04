@@ -15,7 +15,7 @@ namespace TgTranslator
         public static async Task Main(string[] args)
         {
             AppDomain currentDomain = AppDomain.CurrentDomain;
-            currentDomain.UnhandledException += (sender, eventArgs) => Console.WriteLine(eventArgs.ExceptionObject);
+            currentDomain.UnhandledException += (sender, eventArgs) => Log.Fatal(eventArgs.ExceptionObject.ToString());
 
             await CreateHostBuilder()
                 .Build()

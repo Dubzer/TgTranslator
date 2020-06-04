@@ -11,7 +11,7 @@ namespace TgTranslator.Validation
         private readonly Blacklists _blacklist;
         private readonly uint _charLimit;
 
-        public MessageValidator(IOptions<Blacklists> blacklistsOptions, IOptions<TgTranslatorOptions> tgTranslatorOptions)
+        public MessageValidator(IOptionsSnapshot<Blacklists> blacklistsOptions, IOptions<TgTranslatorOptions> tgTranslatorOptions)
         {
             _blacklist = blacklistsOptions.Value;
             _charLimit = tgTranslatorOptions.Value.CharLimit;

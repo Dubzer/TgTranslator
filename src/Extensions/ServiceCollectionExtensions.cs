@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
-using TgTranslator.Controllers;
 using TgTranslator.Data;
 using TgTranslator.Interfaces;
 using TgTranslator.Menu;
@@ -29,16 +28,16 @@ namespace TgTranslator.Extensions
             services.AddSingleton(new TelegramBotClient(botToken));
 
             services.AddSingleton<IMetrics, Metrics>();
-            services.AddSingleton<BotMenu>();
+            services.AddTransient<BotMenu>();
             
-            services.AddSingleton<ILanguageDetector, YandexLanguageDetector>();
-            services.AddSingleton<ITranslator, YandexTranslator>();
+            services.AddTransient<ILanguageDetector, YandexLanguageDetector>();
+            services.AddTransient<ITranslator, YandexTranslator>();
 
-            services.AddSingleton<MessageValidator>();
+            services.AddTransient<MessageValidator>();
             services.AddTransient<SettingsProcessor>();
             
             services.AddTransient<IMessageHandler, MessageHandler>();
-            services.AddSingleton<ICallbackQueryHandler, CallbackQueryHandler>();
+            services.AddTransient<ICallbackQueryHandler, CallbackQueryHandler>();
             
             
             services.AddHostedService<TelegramBotHostedService>();
