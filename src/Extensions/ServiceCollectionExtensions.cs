@@ -27,7 +27,7 @@ namespace TgTranslator.Extensions
 
             services.AddSingleton(new TelegramBotClient(botToken));
 
-            services.AddSingleton<IMetrics>(new Metrics());
+            services.AddSingleton<IMetrics, Metrics>();
             services.AddSingleton<BotMenu>();
             
             services.AddSingleton<ILanguageDetector, YandexLanguageDetector>();
