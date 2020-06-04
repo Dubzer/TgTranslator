@@ -10,7 +10,7 @@ namespace TgTranslator.Translation
     {
         private readonly YandexTranslateSdk _translator = new YandexTranslateSdk();
 
-        public YandexLanguageDetector(IOptions<YandexOptions> options)
+        public YandexLanguageDetector(IOptionsSnapshot<YandexOptions> options)
         {
             _translator.ApiKey = options.Value.TranslatorToken;
         }
