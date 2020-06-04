@@ -4,5 +4,6 @@
     {
         public int UserId { get; set; }
         public string Track { get; set; }
+        public bool PmAllowed { get; set; }
     }
 }

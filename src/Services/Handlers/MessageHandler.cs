@@ -69,7 +69,7 @@ namespace TgTranslator.Services.Handlers
 
         private async Task HandleGroupMessage(Message message)
         {
-            _metrics.HandleGroupMessage(message.Chat.Id, message.Text.Length);
+            _metrics.HandleGroupMessage(message.Chat.Id, string.IsNullOrEmpty(message.Text) ? 0 : message.Text.Length);
             if (!_validator.GroupMessageValid(message))
                 return;
 
