@@ -7,14 +7,15 @@ namespace TgTranslator.Data
     {
         public TgTranslatorContext()
         {
-            
         }
 
-        public TgTranslatorContext(DbContextOptions<TgTranslatorContext> options) : base(options)
+        public TgTranslatorContext(DbContextOptions<TgTranslatorContext> options)
+            : base(options)
         {
         }
 
         public virtual DbSet<Group> Groups { get; set; }
+        public virtual DbSet<User> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -35,12 +36,28 @@ namespace TgTranslator.Data
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.Language)
+                    .IsRequired()
                     .HasColumnName("language")
-                    .HasMaxLength(10);
+                    .HasDefaultValueSql("'en'::text");
 
                 entity.Property(e => e.TranslationMode).HasColumnName("translation_mode");
             });
 
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.HasKey(e => e.UserId)
+                    .HasName("users_pkey");
+
+                entity.ToTable("users");
+
+                entity.Property(e => e.UserId)
+                    .HasColumnName("user_id")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.PmAllowed).HasColumnName("pm_allowed");
+
+                entity.Property(e => e.Track).HasColumnName("track");
+            });
 
             OnModelCreatingPartial(modelBuilder);
         }

@@ -2,10 +2,10 @@
 
 namespace TgTranslator.Models
 {
-    public class Group
+    public partial class Group
     {
         public long GroupId { get; set; }
-        public string Language { get; set; } = "en";
-        public TranslationMode TranslationMode { get; set; } = TranslationMode.Auto;
+        public string Language { get; set; }
+        public TranslationMode TranslationMode { get; set; }
     }
 }
