@@ -29,7 +29,7 @@ namespace TgTranslator.Services
         {
             await _databaseContext.AddAsync(group);
             await _databaseContext.SaveChangesAsync();
-            return await GetAsync(group.GroupId);
+            return group;
         }
 
         public async Task UpdateLanguageAsync(Group groupIn, string language)
