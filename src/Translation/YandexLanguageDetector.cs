@@ -17,7 +17,7 @@ namespace TgTranslator.Translation
         
         public Task<string> DetectLanguageAsync(string text)
         {
-            return _translator.DetectLanguage(text);
+            return _translator.DetectLanguageAsync(text);
         }
     }
 }

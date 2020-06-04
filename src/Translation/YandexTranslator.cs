@@ -17,7 +17,7 @@ namespace TgTranslator.Translation
 
         public Task<string> TranslateTextAsync(string text, string to)
         {
-            return _yaTranslator.TranslateText(text, to);
+            return _yaTranslator.TranslateTextAsync(text, to);
         }
     }
 }
