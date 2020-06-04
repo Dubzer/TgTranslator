@@ -24,7 +24,8 @@ namespace TgTranslator.Extensions
                 .UseNpgsql(configuration.GetConnectionString("TgTranslatorContext")));
             
             services.AddTransient<GroupDatabaseService>();
-
+            services.AddTransient<UsersDatabaseService>();
+            
             services.AddSingleton(new TelegramBotClient(botToken));
 
             services.AddSingleton<IMetrics, Metrics>();

@@ -28,9 +28,10 @@ namespace TgTranslator.Services.Handlers
         private readonly SettingsProcessor _settingsProcessor;
         private readonly ITranslator _translator;
         private readonly MessageValidator _validator;
-
+        private readonly UsersDatabaseService _users;
+        
         public MessageHandler(TelegramBotClient client, BotMenu botMenu, SettingsProcessor settingsProcessor, ILanguageDetector languageLanguageDetector, 
-            ITranslator translator, IMetrics metrics, IOptions<Blacklists> blacklistsOptions, MessageValidator validator)
+            ITranslator translator, IMetrics metrics, IOptions<Blacklists> blacklistsOptions, MessageValidator validator, UsersDatabaseService users)
         {
             _client = client;
             _botMenu = botMenu;
@@ -40,6 +41,7 @@ namespace TgTranslator.Services.Handlers
             _languageDetector = languageLanguageDetector;
             _blacklist = blacklistsOptions.Value;
             _validator = validator;
+            _users = users;
 
             _botUsername = _client.GetMeAsync().Result.Username;
         }
@@ -107,6 +109,7 @@ namespace TgTranslator.Services.Handlers
 
         private async Task HandlePrivateMessage(Message message)
         {
+            await _users.AddFromPmIfNeeded(message.From.Id, null);
             if (message.IsCommand())
             {
                 await HandleCommand(message);
@@ -119,6 +122,8 @@ namespace TgTranslator.Services.Handlers
         private async Task HandleTranslation(Message message)
         {
             _metrics.HandleTranslatorApiCall(message.Chat.Id, message.Text.Length);
+            await _users.AddFromGroupIfNeeded(message.From.Id);
+            
             string groupLanguage = await _settingsProcessor.GetGroupLanguage(message.Chat.Id);
             string translation = await _translator.TranslateTextAsync(message.Text, groupLanguage);
 
