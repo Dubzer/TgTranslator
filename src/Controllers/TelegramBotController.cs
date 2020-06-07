@@ -9,7 +9,6 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TgTranslator.Exceptions;
 using TgTranslator.Interfaces;
-using TgTranslator.Services.Handlers;
 
 namespace TgTranslator.Controllers
 {
@@ -71,6 +70,9 @@ namespace TgTranslator.Controllers
 
         private async Task OnMessage(Message message)
         {
+            if (message.Date < Program.StartedTime)
+                return;
+            
             try
             {
                 await _messageHandler.HandleMessageAsync(message);

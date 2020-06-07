@@ -10,12 +10,12 @@ namespace TgTranslator
 {
     public static class Program
     {
+        public static readonly DateTime StartedTime = DateTime.UtcNow;
         public static LanguagesList Languages;
 
         public static async Task Main(string[] args)
         {
-            AppDomain currentDomain = AppDomain.CurrentDomain;
-            currentDomain.UnhandledException += (sender, eventArgs) => Log.Fatal(eventArgs.ExceptionObject.ToString());
+            AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) => Log.Fatal(eventArgs.ExceptionObject.ToString());
 
             await CreateHostBuilder()
                 .Build()
