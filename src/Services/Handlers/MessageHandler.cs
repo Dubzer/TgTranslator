@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
@@ -168,6 +168,7 @@ namespace TgTranslator.Services.Handlers
         {
             ChatType chatType = message.Chat.Type;
             string command = message.Text[1..];
+            string payload = null;
             
             if (command.Contains("@"))
             {
@@ -178,13 +179,19 @@ namespace TgTranslator.Services.Handlers
                 command = command[..indexOfAt];
             }
 
+            if (command.Contains(" "))
+            {
+                payload = command.Split(" ")[1];
+                command = command.Split(" ")[0];
+            }
+
             switch (command)
             {
                 case "settings" when chatType == ChatType.Group || chatType == ChatType.Supergroup:
                     if(!await message.From.IsAdministrator(message.Chat.Id, _client))
                         throw new UnauthorizedSettingChangingException();
                     
-                    const string text = "You can access settings in the PM:";
+                    const string text = "You can access settings in the PM";
                     await _client.SendTextMessageAsync(message.Chat.Id, text, replyMarkup: new InlineKeyboardMarkup(new InlineKeyboardButton
                     {
                         Text = "Open settings",
@@ -192,6 +199,13 @@ namespace TgTranslator.Services.Handlers
                     }));
                     
                     break;
+                case "start" when chatType == ChatType.Private && !string.IsNullOrEmpty(payload):
+                    if (payload != "s")
+                        await _users.AddFromPmIfNeeded(message.From.Id, payload);
+                    
+                    await _botMenu.SendMainMenu(message.Chat.Id);
+                    break;
+                case "start" when chatType == ChatType.Private:
                 case "settings" when chatType == ChatType.Private:
                     await _botMenu.SendMainMenu(message.Chat.Id);
                     break;
