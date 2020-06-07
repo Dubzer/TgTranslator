@@ -42,6 +42,12 @@ namespace TgTranslator.Services
                 user.PmAllowed = true;
                 await _databaseContext.SaveChangesAsync();
             }
+
+            if (track != null && user.Track == null)
+            {
+                user.Track = track;
+                await _databaseContext.SaveChangesAsync();
+            }
         }
     }
 }
