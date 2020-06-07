@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -48,18 +49,32 @@ namespace TgTranslator.Services
 
         private async void OnMessage(object sender, MessageEventArgs e)
         {
-            using IServiceScope scope = _scopeFactory.CreateScope();
-            var controller = scope.ServiceProvider.GetRequiredService<TelegramBotController>();
+            try
+            {
+                using IServiceScope scope = _scopeFactory.CreateScope();
+                var controller = scope.ServiceProvider.GetRequiredService<TelegramBotController>();
             
-            await controller.Post(new Update {Message = e.Message});
+                await controller.Post(new Update {Message = e.Message});
+            }
+            catch (Exception exception)
+            {
+                Log.Error(exception, "OnMessage: An unhandled exception");
+            }
         }
 
         private async void OnCallbackQuery(object sender, CallbackQueryEventArgs e)
         {
-            using IServiceScope scope = _scopeFactory.CreateScope();
-            var controller = scope.ServiceProvider.GetRequiredService<TelegramBotController>();
+            try
+            {
+                using IServiceScope scope = _scopeFactory.CreateScope();
+                var controller = scope.ServiceProvider.GetRequiredService<TelegramBotController>();
 
-            await controller.Post(new Update {CallbackQuery = e.CallbackQuery});   
+                await controller.Post(new Update {CallbackQuery = e.CallbackQuery});
+            }
+            catch (Exception exception)
+            {
+                Log.Error(exception, "OnCallbackQuery: An unhandled exception");
+            }
         }
 
         private void OnReceiveError(object sender, ReceiveErrorEventArgs e)
