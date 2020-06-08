@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
@@ -29,9 +29,10 @@ namespace TgTranslator.Services.Handlers
         private readonly ITranslator _translator;
         private readonly MessageValidator _validator;
         private readonly UsersDatabaseService _users;
+        private readonly GroupsBlacklistService _groupsBlacklist;
         
         public MessageHandler(TelegramBotClient client, BotMenu botMenu, SettingsProcessor settingsProcessor, ILanguageDetector languageLanguageDetector, 
-            ITranslator translator, IMetrics metrics, IOptions<Blacklists> blacklistsOptions, MessageValidator validator, UsersDatabaseService users)
+            ITranslator translator, IMetrics metrics, IOptions<Blacklists> blacklistsOptions, MessageValidator validator, UsersDatabaseService users, GroupsBlacklistService groupsBlacklist)
         {
             _client = client;
             _botMenu = botMenu;
@@ -42,6 +43,7 @@ namespace TgTranslator.Services.Handlers
             _blacklist = blacklistsOptions.Value;
             _validator = validator;
             _users = users;
+            _groupsBlacklist = groupsBlacklist;
 
             _botUsername = _client.GetMeAsync().Result.Username;
         }
@@ -75,6 +77,9 @@ namespace TgTranslator.Services.Handlers
             if (!_validator.GroupMessageValid(message))
                 return;
 
+            if (await _groupsBlacklist.InBlacklist(message.From.Id))
+                return;
+            
             if (message.IsCommand())
             {
                 await HandleCommand(message);

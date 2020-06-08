@@ -15,6 +15,7 @@ namespace TgTranslator.Data
         }
 
         public virtual DbSet<Group> Groups { get; set; }
+        public virtual DbSet<GroupBlacklist> GroupsBlacklist { get; set; }
         public virtual DbSet<User> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -27,7 +28,7 @@ namespace TgTranslator.Data
             modelBuilder.Entity<Group>(entity =>
             {
                 entity.HasKey(e => e.GroupId)
-                    .HasName("groups_pkey");
+                    .HasName("groups_pk");
 
                 entity.ToTable("groups");
 
@@ -41,6 +42,33 @@ namespace TgTranslator.Data
                     .HasDefaultValueSql("'en'::text");
 
                 entity.Property(e => e.TranslationMode).HasColumnName("translation_mode");
+            });
+
+            modelBuilder.Entity<GroupBlacklist>(entity =>
+            {
+                entity.HasKey(e => e.GroupId)
+                    .HasName("groups_blacklist_pk");
+
+                entity.ToTable("groups_blacklist");
+
+                entity.HasIndex(e => e.GroupId)
+                    .HasName("groups_blacklist_group_id_uindex")
+                    .IsUnique();
+
+                entity.Property(e => e.GroupId)
+                    .HasColumnName("group_id")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.AddedAt)
+                    .HasColumnName("added_at")
+                    .HasColumnType("timestamp with time zone")
+                    .HasDefaultValueSql("timezone('utc'::text, now())");
+
+                entity.HasOne(d => d.Group)
+                    .WithOne(p => p.GroupBlacklist)
+                    .HasForeignKey<GroupBlacklist>(d => d.GroupId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("groups_blacklist_groups_group_id_fk");
             });
 
             modelBuilder.Entity<User>(entity =>
