@@ -24,6 +24,7 @@ namespace TgTranslator.Extensions
             
             services.AddTransient<GroupDatabaseService>();
             services.AddTransient<UsersDatabaseService>();
+            services.AddTransient<GroupsBlacklistService>();
             
             services.AddSingleton(new TelegramBotClient(botToken));
 

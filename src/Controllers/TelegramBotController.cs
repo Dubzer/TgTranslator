@@ -9,6 +9,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TgTranslator.Exceptions;
 using TgTranslator.Interfaces;
+using TgTranslator.Services;
 
 namespace TgTranslator.Controllers
 {
@@ -18,12 +19,14 @@ namespace TgTranslator.Controllers
         private readonly ICallbackQueryHandler _callbackQueryHandler;
         private readonly TelegramBotClient _client;
         private readonly IMessageHandler _messageHandler;
+        private readonly GroupsBlacklistService _groupsBlacklist;
 
-        public TelegramBotController(TelegramBotClient client, IMessageHandler messageHandler, ICallbackQueryHandler callbackQueryHandler)
+        public TelegramBotController(TelegramBotClient client, IMessageHandler messageHandler, ICallbackQueryHandler callbackQueryHandler, GroupsBlacklistService groupsBlacklist)
         {
             _client = client;
             _messageHandler = messageHandler ?? throw new ArgumentNullException(nameof(messageHandler));
             _callbackQueryHandler = callbackQueryHandler ?? throw new ArgumentNullException(nameof(messageHandler));
+            _groupsBlacklist = groupsBlacklist;
         }
 
         [HttpGet]
@@ -92,11 +95,11 @@ namespace TgTranslator.Controllers
             }
             catch (FlurlHttpException exception)
             {
-                Log.Error(exception, "Got an HTTP exception:\n{Message}", exception.Message);
+                Log.Error(exception, "Got an HTTP exception");
             }
             catch (ApiRequestException exception) when (exception.Message == "Bad Request: have no rights to send a message")
             {
-                Log.Error("Bot have no rights to send a message in a group: {GroupId}", message.Chat.Id);
+                await _groupsBlacklist.AddGroup(message.Chat.Id);
             }
         }
     }

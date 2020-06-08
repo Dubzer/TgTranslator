@@ -8,7 +8,6 @@ using Prometheus;
 using TgTranslator.Data.Options;
 using TgTranslator.Extensions;
 using TgTranslator.Services.Middlewares;
-using TgTranslator.Translation;
 
 namespace TgTranslator
 {
