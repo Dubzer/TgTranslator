@@ -2,7 +2,9 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using TgTranslator.Data;
+using TgTranslator.Data.Options;
 using TgTranslator.Models;
 
 namespace TgTranslator.Services
@@ -12,10 +14,10 @@ namespace TgTranslator.Services
         private readonly TgTranslatorContext _database;
         private readonly TimeSpan _blacklistTime;
         
-        public GroupsBlacklistService(TgTranslatorContext database)
+        public GroupsBlacklistService(TgTranslatorContext database, IOptions<TgTranslatorOptions> tgTranslatorOptions)
         {
             _database = database;
-            _blacklistTime = TimeSpan.FromHours(3);
+            _blacklistTime = TimeSpan.FromMinutes(tgTranslatorOptions.Value.BanTime);
         }
         
         public async Task AddGroup(long groupId)
@@ -38,7 +40,7 @@ namespace TgTranslator.Services
             if (group?.GroupBlacklist == null)
                 return false;
 
-            if (group.GroupBlacklist.AddedAt + _blacklistTime < DateTime.UtcNow)
+            if (IsBanExpired(group.GroupBlacklist.AddedAt))
             {
                 _database.Remove(group.GroupBlacklist);
                 await _database.SaveChangesAsync();
@@ -47,5 +49,7 @@ namespace TgTranslator.Services
 
             return true;
         }
-    }
+
+        private bool IsBanExpired(DateTime addedAt) => addedAt.ToUniversalTime() + _blacklistTime < DateTime.UtcNow;
+    }    
 }
