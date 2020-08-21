@@ -77,7 +77,7 @@ namespace TgTranslator.Services.Handlers
             if (!_validator.GroupMessageValid(message))
                 return;
 
-            if (await _groupsBlacklist.InBlacklist(message.From.Id))
+            if (await _groupsBlacklist.InBlacklist(message.Chat.Id))
                 return;
             
             if (message.IsCommand())
