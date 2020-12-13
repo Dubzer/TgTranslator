@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using Serilog.Filters;
 using TgTranslator.Data.Options;
 
 namespace TgTranslator
@@ -24,7 +25,9 @@ namespace TgTranslator
 
         private static IHostBuilder CreateHostBuilder() =>
             Host.CreateDefaultBuilder()
-                .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration))
+                .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration)
+                    .Filter.ByExcluding(Matching.FromSource("Microsoft.EntityFrameworkCore.Database.Command"))
+                    .Filter.ByExcluding(Matching.FromSource("Microsoft.EntityFrameworkCore.Infrastructure")))
                 .ConfigureAppConfiguration(config => config
                     .AddJsonFile("blacklists.json")
                     .AddJsonFile("languages.json"))
