@@ -53,6 +53,8 @@ namespace TgTranslator.Services.Handlers
         public async Task HandleMessageAsync(Message message)
         {
             _metrics.HandleMessage();
+            Log.Information("Got new message {ChatId} | {From}", message.Chat.Id, message.From);
+
             if (_blacklist.UserIdsBlacklist.Contains(message.From.Id))
                 return;
 
@@ -75,19 +77,27 @@ namespace TgTranslator.Services.Handlers
         {
             _metrics.HandleGroupMessage(message.Chat.Id, string.IsNullOrEmpty(message.Text) ? 0 : message.Text.Length);
             if (!_validator.GroupMessageValid(message))
+            {
+                Log.Information("Message by {ChatId} | {From} is not valid", message.Chat.Id, message.From);
                 return;
+            }
 
             if (await _groupsBlacklist.InBlacklist(message.Chat.Id))
+            {
+                Log.Information("Group {ChatId} | {From} is in the blacklist", message.Chat.Id, message.From);
                 return;
+            }
             
             if (message.IsCommand())
             {
+                Log.Information("Message by {ChatId} | {From} is a command", message.Chat.Id, message.From);
                 await HandleCommand(message);
                 return;
             }
 
             if (message.Text.StartsWith($"@{_botUsername} set:"))
             {
+                Log.Information("Message by {ChatId} | {From} is a setting changing", message.Chat.Id, message.From);
                 await HandleSettingChanging(message);
                 return;
             }
@@ -95,10 +105,12 @@ namespace TgTranslator.Services.Handlers
             switch (await _settingsProcessor.GetTranslationMode(message.Chat.Id))
             {
                 case TranslationMode.Forwards:
+                    Log.Information("Group {ChatId} | {From} is using Forwards translation mode", message.Chat.Id, message.From);
                     if (message.ForwardSenderName == null)
                         return;
                     break;
                 case TranslationMode.Manual:
+                    Log.Information("Group {ChatId} | {From} is using Manual translation mode", message.Chat.Id, message.From);
                     if (message.ReplyToMessage == null) return;
                     if (message.Text == _botUsername || message.Text == "!translate" || await RequireTranslation(message.Text, await _settingsProcessor.GetGroupLanguage(message.Chat.Id)))
                     {
@@ -126,6 +138,7 @@ namespace TgTranslator.Services.Handlers
 
         private async Task HandleTranslation(Message message)
         {
+            Log.Information("Handling translation for {ChatId} | {From}...", message.Chat.Id, message.From);
             _metrics.HandleTranslatorApiCall(message.Chat.Id, message.Text.Length);
             await _users.AddFromGroupIfNeeded(message.From.Id);
             
