@@ -1,7 +1,7 @@
 📙 TgTranslator
 ===============
 
-TgTranslator is a telegram bot that translates messages in groups. Try it for yourself: [@grouptranslator_bot](https://t.me/tgtranslatorbot)
+TgTranslator is a telegram bot that translates messages in groups. Try it for yourself: [@TgTranslatorBot](https://t.me/tgtranslatorbot)
 
 Use it in your project support group, to study language with a tutor, and in many other ways!
 
