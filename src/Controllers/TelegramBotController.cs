@@ -13,7 +13,7 @@ using TgTranslator.Services;
 
 namespace TgTranslator.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/bot")]
     public class TelegramBotController : Controller
     {
         private readonly ICallbackQueryHandler _callbackQueryHandler;
