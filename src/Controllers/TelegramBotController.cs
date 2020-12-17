@@ -73,7 +73,7 @@ namespace TgTranslator.Controllers
 
         private async Task OnMessage(Message message)
         {
-            if (message.Date < Program.StartedTime)
+            if (message.Date < Program.StartedTime - TimeSpan.FromSeconds(10))
                 return;
             
             try
