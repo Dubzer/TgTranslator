@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Filters;
 using TgTranslator.Data.Options;
+using TgTranslator.Extensions;
 
 namespace TgTranslator
 {
@@ -14,9 +15,9 @@ namespace TgTranslator
         public static readonly DateTime StartedTime = DateTime.UtcNow;
         public static LanguagesList Languages;
 
-        public static async Task Main(string[] args)
+        public static async Task Main()
         {
-            AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) => Log.Fatal(eventArgs.ExceptionObject.ToString());
+            AppDomain.CurrentDomain.UnhandledException += (_, eventArgs) => Log.Fatal(eventArgs.ExceptionObject.ToString());
 
             await CreateHostBuilder()
                 .Build()
@@ -26,8 +27,14 @@ namespace TgTranslator
         private static IHostBuilder CreateHostBuilder() =>
             Host.CreateDefaultBuilder()
                 .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration)
-                    .Filter.ByExcluding(Matching.FromSource("Microsoft.EntityFrameworkCore.Database.Command"))
-                    .Filter.ByExcluding(Matching.FromSource("Microsoft.EntityFrameworkCore.Infrastructure")))
+                    .Ignore(new []
+                    {
+                        "Microsoft.EntityFrameworkCore.Database.Command",
+                        "Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker",
+                        "Microsoft.AspNetCore.Hosting.Diagnostics",
+                        "Microsoft.AspNetCore.Mvc.StatusCodeResult",
+                        "Microsoft.EntityFrameworkCore.Infrastructure"
+                    }))
                 .ConfigureAppConfiguration(config => config
                     .AddJsonFile("blacklists.json")
                     .AddJsonFile("languages.json"))
