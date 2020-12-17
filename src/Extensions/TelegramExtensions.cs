@@ -35,7 +35,8 @@ namespace TgTranslator.Extensions
         {
             ChatMember[] chatAdmins = await client.GetChatAdministratorsAsync(chatId);
 
-            return chatAdmins.Any(x => x.User.Id == user.Id);
+            //                                                  Todo: replace with something better when telegram lib will update
+            return chatAdmins.Any(x => x.User.Id == user.Id) || user.Id == 1087968824;
         }
 
         public static bool IsCommand(this Message message) => 
