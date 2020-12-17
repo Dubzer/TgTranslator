@@ -34,10 +34,10 @@ namespace TgTranslator.Services
 
         #region IHostedService Members
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
+            await _client.DeleteWebhookAsync(cancellationToken);
             _client.StartReceiving(cancellationToken: cancellationToken, allowedUpdates: new[] {UpdateType.Message, UpdateType.CallbackQuery});
-            return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
