@@ -8,12 +8,14 @@ using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TgTranslator.Exceptions;
+using TgTranslator.Extensions;
 using TgTranslator.Interfaces;
 using TgTranslator.Services;
 
 namespace TgTranslator.Controllers
 {
     [Route("api/bot")]
+    [ServiceFilter(typeof(IpWhitelist))]
     public class TelegramBotController : Controller
     {
         private readonly ICallbackQueryHandler _callbackQueryHandler;
@@ -101,6 +103,7 @@ namespace TgTranslator.Controllers
             {
                 await _groupsBlacklist.AddGroup(message.Chat.Id);
             }
+            catch (ApiRequestException exception) when (exception.Message == "Bad Request: reply message not found") { }
         }
     }
 }

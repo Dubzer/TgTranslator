@@ -20,9 +20,10 @@ namespace TgTranslator.Validation
         public bool GroupMessageValid(Message message) =>
             !_blacklist.GroupIdsBlacklist.Contains(message.Chat.Id)
             && message.Type == MessageType.Text
+            && message.Text != null
             && message.Text.Length <= _charLimit
-            && !_blacklist.TextsBlacklist.Contains(message.Text)
+            && !_blacklist.TextsBlacklist.Contains(message.Text.ToLowerInvariant())
             && !message.IsOnlyLinks()
-            && message.Text[0] != '.';
+            && !message.Text.StartsWith('.');
     }
 }

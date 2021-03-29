@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Flurl" Version="3.0.0" />
     <PackageReference Include="Flurl.Http" Version="3.0.0" />
+    <PackageReference Include="IPAddressRange" Version="4.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.1">
       <PrivateAssets>all</PrivateAssets>
