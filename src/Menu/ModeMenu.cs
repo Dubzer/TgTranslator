@@ -19,7 +19,7 @@ namespace TgTranslator.Menu
             Description = "*Here you can change translation mode* \n\n" +
                           "*Auto* — translates all messages that require it \n" +
                           "*Forwards* — translates only forwarded messages that require it \n" +
-                          "*Manual* — translates *only* by replying on message with `@grouptransalor_bot` or `!translate`";
+                          "*Manual* — translates *only* by replying on message with `@TgTranslatorBot`, `!translate` or `/tl`";
 
             Command = nameof(Setting.Mode).ToLowerInvariant();
         }

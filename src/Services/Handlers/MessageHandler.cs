@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
@@ -12,6 +13,7 @@ using TgTranslator.Exceptions;
 using TgTranslator.Extensions;
 using TgTranslator.Interfaces;
 using TgTranslator.Menu;
+using TgTranslator.Stats;
 using TgTranslator.Validation;
 
 namespace TgTranslator.Services.Handlers
@@ -30,6 +32,8 @@ namespace TgTranslator.Services.Handlers
         private readonly MessageValidator _validator;
         private readonly UsersDatabaseService _users;
         private readonly GroupsBlacklistService _groupsBlacklist;
+
+        private readonly HashSet<string> _manualTranslationCommands;
         
         public MessageHandler(TelegramBotClient client, BotMenu botMenu, SettingsProcessor settingsProcessor, ILanguageDetector languageLanguageDetector, 
             ITranslator translator, IMetrics metrics, IOptions<Blacklists> blacklistsOptions, MessageValidator validator, UsersDatabaseService users, GroupsBlacklistService groupsBlacklist)
@@ -46,6 +50,7 @@ namespace TgTranslator.Services.Handlers
             _groupsBlacklist = groupsBlacklist;
 
             _botUsername = _client.GetMeAsync().Result.Username;
+            _manualTranslationCommands = new HashSet<string>() {$"@{_botUsername}", "!translate", "/tl", $"/tl@{_botUsername}"};
         }
 
         #region IMessageHandler Members
@@ -53,7 +58,7 @@ namespace TgTranslator.Services.Handlers
         public async Task HandleMessageAsync(Message message)
         {
             _metrics.HandleMessage();
-            Log.Information("Got new message {ChatId} | {From}", message.Chat.Id, message.From);
+            Log.Information("Got new message {ChatId} | {From} | {ChatType}", message.Chat.Id, message.From, message.Chat.Type);
 
             if (_blacklist.UserIdsBlacklist.Contains(message.From.Id))
                 return;
@@ -88,14 +93,19 @@ namespace TgTranslator.Services.Handlers
                 return;
             }
             
-            if (message.IsCommand())
+            if (message.IsCommand() && !_manualTranslationCommands.Contains(message.Text))
             {
                 Log.Information("Message by {ChatId} | {From} is a command", message.Chat.Id, message.From);
                 await HandleCommand(message);
                 return;
             }
-
-            if (message.Text.StartsWith($"@{_botUsername} set:"))
+            
+            
+            // TODO: Refactor it
+            if(message.Text.StartsWith('!'))
+                return;
+            
+            if (message.Text.StartsWith($"@{_botUsername} set:", StringComparison.InvariantCulture))
             {
                 Log.Information("Message by {ChatId} | {From} is a setting changing", message.Chat.Id, message.From);
                 await HandleSettingChanging(message);
@@ -111,8 +121,9 @@ namespace TgTranslator.Services.Handlers
                     break;
                 case TranslationMode.Manual:
                     Log.Information("Group {ChatId} | {From} is using Manual translation mode", message.Chat.Id, message.From);
-                    if (message.ReplyToMessage == null) return;
-                    if (message.Text == _botUsername || message.Text == "!translate" || await RequireTranslation(message.Text, await _settingsProcessor.GetGroupLanguage(message.Chat.Id)))
+                    if (message.ReplyToMessage == null) 
+                        return;
+                    if (_manualTranslationCommands.Contains(message.Text) && await RequireTranslation(message.ReplyToMessage.Text, await _settingsProcessor.GetGroupLanguage(message.Chat.Id)))
                     {
                         await HandleTranslation(message.ReplyToMessage);
                     }
@@ -139,7 +150,7 @@ namespace TgTranslator.Services.Handlers
         private async Task HandleTranslation(Message message)
         {
             Log.Information("Handling translation for {ChatId} | {From}...", message.Chat.Id, message.From);
-            _metrics.HandleTranslatorApiCall(message.Chat.Id, message.Text.Length);
+            _metrics.HandleTranslatorApiCall(message.Chat.Id, string.IsNullOrEmpty(message.Text) ? 0 : message.Text.Length);
             await _users.AddFromGroupIfNeeded(message.From.Id);
             
             string groupLanguage = await _settingsProcessor.GetGroupLanguage(message.Chat.Id);

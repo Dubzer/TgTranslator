@@ -39,7 +39,9 @@ namespace TgTranslator.Extensions
             
             services.AddTransient<IMessageHandler, MessageHandler>();
             services.AddTransient<ICallbackQueryHandler, CallbackQueryHandler>();
-            
+
+            services.AddScoped<IpWhitelist>();
+
             if (telegramOptions.Webhooks)
                 //  Register webhooks.
                 //  IStartupFilter calls the service only once, after building the DI container, but before the app starts receiving messages 
