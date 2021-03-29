@@ -17,7 +17,7 @@ This bot has 3 translation modes:
 
 3. **Manual**. Translates only after replying on message with `!translate` or bot username.
 
-## 📙 Langauges
+## 📙 Languages
 Bot has 65 languages supported by Google Translate.
 
 ![alt text](https://raw.githubusercontent.com/Dubzer/TgTranslator/master/screenshots/language_selection.png "Languages seletion")
