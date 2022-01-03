@@ -26,7 +26,6 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0-dev-00839" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0-dev-00905" />
     <PackageReference Include="Telegram.Bot" Version="15.7.1" />
-    <PackageReference Include="YandexTranslateCoreSdk" Version="1.1.0" />
   </ItemGroup>
   
   <ItemGroup>
