@@ -30,6 +30,7 @@ namespace TgTranslator.Services
             _client.OnReceiveGeneralError += OnReceiveGeneralError;
 
             #endregion
+            Program.Username = client.GetMeAsync().Result.Username;
         }
 
         #region IHostedService Members

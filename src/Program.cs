@@ -15,6 +15,7 @@ namespace TgTranslator
         public static readonly DateTime StartedTime = DateTime.UtcNow;
         public static LanguagesList Languages;
 
+        public static string Username;
         public static async Task Main()
         {
             CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
