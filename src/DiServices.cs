@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
-using TgTranslator.Data;
 using TgTranslator.Data.Options;
+using TgTranslator.Extensions;
 using TgTranslator.Interfaces;
 using TgTranslator.Menu;
 using TgTranslator.Services;
@@ -12,15 +11,14 @@ using TgTranslator.Services.Handlers;
 using TgTranslator.Stats;
 using TgTranslator.Validation;
 
-namespace TgTranslator.Extensions
+namespace TgTranslator
 {
-    public static class ServiceCollectionExtensions
+    public static class DiServices
     {
         public static IServiceCollection RegisterServices(this IServiceCollection services, IConfiguration configuration)
         {
             var telegramOptions = configuration.GetSection("telegram").Get<TelegramOptions>();
 
-            services.AddDbContext<TgTranslatorContext>(builder => builder.UseNpgsql(configuration.GetConnectionString("TgTranslatorContext")));
             
             services.AddTransient<GroupDatabaseService>();
             services.AddTransient<UsersDatabaseService>();
@@ -31,8 +29,10 @@ namespace TgTranslator.Extensions
             services.AddSingleton<IMetrics, Metrics>();
             services.AddTransient<BotMenu>();
             
-            services.AddTransient<ILanguageDetector, YandexLanguageDetector>();
-            services.AddTransient<ITranslator, YandexTranslator>();
+            //services.AddTransient<ILanguageDetector, YandexLanguageDetector>();
+            //services.AddTransient<ITranslator, YandexTranslator>();
+            services.AddTransient<ILanguageDetector, TranslatorMicroservice>();
+            services.AddSingleton<ITranslator, TranslatorMicroservice>();
 
             services.AddTransient<MessageValidator>();
             services.AddTransient<SettingsProcessor>();
