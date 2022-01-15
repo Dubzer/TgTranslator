@@ -1,10 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Telegram.Bot.Types;
 
-namespace TgTranslator.Interfaces
+namespace TgTranslator.Interfaces;
+
+public interface IMessageHandler
 {
-    public interface IMessageHandler
-    {
-        Task HandleMessageAsync(Message message);
-    }
+    Task HandleMessageAsync(Message message);
 }

@@ -1,9 +1,8 @@
 using System.Threading.Tasks;
 
-namespace TgTranslator.Interfaces
+namespace TgTranslator.Interfaces;
+
+public interface ILanguageDetector
 {
-    public interface ILanguageDetector
-    {
-        Task<string> DetectLanguageAsync(string text);
-    }
+    Task<string> DetectLanguageAsync(string text);
 }
