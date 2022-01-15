@@ -11,47 +11,46 @@ using TgTranslator.Services.Handlers;
 using TgTranslator.Stats;
 using TgTranslator.Validation;
 
-namespace TgTranslator
+namespace TgTranslator;
+
+public static class DiServices
 {
-    public static class DiServices
+    public static IServiceCollection RegisterServices(this IServiceCollection services, IConfiguration configuration)
     {
-        public static IServiceCollection RegisterServices(this IServiceCollection services, IConfiguration configuration)
-        {
-            var telegramOptions = configuration.GetSection("telegram").Get<TelegramOptions>();
+        var telegramOptions = configuration.GetSection("telegram").Get<TelegramOptions>();
 
             
-            services.AddTransient<GroupDatabaseService>();
-            services.AddTransient<UsersDatabaseService>();
-            services.AddTransient<GroupsBlacklistService>();
+        services.AddScoped<GroupDatabaseService>();
+        services.AddScoped<UsersDatabaseService>();
+        services.AddScoped<GroupsBlacklistService>();
             
-            services.AddSingleton(new TelegramBotClient(telegramOptions.BotToken));
+        services.AddSingleton(new TelegramBotClient(telegramOptions.BotToken));
 
-            services.AddSingleton<IMetrics, Metrics>();
-            services.AddTransient<BotMenu>();
+        services.AddSingleton<IMetrics, Metrics>();
+        services.AddScoped<BotMenu>();
             
-            //services.AddTransient<ILanguageDetector, YandexLanguageDetector>();
-            //services.AddTransient<ITranslator, YandexTranslator>();
-            services.AddTransient<ILanguageDetector, TranslatorMicroservice>();
-            services.AddSingleton<ITranslator, TranslatorMicroservice>();
+        //services.AddTransient<ILanguageDetector, YandexLanguageDetector>();
+        //services.AddTransient<ITranslator, YandexTranslator>();
+        services.AddScoped<ILanguageDetector, TranslatorMicroservice>();
+        services.AddSingleton<ITranslator, TranslatorMicroservice>();
 
-            services.AddTransient<MessageValidator>();
-            services.AddTransient<SettingsProcessor>();
+        services.AddScoped<MessageValidator>();
+        services.AddScoped<SettingsProcessor>();
             
-            services.AddTransient<IMessageHandler, MessageHandler>();
-            services.AddTransient<ICallbackQueryHandler, CallbackQueryHandler>();
+        services.AddScoped<IMessageHandler, MessageHandler>();
+        services.AddScoped<ICallbackQueryHandler, CallbackQueryHandler>();
 
-            services.AddScoped<IpWhitelist>();
+        services.AddScoped<IpWhitelist>();
+        
+        if (telegramOptions.Webhooks)
+            //  Register webhooks.
+            //  IStartupFilter calls the service only once, after building the DI container, but before the app starts receiving messages 
+            services.AddTransient<IStartupFilter, TelegramWebhooksExtensions>();    
+        else
+            //  Receive events using polling
+            //  TelegramBotHostedService basically wraps Telegram.Bot lib's events into Controller 
+            services.AddHostedService<TelegramBotHostedService>();   
 
-            if (telegramOptions.Webhooks)
-                //  Register webhooks.
-                //  IStartupFilter calls the service only once, after building the DI container, but before the app starts receiving messages 
-                services.AddTransient<IStartupFilter, TelegramWebhooksExtensions>();    
-            else
-                //  Receive events using polling
-                //  TelegramBotHostedService basically wraps Telegram.Bot lib's events into Controller 
-                services.AddHostedService<TelegramBotHostedService>();   
-
-            return services;
-        }
+        return services;
     }
 }
