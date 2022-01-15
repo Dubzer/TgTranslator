@@ -1,8 +1,7 @@
 using System;
 
-namespace TgTranslator.Exceptions
+namespace TgTranslator.Exceptions;
+
+public class InvalidSettingValueException : Exception
 {
-    public class InvalidSettingValueException : Exception
-    {
-    }
 }

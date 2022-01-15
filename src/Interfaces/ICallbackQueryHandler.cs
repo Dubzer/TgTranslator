@@ -1,10 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Telegram.Bot.Types;
 
-namespace TgTranslator.Interfaces
+namespace TgTranslator.Interfaces;
+
+public interface ICallbackQueryHandler
 {
-    public interface ICallbackQueryHandler
-    {
-        Task HandleCallbackQueryAsync(CallbackQuery callbackQuery);
-    }
+    Task HandleCallbackQueryAsync(CallbackQuery callbackQuery);
 }

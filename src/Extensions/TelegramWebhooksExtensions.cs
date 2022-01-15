@@ -8,33 +8,32 @@ using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 using TgTranslator.Data.Options;
 
-namespace TgTranslator.Extensions
+namespace TgTranslator.Extensions;
+
+public class TelegramWebhooksExtensions : IStartupFilter
 {
-    public class TelegramWebhooksExtensions : IStartupFilter
+    private readonly IServiceProvider _serviceProvider;
+
+    public TelegramWebhooksExtensions(IServiceProvider serviceProvider)
     {
-        private readonly IServiceProvider _serviceProvider;
-
-        public TelegramWebhooksExtensions(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
+        _serviceProvider = serviceProvider;
+    }
         
-        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+    {
+        return builder =>
         {
-            return builder =>
+            using (var scope = _serviceProvider.CreateScope())
             {
-                using (var scope = _serviceProvider.CreateScope())
-                {
-                    var client = scope.ServiceProvider.GetRequiredService<TelegramBotClient>();
-                    var domain = scope.ServiceProvider.GetRequiredService<IOptions<TelegramOptions>>().Value.WebhooksDomain;
+                var client = scope.ServiceProvider.GetRequiredService<TelegramBotClient>();
+                var domain = scope.ServiceProvider.GetRequiredService<IOptions<TelegramOptions>>().Value.WebhooksDomain;
 
-                    client.DeleteWebhookAsync().GetAwaiter().GetResult();
-                    client.SetWebhookAsync(domain.AppendPathSegments("api", "bot"), allowedUpdates:new[] {UpdateType.Message, UpdateType.CallbackQuery}).GetAwaiter().GetResult();
-                    Program.Username = client.GetMeAsync().Result.Username;
-                }
+                client.DeleteWebhookAsync().GetAwaiter().GetResult();
+                client.SetWebhookAsync(domain.AppendPathSegments("api", "bot"), allowedUpdates:new[] {UpdateType.Message, UpdateType.CallbackQuery}).GetAwaiter().GetResult();
+                Program.Username = client.GetMeAsync().Result.Username;
+            }
 
-                next(builder);
-            };
-        }
+            next(builder);
+        };
     }
 }

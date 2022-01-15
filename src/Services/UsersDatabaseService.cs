@@ -4,50 +4,49 @@ using Microsoft.EntityFrameworkCore;
 using TgTranslator.Data;
 using TgTranslator.Models;
 
-namespace TgTranslator.Services
+namespace TgTranslator.Services;
+
+public class UsersDatabaseService
 {
-    public class UsersDatabaseService
+    private readonly TgTranslatorContext _databaseContext;
+
+    public UsersDatabaseService(TgTranslatorContext databaseContext)
     {
-        private readonly TgTranslatorContext _databaseContext;
+        _databaseContext = databaseContext;
+    }
 
-        public UsersDatabaseService(TgTranslatorContext databaseContext)
+    public async Task AddFromGroupIfNeeded(long userId)
+    {
+        User user = await _databaseContext.Users.Where(u => u.UserId == userId).FirstOrDefaultAsync();
+        if (user == null)
         {
-            _databaseContext = databaseContext;
+            user = new User {PmAllowed = false, UserId = userId};
+            await _databaseContext.Users.AddAsync(user);
+            await _databaseContext.SaveChangesAsync();
         }
-
-        public async Task AddFromGroupIfNeeded(int userId)
-        {
-            User user = await _databaseContext.Users.Where(u => u.UserId == userId).FirstOrDefaultAsync();
-            if (user == null)
-            {
-                user = new User {PmAllowed = false, UserId = userId};
-                await _databaseContext.Users.AddAsync(user);
-                await _databaseContext.SaveChangesAsync();
-            }
-        }
+    }
         
-        public async Task AddFromPmIfNeeded(int userId, string track)
+    public async Task AddFromPmIfNeeded(long userId, string track)
+    {
+        User user = await _databaseContext.Users.Where(u => u.UserId == userId).FirstOrDefaultAsync();
+        if (user == null)
         {
-            User user = await _databaseContext.Users.Where(u => u.UserId == userId).FirstOrDefaultAsync();
-            if (user == null)
-            {
-                user = new User {PmAllowed = true, UserId = userId, Track = track};
-                await _databaseContext.Users.AddAsync(user);
-                await _databaseContext.SaveChangesAsync();
-                return;
-            }
+            user = new User {PmAllowed = true, UserId = userId, Track = track};
+            await _databaseContext.Users.AddAsync(user);
+            await _databaseContext.SaveChangesAsync();
+            return;
+        }
 
-            if (user.PmAllowed != true)
-            {
-                user.PmAllowed = true;
-                await _databaseContext.SaveChangesAsync();
-            }
+        if (user.PmAllowed != true)
+        {
+            user.PmAllowed = true;
+            await _databaseContext.SaveChangesAsync();
+        }
 
-            if (track != null && user.Track == null)
-            {
-                user.Track = track;
-                await _databaseContext.SaveChangesAsync();
-            }
+        if (track != null && user.Track == null)
+        {
+            user.Track = track;
+            await _databaseContext.SaveChangesAsync();
         }
     }
 }

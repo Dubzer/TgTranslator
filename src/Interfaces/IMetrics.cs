@@ -1,9 +1,8 @@
-namespace TgTranslator.Interfaces
+namespace TgTranslator.Interfaces;
+
+public interface IMetrics
 {
-    public interface IMetrics
-    {
-        void HandleGroupMessage(long groupId, int charactersCount);
-        void HandleTranslatorApiCall(long groupId, int charactersCount);
-        void HandleMessage();
-    }
+    void HandleGroupMessage(long groupId, int charactersCount);
+    void HandleTranslatorApiCall(long groupId, int charactersCount);
+    void HandleMessage();
 }

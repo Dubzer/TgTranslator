@@ -2,44 +2,43 @@ using System.Collections.Generic;
 using Telegram.Bot.Types.ReplyMarkups;
 using TgTranslator.Services;
 
-namespace TgTranslator.Menu
+namespace TgTranslator.Menu;
+
+public enum TranslationMode
 {
-    public enum TranslationMode
+    Auto,
+    Forwards,
+    Manual
+}
+
+public class ModeMenu : MenuItem
+{
+    public ModeMenu(IReadOnlyList<string> arguments)
     {
-        Auto,
-        Forwards,
-        Manual
+        ItemTitle = "Change translation mode";
+        Description = "*Here you can change translation mode* \n\n" +
+                      "*Auto* — translates all messages that require it \n" +
+                      "*Forwards* — translates only forwarded messages that require it \n" +
+                      "*Manual* — translates *only* by replying on message with `@TgTranslatorBot`, `!translate` or `/tl`";
+
+        Command = nameof(Setting.Mode).ToLowerInvariant();
     }
 
-    public class ModeMenu : MenuItem
+    protected override void GenerateButtons()
     {
-        public ModeMenu(IReadOnlyList<string> arguments)
+        Buttons.Add(new List<InlineKeyboardButton>
         {
-            ItemTitle = "Change translation mode";
-            Description = "*Here you can change translation mode* \n\n" +
-                          "*Auto* — translates all messages that require it \n" +
-                          "*Forwards* — translates only forwarded messages that require it \n" +
-                          "*Manual* — translates *only* by replying on message with `@TgTranslatorBot`, `!translate` or `/tl`";
-
-            Command = nameof(Setting.Mode).ToLowerInvariant();
-        }
-
-        protected override void GenerateButtons()
+            new("Auto") {CallbackData = $"switch {typeof(ApplyMenu)}#{Command}=auto"}
+        });
+        Buttons.Add(new List<InlineKeyboardButton>
         {
-            Buttons.Add(new List<InlineKeyboardButton>
-            {
-                new InlineKeyboardButton {Text = "Auto", CallbackData = $"switch {typeof(ApplyMenu)}#{Command}=auto"}
-            });
-            Buttons.Add(new List<InlineKeyboardButton>
-            {
-                new InlineKeyboardButton {Text = "Only forwards", CallbackData = $"switch {typeof(ApplyMenu)}#{Command}=forwards"}
-            });
-            Buttons.Add(new List<InlineKeyboardButton>
-            {
-                new InlineKeyboardButton {Text = "Manual", CallbackData = $"switch {typeof(ApplyMenu)}#{Command}=manual"}
-            });
+            new("Only forwards") {CallbackData = $"switch {typeof(ApplyMenu)}#{Command}=forwards"}
+        });
+        Buttons.Add(new List<InlineKeyboardButton>
+        {
+            new("Manual") {CallbackData = $"switch {typeof(ApplyMenu)}#{Command}=manual"}
+        });
 
-            base.GenerateButtons();
-        }
+        base.GenerateButtons();
     }
 }
