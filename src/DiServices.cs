@@ -8,6 +8,7 @@ using TgTranslator.Interfaces;
 using TgTranslator.Menu;
 using TgTranslator.Services;
 using TgTranslator.Services.Handlers;
+using TgTranslator.Services.Translation;
 using TgTranslator.Stats;
 using TgTranslator.Validation;
 
@@ -31,8 +32,8 @@ public static class DiServices
             
         //services.AddTransient<ILanguageDetector, YandexLanguageDetector>();
         //services.AddTransient<ITranslator, YandexTranslator>();
-        services.AddScoped<ILanguageDetector, TranslatorMicroservice>();
-        services.AddSingleton<ITranslator, TranslatorMicroservice>();
+        services.AddScoped<ILanguageDetector, TranslatePlaceholderService>();
+        services.AddSingleton<ITranslator, TranslatePlaceholderService>();
 
         services.AddScoped<MessageValidator>();
         services.AddScoped<SettingsProcessor>();
