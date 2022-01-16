@@ -29,7 +29,7 @@ In many group bots you can call menu in group chat. This one works different: th
 ![alt text](https://raw.githubusercontent.com/Dubzer/TgTranslator/master/screenshots/main_menu.png "Main Menu")
 
 
-When you select an option, it offers you to choose chat where you send ready command, like `@grouptranslator_bot set:mode=auto`.
+When you select an option, it offers you to choose chat where you send ready command, like `@TgTranslatorBot set:mode=auto`.
 
 ![alt text](https://raw.githubusercontent.com/Dubzer/TgTranslator/master/screenshots/apply_menu.png "Apply Menu")
 
@@ -39,71 +39,21 @@ This may seem a bit complicated, but it creates a lot more flexibility for large
 Menu is higly customizable, so it's not hard to add new options, or even implement it in your own project.
 
 
-## 🛠 Tools that project uses
-
-[.NET Core](https://dot.net) — Cross-platform general-purpose development platform.
-
-[ASP.NET Core](https://dotnet.microsoft.com/apps/aspnet) - A framework for 
-
-[Telegram.Bot](https://github.com/TelegramBots/Telegram.Bot) — .NET Client for Telegram Bot API.
-
-[PostgreSQL](https://www.postgresql.org/) — Open Source relational database.
-
-[Yandex.Translate](https://translate.yandex.com/developers) — Universal text translation tool that uses machine translation technology developed at Yandex.
-
-[Prometheus](https://prometheus.io/) — Used for event monitoring and alerting.
-
 ## ▶️ Build
-You need .NET Core SDK 3.1+. [Download it here](https://dotnet.microsoft.com/download/dotnet-core/3.1)
-
-You also need PostgreSQL to store groups settings. [Learn more](https://www.postgresql.org/)
+You need to have docker and Postgresql.
 
 1. Clone repository and open directory:
    ```sh
    git clone https://github.com/Dubzer/TgTranslator.git && cd TgTranslator
-2. Build the project. You can also use portable mode, which doesn't require .NET runtime. [Learn more](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-build)
+2. Configure the `appsettings.json` (it's pretty self-explanatory)
+3. Build the project.
     ```sh
-    dotnet publish -c Release
+    docker build -t tgtranslator.
     ```
-## 🔧 Configuration
-Bot configuration is located in ``appsettings.json``
+4. Start an app container.
+    ```sh
+     docker run tgtranslator
+    ```
 
-- **TgTranslator**
-
-  ``CharLimit`` —  translation characters limit.
-
-  ``BanTIme`` —  timeout time when admin mutes bot. Bot will not check the messages language during the timeout. (in minutes)
-
-- **Telegram**
-
-  ``Polling`` — defines, is bot getting updates by using polling, or webhooks.
-
-  ``BotToken`` — token for Bot API (get in @BotFather) 
-
-- **Yandex**
-
-  ``TranslatorToken`` — token for Yandex.Translate API (get at https://translate.yandex.com/developers)
-
-- **ConnectionStrings**
-
-  ``TgTranslatorContext`` — connection string for bot's Postgres database. 
-
-- **HelpMenu**
-
-  ``VideoUrl`` — public URL for video that sends on ``/help`` command. Has to be accessible from the web.
-
- - **Kestrel**
-
-   ``Endpoints`` — endpoints for using webhooks and metrics.
-
-- **Prometheus**
-
-  ``Login`` — Basic Auth login for Prometheus metrics.
-  
-  ``Password`` — Basic Auth password for Prometheus metrics.
-
-- **Serilog**
-
-  Here you can set various serilog settings.
 ## 📝 License
 The project is licensed under the [MIT license](https://github.com/yet-another-devteam/SendColorBot/blob/master/LICENSE).
