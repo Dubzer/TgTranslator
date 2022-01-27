@@ -112,14 +112,19 @@ public class MessageHandler : IMessageHandler
         {
             case TranslationMode.Forwards:
                 Log.Information("Group {ChatId} | {From} is using Forwards translation mode", message.Chat.Id, message.From);
-                if (message.ForwardSenderName == null)
+                if ((message.ForwardFrom == null || message.ForwardFrom.Id == 1087968824)
+                    && message.ForwardSenderName == null 
+                    && message.ForwardFromChat == null
+                    && message.ForwardSignature == null
+                    && message.ForwardDate == null
+                    && message.ForwardFromMessageId == null)
                     return;
                 break;
             case TranslationMode.Manual:
                 Log.Information("Group {ChatId} | {From} is using Manual translation mode", message.Chat.Id, message.From);
                 if (message.ReplyToMessage == null) 
                     return;
-                if (_manualTranslationCommands.Contains(messageText) && await RequireTranslation(message.ReplyToMessage.Text, await _settingsProcessor.GetGroupLanguage(message.Chat.Id)))
+                if (_manualTranslationCommands.Contains(messageText) && await RequireTranslation(message.ReplyToMessage.TextOrCaption(), await _settingsProcessor.GetGroupLanguage(message.Chat.Id)))
                 {
                     await HandleTranslation(message.ReplyToMessage, message.ReplyToMessage.TextOrCaption());
                 }
@@ -204,6 +209,7 @@ public class MessageHandler : IMessageHandler
                         }, BotCommandScope.Chat(message.Chat.Id));
                         break;
                     default:
+                        await _client.DeleteMyCommandsAsync(BotCommandScope.Chat(message.Chat.Id));
                         await _client.SetMyCommandsAsync(new[]
                         {
                             BotCommands.AdminCommand
@@ -265,6 +271,9 @@ public class MessageHandler : IMessageHandler
                 break;
             case "help" when chatType == ChatType.Private:
                 await _client.SendVideoAsync(message.Chat.Id, "https://dubzer.dev/TgTranslatorHelp.mp4");
+                break;
+            case "contact" when chatType == ChatType.Private:
+                await _client.SendTextMessageAsync(message.Chat.Id, "Developer: @Dubzer\nNews channel: @tgtrns\n\n☕️ Donate: yaso.su/feedme");
                 break;
             default:
                 return;
