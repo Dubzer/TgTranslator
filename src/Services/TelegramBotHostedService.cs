@@ -37,14 +37,19 @@ public class TelegramBotHostedService : IHostedService
         {
             new BotCommand
             {
-                Command = "settings",
-                Description = "⚙️ Change language and mode"
+                Command = "contact",
+                Description = "📩 Contact the developer"
             },
             new BotCommand
             {
                 Command = "help",
                 Description = "❔ How to add the bot"
-            }
+            },
+            new BotCommand
+            {
+                Command = "settings",
+                Description = "⚙️ Change language and mode"
+            },
 
         }, BotCommandScope.AllPrivateChats(), cancellationToken: cancellationToken);
         
