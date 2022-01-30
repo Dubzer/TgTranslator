@@ -30,8 +30,6 @@ public static class DiServices
         services.AddSingleton<IMetrics, Metrics>();
         services.AddScoped<BotMenu>();
             
-        //services.AddTransient<ILanguageDetector, YandexLanguageDetector>();
-        //services.AddTransient<ITranslator, YandexTranslator>();
         services.AddScoped<ILanguageDetector, TranslatePlaceholderService>();
         services.AddSingleton<ITranslator, TranslatePlaceholderService>();
 
