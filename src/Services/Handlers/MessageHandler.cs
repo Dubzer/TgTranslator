@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -156,10 +157,17 @@ public class MessageHandler : IMessageHandler
             
         string groupLanguage = await _settingsProcessor.GetGroupLanguage(message.Chat.Id);
         string translation = await _translator.TranslateTextAsync(text, groupLanguage);
+
+        var emojiRegex = new Regex(@"\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]", RegexOptions.Compiled);
+        var nonLettersRegex = new Regex(@"\p{P}|\d|\s", RegexOptions.Compiled);
         
-        string normalizedText = Regex.Replace(text, @"\p{P}|\d", "");
-        string normalizedTranslation = Regex.Replace(translation, @"\p{P}|\d", "");
-        if (string.IsNullOrEmpty(normalizedTranslation) || string.Equals(normalizedText, normalizedTranslation, StringComparison.CurrentCultureIgnoreCase))
+        string normalizedText = nonLettersRegex.Replace(text, "");
+        normalizedText = emojiRegex.Replace(normalizedText, "");
+        
+        string normalizedTranslation = nonLettersRegex.Replace(translation, "");
+        normalizedTranslation = emojiRegex.Replace(normalizedText, "");
+        
+        if (string.IsNullOrEmpty(normalizedTranslation) || string.Equals(normalizedText, normalizedTranslation, StringComparison.InvariantCultureIgnoreCase))
             return;
 
         await _client.SendTextMessageAsync(message.Chat.Id, translation, 
