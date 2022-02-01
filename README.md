@@ -18,7 +18,7 @@ This bot has 3 translation modes:
 3. **Manual**. Translates only after replying on message with `!translate` or bot username.
 
 ## 📙 Languages
-Bot has 65 languages supported by Google Translate.
+By default, bot has 105 languages supported by Google Translate.
 
 ![alt text](https://raw.githubusercontent.com/Dubzer/TgTranslator/master/screenshots/language_selection.png "Languages seletion")
 
@@ -39,18 +39,19 @@ This may seem a bit complicated, but it creates a lot more flexibility for large
 Menu is higly customizable, so it's not hard to add new options, or even implement it in your own project.
 
 
-## ▶️ Build
-You need to have docker and Postgresql.
+## ▶️ Setup
+You need to have Docker and PostgreSQL.
 
 1. Clone repository and open directory:
    ```sh
    git clone https://github.com/Dubzer/TgTranslator.git && cd TgTranslator
 2. Configure the `appsettings.json` (it's pretty self-explanatory)
-3. Build the project.
+3. Create a new class and implement `ITranslator` and `ILanguageDetector` interfaces. After that, open `DiServices.cs` and replace `TranslatePlaceholderService` with your new class.
+4. Build the project.
     ```sh
     docker build -t tgtranslator.
     ```
-4. Start an app container.
+5. Start an app container.
     ```sh
      docker run tgtranslator
     ```
