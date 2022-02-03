@@ -91,10 +91,6 @@ public class TelegramBotController : Controller
             await _client.SendTextMessageAsync(message.Chat.Id, "Hey! Only admins can change settings of this bot!",
                 replyToMessageId: message.MessageId);
         }
-        catch (FlurlHttpException exception)
-        {
-            Log.Error(exception, "Got an HTTP exception");
-        }
         catch (ApiRequestException exception) when (exception.Message == "Bad Request: have no rights to send a message")
         {
             await _groupsBlacklist.AddGroup(message.Chat.Id);

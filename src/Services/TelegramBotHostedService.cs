@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Sentry;
 using Serilog;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -21,6 +22,14 @@ public class TelegramBotHostedService : IHostedService
         _scopeFactory = scopeFactory;
         _client = client;
         Program.Username = client.GetMeAsync().Result.Username;
+        SentrySdk.ConfigureScope(scope =>
+        {
+            scope.Contexts["bot"] = new
+            {
+                Program.Username
+            };
+        });
+
     }
         
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -69,6 +78,7 @@ public class TelegramBotHostedService : IHostedService
         }
         catch (Exception exception)
         {
+            SentrySdk.CaptureException(exception);
             Log.Error(exception, "OnMessage: An unhandled exception");
         }
     }
