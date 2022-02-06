@@ -96,5 +96,6 @@ public class TelegramBotController : Controller
             await _groupsBlacklist.AddGroup(message.Chat.Id);
         }
         catch (ApiRequestException exception) when (exception.Message == "Bad Request: reply message not found") { }
+        catch (ApiRequestException exception) when (exception.Message.Contains("Too Many Requests")) { }
     }
 }
