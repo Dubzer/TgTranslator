@@ -52,7 +52,7 @@ public partial class TgTranslatorContext : DbContext
             entity.ToTable("groups_blacklist");
 
             entity.HasIndex(e => e.GroupId)
-                .HasName("groups_blacklist_group_id_uindex")
+                .HasDatabaseName("groups_blacklist_group_id_uindex")
                 .IsUnique();
 
             entity.Property(e => e.GroupId)
