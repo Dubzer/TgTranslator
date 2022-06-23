@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Sentry;
 using Serilog;
 using Telegram.Bot;
+using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TgTranslator.Controllers;
@@ -35,11 +36,12 @@ public class TelegramBotHostedService : IHostedService
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         await _client.DeleteWebhookAsync(cancellationToken: cancellationToken);
-        _client.StartReceiving(cancellationToken: cancellationToken, 
+        _client.StartReceiving(cancellationToken: cancellationToken,
             updateHandler: UpdateHandler,
             errorHandler: ErrorHandler, receiverOptions: new()
             {
-                AllowedUpdates = new[] {UpdateType.Message, UpdateType.CallbackQuery}
+                AllowedUpdates = new[] {UpdateType.Message, UpdateType.CallbackQuery},
+                Offset = -1
             });
         
         await _client.SetMyCommandsAsync(new[]
