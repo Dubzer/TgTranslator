@@ -31,7 +31,7 @@ public static class DiServices
         services.AddScoped<BotMenu>();
             
         services.AddScoped<ILanguageDetector, TranslatePlaceholderService>();
-        services.AddSingleton<ITranslator, TranslatePlaceholderService>();
+        services.AddScoped<ITranslator, TranslatePlaceholderService>();
 
         services.AddScoped<MessageValidator>();
         services.AddScoped<SettingsProcessor>();
