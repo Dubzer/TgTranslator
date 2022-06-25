@@ -165,7 +165,7 @@ public class MessageHandler : IMessageHandler
         normalizedText = emojiRegex.Replace(normalizedText, "");
         
         string normalizedTranslation = nonLettersRegex.Replace(translation, "");
-        normalizedTranslation = emojiRegex.Replace(normalizedText, "");
+        normalizedTranslation = emojiRegex.Replace(normalizedTranslation, "");
         
         if (string.IsNullOrEmpty(normalizedTranslation) || string.Equals(normalizedText, normalizedTranslation, StringComparison.InvariantCultureIgnoreCase))
             return;
