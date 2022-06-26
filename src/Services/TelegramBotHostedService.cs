@@ -6,7 +6,6 @@ using Microsoft.Extensions.Hosting;
 using Sentry;
 using Serilog;
 using Telegram.Bot;
-using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TgTranslator.Controllers;

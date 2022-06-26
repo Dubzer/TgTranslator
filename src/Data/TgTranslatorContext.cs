@@ -3,7 +3,7 @@ using TgTranslator.Models;
 
 namespace TgTranslator.Data;
 
-public partial class TgTranslatorContext : DbContext
+public class TgTranslatorContext : DbContext
 {
     public TgTranslatorContext()
     {
@@ -90,5 +90,8 @@ public partial class TgTranslatorContext : DbContext
         OnModelCreatingPartial(modelBuilder);
     }
 
-    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+    private void OnModelCreatingPartial(ModelBuilder modelBuilder)
+    {
+        throw new System.NotImplementedException();
+    }
 }
