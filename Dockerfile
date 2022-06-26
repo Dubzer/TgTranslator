@@ -1,6 +1,9 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0.101-alpine3.14 AS build
 WORKDIR /source
 
+ARG placeholder="./src/Services/Translation/TranslatePlaceholderService.cs"
+COPY ${placeholder} /soruce/src/Services/Translation/TranslatePlaceholderService.cs
+
 COPY *.sln .
 COPY src/ ./src
 RUN dotnet restore -r linux-musl-x64
