@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Flurl.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using Telegram.Bot;
@@ -26,7 +27,7 @@ public class TelegramBotController : Controller
     {
         _client = client;
         _messageHandler = messageHandler ?? throw new ArgumentNullException(nameof(messageHandler));
-        _callbackQueryHandler = callbackQueryHandler ?? throw new ArgumentNullException(nameof(callbackQueryHandler));
+        _callbackQueryHandler = callbackQueryHandler ?? throw new ArgumentNullException(nameof(messageHandler));
         _groupsBlacklist = groupsBlacklist;
     }
 
