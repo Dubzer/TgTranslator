@@ -23,5 +23,5 @@ public class MessageValidator
         && messageText.Length <= _charLimit
         && !messageText.StartsWith('.')
         && !_blacklist.TextsBlacklist.Contains(messageText.ToLowerInvariant())
-        && (messageText == $"@{Program.Username}" || !message.IsOnlyLinks());
+        && (messageText == $"@{Program.Username}" || !message.IsOnlyEntities());
 }
