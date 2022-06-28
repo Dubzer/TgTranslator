@@ -22,7 +22,8 @@ public static class TelegramExtensions
                 or MessageEntityType.Email 
                 or MessageEntityType.PhoneNumber 
                 or MessageEntityType.Hashtag
-                or MessageEntityType.Pre);
+                or MessageEntityType.Pre
+                or MessageEntityType.Code);
 
             
         string withoutLinks = entitiesArray.Reverse()
