@@ -9,22 +9,23 @@ namespace TgTranslator.Extensions;
 
 public static class TelegramExtensions
 {
-    public static bool IsOnlyLinks(this Message message)
+    public static bool IsOnlyEntities(this Message message)
     {
         if (message.Entities == null)
             return false;
 
-        IEnumerable<MessageEntity> linksArray = message.TextOrCaptionEntities()
+        IEnumerable<MessageEntity> entitiesArray = message.TextOrCaptionEntities()
             .Where(e => e.Type 
                 is MessageEntityType.Url 
                 or MessageEntityType.Mention 
                 or MessageEntityType.Cashtag 
                 or MessageEntityType.Email 
                 or MessageEntityType.PhoneNumber 
-                or MessageEntityType.Hashtag);
+                or MessageEntityType.Hashtag
+                or MessageEntityType.Pre);
 
             
-        string withoutLinks = linksArray.Reverse()
+        string withoutLinks = entitiesArray.Reverse()
             .Aggregate(message.TextOrCaption(), (current, e) => current.Remove(e.Offset, e.Length));
 
         return !withoutLinks.Any(char.IsLetterOrDigit);
