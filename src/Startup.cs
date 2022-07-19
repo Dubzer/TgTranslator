@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -25,7 +26,11 @@ public class Startup
         services.RegisterServices(_configuration);
         services.AddMvc(options => { options.EnableEndpointRouting = false; })
             .AddControllersAsServices()
-            .AddNewtonsoftJson();
+            .AddNewtonsoftJson()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            });
             
         services.Configure<KestrelServerOptions>(_configuration.GetSection("Kestrel"));
         services.Configure<LanguagesList>(_configuration.GetSection("languages"));
