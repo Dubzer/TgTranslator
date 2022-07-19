@@ -6,7 +6,6 @@ using Microsoft.Extensions.Hosting;
 using Sentry;
 using Serilog;
 using Telegram.Bot;
-using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TgTranslator.Controllers;
@@ -40,8 +39,6 @@ public class TelegramBotHostedService : IHostedService
             updateHandler: UpdateHandler,
             errorHandler: ErrorHandler, receiverOptions: new()
             {
-                AllowedUpdates = new[] {UpdateType.Message, UpdateType.CallbackQuery},
-                Offset = -1
                 Offset = -1,
                 AllowedUpdates = new[]
                 {
