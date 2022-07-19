@@ -41,7 +41,7 @@ public class GroupsBlacklistService
             .Include(g => g.GroupBlacklist)
             .FirstOrDefaultAsync();
         
-        if (group.GroupBlacklist == null)
+        if (group?.GroupBlacklist == null)
             return;
                     
         _database.GroupsBlacklist.Remove(group.GroupBlacklist);
