@@ -38,6 +38,7 @@ public static class DiServices
             
         services.AddScoped<IMessageHandler, MessageHandler>();
         services.AddScoped<ICallbackQueryHandler, CallbackQueryHandler>();
+        services.AddScoped<MyChatMemberHandler>();
 
         services.AddScoped<IpWhitelist>();
         

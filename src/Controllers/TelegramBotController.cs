@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Flurl.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using Telegram.Bot;
@@ -11,6 +10,7 @@ using TgTranslator.Exceptions;
 using TgTranslator.Extensions;
 using TgTranslator.Interfaces;
 using TgTranslator.Services;
+using TgTranslator.Services.Handlers;
 
 namespace TgTranslator.Controllers;
 
@@ -19,15 +19,17 @@ namespace TgTranslator.Controllers;
 public class TelegramBotController : Controller
 {
     private readonly ICallbackQueryHandler _callbackQueryHandler;
+    private readonly MyChatMemberHandler _myChatMemberHandler;
     private readonly TelegramBotClient _client;
     private readonly IMessageHandler _messageHandler;
     private readonly GroupsBlacklistService _groupsBlacklist;
 
-    public TelegramBotController(TelegramBotClient client, IMessageHandler messageHandler, ICallbackQueryHandler callbackQueryHandler, GroupsBlacklistService groupsBlacklist)
+    public TelegramBotController(TelegramBotClient client, IMessageHandler messageHandler, ICallbackQueryHandler callbackQueryHandler, MyChatMemberHandler myChatMemberHandler, GroupsBlacklistService groupsBlacklist)
     {
         _client = client;
         _messageHandler = messageHandler ?? throw new ArgumentNullException(nameof(messageHandler));
         _callbackQueryHandler = callbackQueryHandler ?? throw new ArgumentNullException(nameof(callbackQueryHandler));
+        _myChatMemberHandler = myChatMemberHandler;
         _groupsBlacklist = groupsBlacklist;
     }
 
@@ -48,9 +50,17 @@ public class TelegramBotController : Controller
             case UpdateType.CallbackQuery:
                 await OnCallbackQuery(update.CallbackQuery);
                 break;
+            case UpdateType.MyChatMember:
+                await OnMyChatMember(update.MyChatMember);
+                break;
         }
 
         return Ok();
+    }
+    
+    private async Task OnMyChatMember(ChatMemberUpdated updateMyChatMember)
+    {
+        await _myChatMemberHandler.Handle(updateMyChatMember);
     }
 
     private async Task OnCallbackQuery(CallbackQuery callbackQuery)
@@ -72,10 +82,8 @@ public class TelegramBotController : Controller
     private async Task OnMessage(Message message)
     {
         if (message.Date < Program.StartedTime - TimeSpan.FromSeconds(10))
-        {
             return;
-        }
-            
+
         try
         {
             await _messageHandler.HandleMessageAsync(message);
@@ -97,7 +105,7 @@ public class TelegramBotController : Controller
         {
             await _groupsBlacklist.AddGroup(message.Chat.Id);
         }
-        catch (ApiRequestException exception) when (exception.Message.Contains("message not found")) { }
-        catch (ApiRequestException exception) when (exception.Message.Contains("Too Many Requests")) { }
+        catch (ApiRequestException exception) when (exception.Message.Contains("message not found", StringComparison.InvariantCultureIgnoreCase)) { }
+        catch (ApiRequestException exception) when (exception.Message.Contains("Too Many Requests", StringComparison.InvariantCultureIgnoreCase)) { }
     }
 }

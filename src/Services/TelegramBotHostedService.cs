@@ -42,6 +42,15 @@ public class TelegramBotHostedService : IHostedService
             {
                 AllowedUpdates = new[] {UpdateType.Message, UpdateType.CallbackQuery},
                 Offset = -1
+                Offset = -1,
+                AllowedUpdates = new[]
+                {
+                    UpdateType.Message, 
+                    UpdateType.CallbackQuery, 
+                    UpdateType.InlineQuery,
+                    UpdateType.ChatMember,
+                    UpdateType.MyChatMember
+                }
             });
         
         await _client.SetMyCommandsAsync(new[]

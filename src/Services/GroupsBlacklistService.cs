@@ -34,6 +34,20 @@ public class GroupsBlacklistService
         await _database.SaveChangesAsync();
     }
 
+    public async Task RemoveGroup(long groupId)
+    {
+        var group = await _database.Groups
+            .Where(g => g.GroupId == groupId)
+            .Include(g => g.GroupBlacklist)
+            .FirstOrDefaultAsync();
+        
+        if (group.GroupBlacklist == null)
+            return;
+                    
+        _database.GroupsBlacklist.Remove(group.GroupBlacklist);
+        await _database.SaveChangesAsync();
+    }
+    
     public async Task<bool> InBlacklist(long groupId)
     {
         Group group = await _database.Groups.Where(g => g.GroupId == groupId).Include(g => g.GroupBlacklist).FirstOrDefaultAsync();
