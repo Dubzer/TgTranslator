@@ -20,27 +20,26 @@ public static class DiServices
     {
         var telegramOptions = configuration.GetSection("telegram").Get<TelegramOptions>();
 
-            
-        services.AddScoped<GroupDatabaseService>();
-        services.AddScoped<UsersDatabaseService>();
-        services.AddScoped<GroupsBlacklistService>();
-            
+        services.AddTransient<GroupDatabaseService>();
+        services.AddTransient<UsersDatabaseService>();
+        services.AddTransient<GroupsBlacklistService>();
+
         services.AddSingleton(new TelegramBotClient(telegramOptions.BotToken));
 
         services.AddSingleton<IMetrics, Metrics>();
-        services.AddScoped<BotMenu>();
-            
-        services.AddScoped<ILanguageDetector, TranslatePlaceholderService>();
-        services.AddScoped<ITranslator, TranslatePlaceholderService>();
+        services.AddTransient<BotMenu>();
 
-        services.AddScoped<MessageValidator>();
-        services.AddScoped<SettingsProcessor>();
-            
-        services.AddScoped<IMessageHandler, MessageHandler>();
-        services.AddScoped<ICallbackQueryHandler, CallbackQueryHandler>();
-        services.AddScoped<MyChatMemberHandler>();
+        services.AddTransient<ILanguageDetector, TranslatePlaceholderService>();
+        services.AddTransient<ITranslator, TranslatePlaceholderService>();
 
-        services.AddScoped<IpWhitelist>();
+        services.AddTransient<MessageValidator>();
+        services.AddTransient<SettingsProcessor>();
+
+        services.AddTransient<IMessageHandler, MessageHandler>();
+        services.AddTransient<ICallbackQueryHandler, CallbackQueryHandler>();
+        services.AddTransient<MyChatMemberHandler>();
+
+        services.AddTransient<IpWhitelist>();
         
         if (telegramOptions.Webhooks)
             //  Register webhooks.
