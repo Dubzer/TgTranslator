@@ -39,7 +39,7 @@ internal sealed class BasicAuthMiddleware
         lock (FailedAuthorizations)
         {
             if (_clearFailedAuthorizationsTimer == null)
-                _clearFailedAuthorizationsTimer = new Timer(e => FailedAuthorizations.Clear(),
+                _clearFailedAuthorizationsTimer = new Timer(_ => FailedAuthorizations.Clear(),
                     null,
                     TimeSpan.FromHours(FailedAuthorizationsCooldownInHours), // Delay
                     TimeSpan.FromHours(FailedAuthorizationsCooldownInHours) // Period

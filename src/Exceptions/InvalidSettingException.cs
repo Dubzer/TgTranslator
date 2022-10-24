@@ -4,7 +4,4 @@ namespace TgTranslator.Exceptions;
 
 public class InvalidSettingException : Exception
 {
-    public InvalidSettingException()
-    {
-    }
 }

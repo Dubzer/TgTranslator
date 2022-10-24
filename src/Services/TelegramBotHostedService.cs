@@ -37,7 +37,7 @@ public class TelegramBotHostedService : IHostedService
         await _client.DeleteWebhookAsync(cancellationToken: cancellationToken);
         _client.StartReceiving(cancellationToken: cancellationToken,
             updateHandler: UpdateHandler,
-            errorHandler: ErrorHandler, receiverOptions: new()
+            pollingErrorHandler: ErrorHandler, receiverOptions: new()
             {
                 Offset = -1,
                 AllowedUpdates = new[]
