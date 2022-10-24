@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Options;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
 using TgTranslator.Data.Options;
 using TgTranslator.Extensions;
 
