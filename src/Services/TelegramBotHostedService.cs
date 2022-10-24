@@ -80,7 +80,7 @@ public class TelegramBotHostedService : IHostedService
     {
         try
         {
-            using IServiceScope scope = _scopeFactory.CreateScope();
+            using var scope = _scopeFactory.CreateScope();
             var controller = scope.ServiceProvider.GetRequiredService<TelegramBotController>();
             await controller.Post(update);
         }
