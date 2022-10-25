@@ -54,7 +54,11 @@ public static class Program
                 .AddJsonFile("languages.json"))
             .ConfigureWebHostDefaults(webBuilder =>
             {
-                webBuilder.UseSentry();
+                webBuilder.UseSentry(builder =>
+                {
+                    builder.Dsn = SentryOptions.Dsn;
+                    builder.TracesSampleRate = SentryOptions.TracesSampleRate;
+                });
                 webBuilder.UseStartup<Startup>()
                     .UseKestrel((context, options) => options.Configure(context.Configuration.GetSection("Kestrel")));
             });
