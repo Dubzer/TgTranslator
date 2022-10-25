@@ -78,6 +78,11 @@ public class TelegramBotHostedService : IHostedService
 
     private async Task UpdateHandler(ITelegramBotClient client, Update update, CancellationToken cancellationToken)
     {
+        var updateTransaction = SentrySdk.StartTransaction(
+            "update",
+            "update-handler"
+        );
+
         try
         {
             using var scope = _scopeFactory.CreateScope();
@@ -88,6 +93,10 @@ public class TelegramBotHostedService : IHostedService
         {
             SentrySdk.CaptureException(exception);
             Log.Error(exception, "OnMessage: An unhandled exception");
+        }
+        finally
+        {
+            updateTransaction.Finish();
         }
     }
 
