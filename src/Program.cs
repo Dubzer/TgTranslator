@@ -26,6 +26,7 @@ public static class Program
             // Set traces_sample_rate to 1.0 to capture 100% of transactions for performance monitoring.
             // We recommend adjusting this value in production.
             o.TracesSampleRate = 1.0;
+            o.AddDiagnosticSourceIntegration();
         });
 
         CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
