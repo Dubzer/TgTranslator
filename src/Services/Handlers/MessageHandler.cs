@@ -1,9 +1,9 @@
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using Sentry;
 using Serilog;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -56,6 +56,14 @@ public class MessageHandler : IMessageHandler
     {
         _metrics.HandleMessage();
         Log.Information("Got new message {ChatId} | {From} | {ChatType}", message.Chat.Id, message.From, message.Chat.Type);
+        SentrySdk.ConfigureScope(scope =>
+        {
+            scope.User = new Sentry.User
+            {
+                Id = message.From?.Id.ToString(),
+                Username = message.From?.Username
+            };
+        });
 
         if (_blacklist.UserIdsBlacklist.Contains(message.From.Id))
             return;
