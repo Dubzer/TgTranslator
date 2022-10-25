@@ -16,18 +16,16 @@ public static class Program
     public static readonly DateTime StartedTime = DateTime.UtcNow;
     public static LanguagesList Languages;
     public static string Username;
+
+    private static readonly SentryOptions SentryOptions = new()
+    {
+        Dsn = "https://380e0a36b482415cabd1fd621c1a030d@o797589.ingest.sentry.io/6181857",
+        TracesSampleRate = 1.0
+    };
+
     public static async Task Main()
     {
-        SentrySdk.Init(o =>
-        {
-            o.Dsn = "https://380e0a36b482415cabd1fd621c1a030d@o797589.ingest.sentry.io/6181857";
-            // When configuring for the first time, to see what the SDK is doing:
-            o.Debug = false;
-            // Set traces_sample_rate to 1.0 to capture 100% of transactions for performance monitoring.
-            // We recommend adjusting this value in production.
-            o.TracesSampleRate = 1.0;
-            o.AddDiagnosticSourceIntegration();
-        });
+        SentrySdk.Init(SentryOptions);
 
         CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
         CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
@@ -56,6 +54,7 @@ public static class Program
                 .AddJsonFile("languages.json"))
             .ConfigureWebHostDefaults(webBuilder =>
             {
+                webBuilder.UseSentry();
                 webBuilder.UseStartup<Startup>()
                     .UseKestrel((context, options) => options.Configure(context.Configuration.GetSection("Kestrel")));
             });
