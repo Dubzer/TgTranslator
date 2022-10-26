@@ -29,7 +29,7 @@ public class IpWhitelist : ActionFilterAttribute
             
         if (!_allowedIps.Any(range => range.Contains(clientIp)))
         {
-            context.Result = new ForbidResult();
+            context.Result = new StatusCodeResult((int) HttpStatusCode.Forbidden);
             Log.Warning("Got a request that is not contained in TelegramIpWhitelist: {IpAddress}", clientIp);
         }
     }
