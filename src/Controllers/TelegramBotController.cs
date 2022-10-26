@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Sentry;
 using Serilog;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
@@ -42,6 +43,12 @@ public class TelegramBotController : Controller
         if (update == null)
             return Ok();
 
+        var updateTransaction = SentrySdk.StartTransaction(
+            "update",
+            $"update-{update.Type.ToString().ToLowerInvariant()}"
+        );
+        SentrySdk.ConfigureScope(sentryScope => sentryScope.Transaction = updateTransaction);
+
         switch (update.Type)
         {
             case UpdateType.Message:
@@ -55,6 +62,7 @@ public class TelegramBotController : Controller
                 break;
         }
 
+        updateTransaction.Finish();
         return Ok();
     }
     
