@@ -29,7 +29,14 @@ public class TelegramWebhooksExtensions : IStartupFilter
                 var domain = scope.ServiceProvider.GetRequiredService<IOptions<TelegramOptions>>().Value.WebhooksDomain;
 
                 client.DeleteWebhookAsync().GetAwaiter().GetResult();
-                client.SetWebhookAsync(domain.AppendPathSegments("api", "bot"), allowedUpdates:new[] {UpdateType.Message, UpdateType.CallbackQuery}).GetAwaiter().GetResult();
+                client
+                    .SetWebhookAsync(domain.AppendPathSegments("api", "bot"),
+                    allowedUpdates:new[]
+                    {
+                        UpdateType.Message,
+                        UpdateType.CallbackQuery
+                    },
+                    dropPendingUpdates: true).GetAwaiter().GetResult();
                 Program.Username = client.GetMeAsync().Result.Username;
             }
 
