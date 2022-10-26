@@ -83,6 +83,8 @@ public class TelegramBotHostedService : IHostedService
             "update-handler"
         );
 
+        SentrySdk.ConfigureScope(sentryScope => sentryScope.Transaction = updateTransaction);
+
         try
         {
             using var scope = _scopeFactory.CreateScope();
