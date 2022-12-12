@@ -109,7 +109,8 @@ public class TelegramBotController : Controller
             await _client.SendTextMessageAsync(message.Chat.Id, "Hey! Only admins can change settings of this bot!",
                 replyToMessageId: message.MessageId);
         }
-        catch (ApiRequestException exception) when (exception.Message.Contains("CHAT_RESTRICTED"))
+        catch (ApiRequestException exception) when (exception.Message.Contains("CHAT_RESTRICTED")
+                                                    || exception.Message.Contains("have no rights to send a message"))
         {
             await _groupsBlacklist.AddGroup(message.Chat.Id);
         }
