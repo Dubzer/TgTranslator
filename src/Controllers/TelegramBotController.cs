@@ -110,7 +110,8 @@ public class TelegramBotController : Controller
                 replyToMessageId: message.MessageId);
         }
         catch (ApiRequestException exception) when (exception.Message.Contains("CHAT_RESTRICTED")
-                                                    || exception.Message.Contains("have no rights to send a message"))
+                                                    || exception.Message.Contains("have no rights to send a message")
+                                                    || exception.Message.Contains("not enough rights to"))
         {
             await _groupsBlacklist.AddGroup(message.Chat.Id);
         }
