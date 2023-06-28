@@ -5,6 +5,7 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
+using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TgTranslator.Data.Options;
 using TgTranslator.Exceptions;
@@ -40,7 +41,7 @@ public class BotMenu
     {
         var menu = new MainMenu(null);
         await _client.SendTextMessageAsync(chatId, menu.Description,
-            ParseMode.Markdown,
+            parseMode: ParseMode.Markdown,
             replyMarkup: menu.GenerateMarkup());
     }
 
@@ -52,7 +53,7 @@ public class BotMenu
             replyMarkup: item.GenerateMarkup());
     }
 
-    public async Task SendHelpMenu(long chatId) => await _client.SendVideoAsync(chatId, _helpVideoUrl, caption: HelpCaption);
+    public async Task SendHelpMenu(long chatId) => await _client.SendVideoAsync(chatId, new InputFileUrl(_helpVideoUrl), caption: HelpCaption);
 
     private MenuItem GetMenuItem(Type menuType, IEnumerable arguments)
     {
