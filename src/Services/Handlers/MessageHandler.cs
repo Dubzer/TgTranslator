@@ -278,7 +278,7 @@ public class MessageHandler : IMessageHandler
             case "start" when chatType == ChatType.Private && !string.IsNullOrEmpty(payload):
                 if (payload != "s")
                     await _users.AddFromPmIfNeeded(message.From.Id, payload);
-                    
+
                 await _botMenu.SendMainMenu(message.Chat.Id);
                 break;
             case "start" when chatType == ChatType.Private:
@@ -286,7 +286,7 @@ public class MessageHandler : IMessageHandler
                 await _botMenu.SendMainMenu(message.Chat.Id);
                 break;
             case "help" when chatType == ChatType.Private:
-                await _client.SendVideoAsync(message.Chat.Id, "https://dubzer.dev/TgTranslatorHelp.mp4");
+                await _client.SendVideoAsync(message.Chat.Id, new InputFileUrl("https://dubzer.dev/TgTranslatorHelp.mp4"));
                 break;
             case "contact" when chatType == ChatType.Private:
                 await _client.SendTextMessageAsync(message.Chat.Id, "Developer: @Dubzer\nNews channel: @tgtrns\n\n☕️ Donate: yaso.su/feedme");
