@@ -178,11 +178,39 @@ public class MessageHandler : IMessageHandler
         if (string.IsNullOrEmpty(normalizedTranslation) || string.Equals(normalizedText, normalizedTranslation, StringComparison.InvariantCultureIgnoreCase))
             return;
 
-        await _client.SendTextMessageAsync(message.Chat.Id, translation, 
-            disableNotification: true, disableWebPagePreview: true,
-            replyToMessageId: message.MessageId);
+        if (translation.Length <= 4096)
+        {
+            await _client.SendTextMessageAsync(message.Chat.Id, translation,
+                disableNotification: true, disableWebPagePreview: true,
+                replyToMessageId: message.MessageId);
+        }
+        else
+        {
+            await SendLongMessage(message.Chat.Id, translation, message.MessageId);
+        }
+
 
         Log.Information("Sent translation to {ChatId} | {From}", message.Chat.Id, message.From);
+    }
+
+    private async Task SendLongMessage(long chatId, string message, int replyId)
+    {
+        // Can be improved by using chars like , . ?
+        var lastEndOfSentence = message.LastIndexOf('.') + 1;
+
+        // 4096 is a hard trim
+        var splitIndex = Math.Min(lastEndOfSentence, 4096);
+
+        var firstPart = message[..splitIndex];
+        var secondPart = message[splitIndex..];
+
+        var firstPartResult = await _client.SendTextMessageAsync(chatId, firstPart,
+            disableNotification: true, disableWebPagePreview: true,
+            replyToMessageId: replyId);
+
+        await _client.SendTextMessageAsync(chatId, secondPart,
+            disableNotification: true, disableWebPagePreview: true,
+            replyToMessageId: firstPartResult.MessageId);
     }
 
     private async Task HandleSettingChanging(Message message)
