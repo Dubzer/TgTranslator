@@ -178,16 +178,16 @@ public class MessageHandler : IMessageHandler
         if (string.IsNullOrEmpty(normalizedTranslation) || string.Equals(normalizedText, normalizedTranslation, StringComparison.InvariantCultureIgnoreCase))
             return;
 
-        if (translation.Length <= 4096)
-        {
+        //if (translation.Length <= 4096)
+        //{
             await _client.SendTextMessageAsync(message.Chat.Id, translation,
                 disableNotification: true, disableWebPagePreview: true,
                 replyToMessageId: message.MessageId);
-        }
-        else
-        {
-            await SendLongMessage(message.Chat.Id, translation, message.MessageId);
-        }
+        //}
+        //else
+        //{
+        //    await SendLongMessage(message.Chat.Id, translation, message.MessageId);
+        //}
 
 
         Log.Information("Sent translation to {ChatId} | {From}", message.Chat.Id, message.From);
