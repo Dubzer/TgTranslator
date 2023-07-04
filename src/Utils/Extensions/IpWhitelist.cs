@@ -8,7 +8,7 @@ using NetTools;
 using Serilog;
 using TgTranslator.Data.Options;
 
-namespace TgTranslator.Extensions;
+namespace TgTranslator.Utils.Extensions;
 
 public class IpWhitelist : ActionFilterAttribute
 {

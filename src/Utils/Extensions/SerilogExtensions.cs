@@ -1,7 +1,7 @@
 using Serilog;
 using Serilog.Filters;
 
-namespace TgTranslator.Extensions;
+namespace TgTranslator.Utils.Extensions;
 
 public static class SerilogExtensions
 {

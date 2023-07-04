@@ -7,7 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Sentry;
 using Serilog;
 using TgTranslator.Data.Options;
-using TgTranslator.Extensions;
+using TgTranslator.Utils.Extensions;
 
 namespace TgTranslator;
 
