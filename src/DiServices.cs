@@ -3,13 +3,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
 using TgTranslator.Data.Options;
-using TgTranslator.Extensions;
 using TgTranslator.Interfaces;
 using TgTranslator.Menu;
 using TgTranslator.Services;
 using TgTranslator.Services.Handlers;
 using TgTranslator.Services.Translation;
 using TgTranslator.Stats;
+using TgTranslator.Utils.Extensions;
 using TgTranslator.Validation;
 
 namespace TgTranslator;
@@ -44,7 +44,7 @@ public static class DiServices
         if (telegramOptions.Webhooks)
             //  Register webhooks.
             //  IStartupFilter calls the service only once, after building the DI container, but before the app starts receiving messages 
-            services.AddTransient<IStartupFilter, TelegramWebhooksExtensions>();    
+            services.AddTransient<IStartupFilter, TelegramWebhooksRegistrar>();
         else
             //  Receive events using polling
             //  TelegramBotHostedService basically wraps Telegram.Bot lib's events into Controller 

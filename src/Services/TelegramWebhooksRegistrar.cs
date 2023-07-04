@@ -8,13 +8,13 @@ using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 using TgTranslator.Data.Options;
 
-namespace TgTranslator.Extensions;
+namespace TgTranslator.Services;
 
-public class TelegramWebhooksExtensions : IStartupFilter
+public class TelegramWebhooksRegistrar : IStartupFilter
 {
     private readonly IServiceProvider _serviceProvider;
 
-    public TelegramWebhooksExtensions(IServiceProvider serviceProvider)
+    public TelegramWebhooksRegistrar(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
     }
