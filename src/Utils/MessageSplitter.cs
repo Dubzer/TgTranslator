@@ -1,4 +1,4 @@
-using System.Linq;
+using System;
 
 namespace TgTranslator.Utils;
 
@@ -6,10 +6,10 @@ public static class MessageSplitter
 {
     private static readonly char[] SplitChars = {'.', '?', '!', ','};
 
-    public static (string, string) Split(string message)
+    public static (string, string) Split(ReadOnlySpan<char> message)
     {
         // We use 4095 instead of 4096 because we want char to be included in the first part
-        var lastEndOfSentence = SplitChars.Select(x => FindLastIndexWithinLimit(message, x, 4095)).Max() + 1;
+        var lastEndOfSentence = message[..4096].LastIndexOfAny(SplitChars) + 1;
 
         // Hard trim
         if(lastEndOfSentence == 0)
@@ -18,17 +18,6 @@ public static class MessageSplitter
         var firstPart = message[..lastEndOfSentence];
         var secondPart = message[lastEndOfSentence..];
 
-        return (firstPart, secondPart);
-    }
-
-    private static int FindLastIndexWithinLimit(string message, char splitChar, int limit)
-    {
-        for (var i = message.Length - 1; i >= 0; i--)
-        {
-            if (message[i] == splitChar && i <= limit)
-                return i;
-        }
-
-        return -1;
+        return (firstPart.ToString(), secondPart.ToString());
     }
 }
