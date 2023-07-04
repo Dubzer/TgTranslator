@@ -8,7 +8,7 @@ public static class MessageSplitter
 
     public static (string, string) Split(ReadOnlySpan<char> message)
     {
-        // We use 4095 instead of 4096 because we want char to be included in the first part
+        // We use ..4096 instead of ..4097 because we want char to be included in the first part
         var lastEndOfSentence = message[..4096].LastIndexOfAny(SplitChars) + 1;
 
         // Hard trim
