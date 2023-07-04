@@ -5,7 +5,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace TgTranslator.Extensions;
+namespace TgTranslator.Utils.Extensions;
 
 public static class TelegramExtensions
 {
