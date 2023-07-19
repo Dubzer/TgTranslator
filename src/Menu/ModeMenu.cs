@@ -8,7 +8,8 @@ public enum TranslationMode
 {
     Auto,
     Forwards,
-    Manual
+    Manual,
+    LinkedChannel
 }
 
 public class ModeMenu : MenuItem
@@ -19,6 +20,7 @@ public class ModeMenu : MenuItem
         Description = "*Here you can change translation mode* \n\n" +
                       "*Auto* — translates all messages that require it \n" +
                       "*Forwards* — translates only forwarded messages that require it \n" +
+                      "*Linked channel* — translates only posts from linked channel that require it. \n" +
                       "*Manual* — translates *only* by replying on message with `@TgTranslatorBot`, `!translate` or `/tl`";
 
         Command = nameof(Setting.Mode).ToLowerInvariant();
@@ -33,6 +35,10 @@ public class ModeMenu : MenuItem
         Buttons.Add(new List<InlineKeyboardButton>
         {
             new("Only forwards") {CallbackData = $"switch {typeof(ApplyMenu)}#{Command}=forwards"}
+        });
+        Buttons.Add(new List<InlineKeyboardButton>()
+        {
+            new("Linked channel") {CallbackData = $"switch {typeof(ApplyMenu)}#{Command}=linkedChannel"}
         });
         Buttons.Add(new List<InlineKeyboardButton>
         {
