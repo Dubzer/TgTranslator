@@ -140,6 +140,10 @@ public class MessageHandler : IMessageHandler
                 }
 
                 return;
+            case TranslationMode.LinkedChannel:
+                if (message.From is not { Id: 777000 })
+                    return;
+                break;
         }
 
         if (await RequireTranslation(messageText, await _settingsProcessor.GetGroupLanguage(message.Chat.Id)))
