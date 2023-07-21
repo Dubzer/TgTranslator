@@ -183,6 +183,8 @@ public class MessageHandler : IMessageHandler
         if (string.IsNullOrEmpty(normalizedTranslation) || string.Equals(normalizedText, normalizedTranslation, StringComparison.InvariantCultureIgnoreCase))
             return;
 
+        translation = TranslationUtils.FixEntities(translation, message.Entities);
+
         if (translation.Length <= 4096)
         {
             await _client.SendTextMessageAsync(message.Chat.Id, translation,
@@ -272,7 +274,7 @@ public class MessageHandler : IMessageHandler
         string command = message.Text[1..];
         string payload = null;
             
-        if (command.Contains("@"))
+        if (command.Contains('@'))
         {
             int indexOfAt = command.IndexOf('@');
             if(command.Substring(indexOfAt + 1) != Program.Username)
@@ -281,7 +283,7 @@ public class MessageHandler : IMessageHandler
             command = command[..indexOfAt];
         }
 
-        if (command.Contains(" "))
+        if (command.Contains(' '))
         {
             payload = command.Split(" ")[1];
             command = command.Split(" ")[0];
@@ -326,7 +328,7 @@ public class MessageHandler : IMessageHandler
         #region Check if string contains only non-alphabetic chars
 
         var regex = new Regex(@"\P{L}{1,}");
-        MatchCollection matches = regex.Matches(text);
+        var matches = regex.Matches(text);
 
         string match = matches.Count == 1 ? matches[0].Value : null;
 
