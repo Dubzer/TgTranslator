@@ -20,7 +20,7 @@ public static class TranslationUtils
         if (usernames.Length == 0)
             return translation;
 
-        translation = usernames.Aggregate(translation, (current, username) => current.Replace($@" {username}", $"@{username}"));
+        translation = usernames.Aggregate(translation, (current, username) => current.Replace($"@ {username}", $"@{username}"));
         return translation;
     }
 }
