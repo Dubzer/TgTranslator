@@ -40,7 +40,8 @@ public static class DiServices
         services.AddTransient<MyChatMemberHandler>();
 
         services.AddTransient<IpWhitelist>();
-        
+        services.AddHostedService<MetricsHostedService>();
+
         if (telegramOptions.Webhooks)
             //  Register webhooks.
             //  IStartupFilter calls the service only once, after building the DI container, but before the app starts receiving messages 
