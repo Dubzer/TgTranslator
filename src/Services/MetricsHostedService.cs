@@ -13,19 +13,23 @@ public class MetricsHostedService : IHostedService
 {
     private readonly TgTranslatorContext _context;
     private readonly IMetrics _metrics;
+    private readonly PeriodicTimer _timer;
 
     public MetricsHostedService(IMetrics metrics, TgTranslatorContext context)
     {
         _context = context;
         _metrics = metrics;
+        _timer = new PeriodicTimer(TimeSpan.FromHours(3));
     }
+
+    // ReSharper disable once FunctionNeverReturns
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         while (true)
         {
             var numberOfGroups = await _context.Groups.CountAsync(cancellationToken);
             _metrics.HandleGroupsCountUpdate(numberOfGroups);
-            await Task.Delay(TimeSpan.FromHours(3), cancellationToken);
+            await _timer.WaitForNextTickAsync(cancellationToken);
         }
     }
 
