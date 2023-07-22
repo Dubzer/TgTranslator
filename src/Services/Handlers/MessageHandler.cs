@@ -183,7 +183,7 @@ public class MessageHandler : IMessageHandler
         if (string.IsNullOrEmpty(normalizedTranslation) || string.Equals(normalizedText, normalizedTranslation, StringComparison.InvariantCultureIgnoreCase))
             return;
 
-        translation = TranslationUtils.FixEntities(translation, message.Entities);
+        translation = TranslationUtils.FixEntities(message.Text, translation, message.Entities);
 
         if (translation.Length <= 4096)
         {
