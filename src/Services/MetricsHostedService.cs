@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TgTranslator.Data;
 using TgTranslator.Interfaces;
@@ -11,13 +12,13 @@ namespace TgTranslator.Services;
 
 public class MetricsHostedService : IHostedService
 {
-    private readonly TgTranslatorContext _context;
+    private readonly IServiceScopeFactory _scopeFactory;
     private readonly IMetrics _metrics;
     private readonly PeriodicTimer _timer;
 
-    public MetricsHostedService(IMetrics metrics, TgTranslatorContext context)
+    public MetricsHostedService(IServiceScopeFactory scopeFactory, IMetrics metrics)
     {
-        _context = context;
+        _scopeFactory = scopeFactory;
         _metrics = metrics;
         _timer = new PeriodicTimer(TimeSpan.FromHours(3));
     }
@@ -27,7 +28,9 @@ public class MetricsHostedService : IHostedService
     {
         while (true)
         {
-            var numberOfGroups = await _context.Groups.CountAsync(cancellationToken);
+            using var scope = _scopeFactory.CreateScope();
+            var context = scope.ServiceProvider.GetService<TgTranslatorContext>();
+            var numberOfGroups = await context.Groups.CountAsync(cancellationToken);
             _metrics.HandleGroupsCountUpdate(numberOfGroups);
             await _timer.WaitForNextTickAsync(cancellationToken);
         }
