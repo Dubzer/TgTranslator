@@ -10,7 +10,7 @@ public class Metrics : IMetrics
     private readonly Counter _totalMessages;
     private readonly Counter _translatorApiCalls;
     private readonly Counter _translatorApiCharacters;
-
+    private readonly Gauge _totalGroups;
     public Metrics()
     {
         _totalMessages = Prometheus.Metrics.CreateCounter("total_messages", "Total messages");
@@ -20,6 +20,7 @@ public class Metrics : IMetrics
 
         _translatorApiCalls = Prometheus.Metrics.CreateCounter("translator_api_calls", "Translator API calls", "group_id");
         _translatorApiCharacters = Prometheus.Metrics.CreateCounter("translator_api_characters", "Translator API characters", "group_id");
+        _totalGroups = Prometheus.Metrics.CreateGauge("total_groups", "Total groups count");
     }
         
     #region IMetrics Members
@@ -36,6 +37,11 @@ public class Metrics : IMetrics
     {
         TranslatorApiCallsInc(groupId);
         TranslatorApiCharactersInc(groupId, charactersCount);
+    }
+
+    public void HandleGroupsCountUpdate(int count)
+    {
+        _totalGroups.Set(count);
     }
 
     #endregion
