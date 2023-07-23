@@ -24,16 +24,21 @@ public class MetricsHostedService : IHostedService
     }
 
     // ReSharper disable once FunctionNeverReturns
-    public async Task StartAsync(CancellationToken cancellationToken)
+    public Task StartAsync(CancellationToken cancellationToken)
     {
-        while (true)
+        Task.Factory.StartNew(async () =>
         {
-            using var scope = _scopeFactory.CreateScope();
-            var context = scope.ServiceProvider.GetService<TgTranslatorContext>();
-            var numberOfGroups = await context.Groups.CountAsync(cancellationToken);
-            _metrics.HandleGroupsCountUpdate(numberOfGroups);
-            await _timer.WaitForNextTickAsync(cancellationToken);
-        }
+            while (true)
+            {
+                using var scope = _scopeFactory.CreateScope();
+                var context = scope.ServiceProvider.GetService<TgTranslatorContext>();
+                var numberOfGroups = await context.Groups.CountAsync(cancellationToken);
+                _metrics.HandleGroupsCountUpdate(numberOfGroups);
+                await _timer.WaitForNextTickAsync(cancellationToken);
+            }
+        }, TaskCreationOptions.LongRunning);
+
+        return Task.CompletedTask;
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
