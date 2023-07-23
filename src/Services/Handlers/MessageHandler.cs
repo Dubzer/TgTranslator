@@ -13,6 +13,7 @@ using TgTranslator.Data.Options;
 using TgTranslator.Exceptions;
 using TgTranslator.Interfaces;
 using TgTranslator.Menu;
+using TgTranslator.Stats;
 using TgTranslator.Utils;
 using TgTranslator.Utils.Extensions;
 using TgTranslator.Validation;
@@ -26,7 +27,7 @@ public class MessageHandler : IMessageHandler
 
     private readonly TelegramBotClient _client;
     private readonly ILanguageDetector _languageDetector;
-    private readonly IMetrics _metrics;
+    private readonly Metrics _metrics;
     private readonly SettingsProcessor _settingsProcessor;
     private readonly ITranslator _translator;
     private readonly MessageValidator _validator;
@@ -36,7 +37,7 @@ public class MessageHandler : IMessageHandler
     private readonly HashSet<string> _manualTranslationCommands;
         
     public MessageHandler(TelegramBotClient client, BotMenu botMenu, SettingsProcessor settingsProcessor, ILanguageDetector languageLanguageDetector, 
-        ITranslator translator, IMetrics metrics, IOptions<Blacklists> blacklistsOptions, MessageValidator validator, UsersDatabaseService users, GroupsBlacklistService groupsBlacklist)
+        ITranslator translator, Metrics metrics, IOptions<Blacklists> blacklistsOptions, MessageValidator validator, UsersDatabaseService users, GroupsBlacklistService groupsBlacklist)
     {
         _client = client;
         _botMenu = botMenu;

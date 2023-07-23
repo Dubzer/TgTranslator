@@ -26,7 +26,7 @@ public static class DiServices
 
         services.AddSingleton(new TelegramBotClient(telegramOptions.BotToken));
 
-        services.AddSingleton<IMetrics, Metrics>();
+        services.AddSingleton<Metrics>();
         services.AddTransient<BotMenu>();
 
         services.AddTransient<ILanguageDetector, TranslatePlaceholderService>();
