@@ -24,8 +24,8 @@ public class Metrics
         _translatorApiCharacters = Prometheus.Metrics.CreateCounter("translator_api_characters", "Translator API characters", "group_id");
 
         TotalGroups = Prometheus.Metrics.CreateGauge("total_groups", "Total groups count");
-        TotalUsers = Prometheus.Metrics.CreateGauge("total_groups", "Total users count");
-        TotalPmUsers = Prometheus.Metrics.CreateGauge("total_groups", "Total PM users count");
+        TotalUsers = Prometheus.Metrics.CreateGauge("total_users", "Total users count");
+        TotalPmUsers = Prometheus.Metrics.CreateGauge("total_pm_users", "Total PM users count");
     }
         
     public void HandleMessage() => TotalMessagesInc();
