@@ -21,7 +21,7 @@ public class MetricsHostedService : IHostedService
     {
         _scopeFactory = scopeFactory;
         _metrics = metrics;
-        _timer = new PeriodicTimer(TimeSpan.FromHours(3));
+        _timer = new PeriodicTimer(TimeSpan.FromMinutes(15));
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
