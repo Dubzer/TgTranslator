@@ -40,6 +40,10 @@ public static class Program
 
     private static IHostBuilder CreateHostBuilder() =>
         Host.CreateDefaultBuilder()
+            .ConfigureLogging(builder =>
+            {
+                builder.Configure(options => options.ActivityTrackingOptions = ActivityTrackingOptions.TraceId);
+            })
             .UseSerilog((hostingContext, loggerConfiguration) =>
             {
                 loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration)
