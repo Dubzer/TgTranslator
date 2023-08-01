@@ -24,14 +24,16 @@ public class TelegramBotController : Controller
     private readonly TelegramBotClient _client;
     private readonly IMessageHandler _messageHandler;
     private readonly GroupsBlacklistService _groupsBlacklist;
+    private readonly ILogger _logger;
 
-    public TelegramBotController(TelegramBotClient client, IMessageHandler messageHandler, ICallbackQueryHandler callbackQueryHandler, MyChatMemberHandler myChatMemberHandler, GroupsBlacklistService groupsBlacklist)
+    public TelegramBotController(TelegramBotClient client, IMessageHandler messageHandler, ICallbackQueryHandler callbackQueryHandler, MyChatMemberHandler myChatMemberHandler, GroupsBlacklistService groupsBlacklist, ILogger logger)
     {
         _client = client;
         _messageHandler = messageHandler ?? throw new ArgumentNullException(nameof(messageHandler));
         _callbackQueryHandler = callbackQueryHandler ?? throw new ArgumentNullException(nameof(callbackQueryHandler));
         _myChatMemberHandler = myChatMemberHandler;
         _groupsBlacklist = groupsBlacklist;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -68,7 +70,7 @@ public class TelegramBotController : Controller
         }
         catch(Exception e)
         {
-            Log.Error(e, "Error while processing update {UpdateId} with type {UpdateType}", update?.Id, update?.Type);
+            _logger.Error(e, "Error while processing update {UpdateId} with type {UpdateType}", update?.Id, update?.Type);
         }
 
         return Ok();
@@ -87,11 +89,11 @@ public class TelegramBotController : Controller
         }
         catch (UnsupportedCommand exception)
         {
-            Log.Error(exception, "Got a CallbackQuery with unsupported command");
+            _logger.Error(exception, "Got a CallbackQuery with unsupported command");
         }
         catch (UnsupportedMenuItem exception)
         {
-            Log.Error(exception, "Got a CallbackQuery with unsupported item");
+            _logger.Error(exception, "Got a CallbackQuery with unsupported item");
         }
     }
 
