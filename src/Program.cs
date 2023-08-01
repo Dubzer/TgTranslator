@@ -40,15 +40,19 @@ public static class Program
 
     private static IHostBuilder CreateHostBuilder() =>
         Host.CreateDefaultBuilder()
-            .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration)
-                .Ignore(new []
-                {
-                    "Microsoft.EntityFrameworkCore.Database.Command",
-                    "Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker",
-                    "Microsoft.AspNetCore.Hosting.Diagnostics",
-                    "Microsoft.AspNetCore.Mvc.StatusCodeResult",
-                    "Microsoft.EntityFrameworkCore.Infrastructure"
-                }))
+            .UseSerilog((hostingContext, loggerConfiguration) =>
+            {
+                loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration)
+                    .Ignore(new[]
+                    {
+                        "Microsoft.EntityFrameworkCore.Database.Command",
+                        "Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker",
+                        "Microsoft.AspNetCore.Hosting.Diagnostics",
+                        "Microsoft.AspNetCore.Mvc.StatusCodeResult",
+                        "Microsoft.EntityFrameworkCore.Infrastructure"
+                    });
+                loggerConfiguration.Enrich.FromLogContext();
+            })
             .ConfigureAppConfiguration(config => config
                 .AddJsonFile("blacklists.json")
                 .AddJsonFile("languages.json"))
