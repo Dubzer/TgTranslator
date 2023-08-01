@@ -40,29 +40,37 @@ public class TelegramBotController : Controller
     [HttpPost]
     public async Task<OkResult> Post([FromBody] Update update)
     {
-        if (update == null)
-            return Ok();
-
-        var updateTransaction = SentrySdk.StartTransaction(
-            "update",
-            $"update-{update.Type.ToString().ToLowerInvariant()}"
-        );
-        SentrySdk.ConfigureScope(sentryScope => sentryScope.Transaction = updateTransaction);
-
-        switch (update.Type)
+        try
         {
-            case UpdateType.Message:
-                await OnMessage(update.Message);
-                break;
-            case UpdateType.CallbackQuery:
-                await OnCallbackQuery(update.CallbackQuery);
-                break;
-            case UpdateType.MyChatMember:
-                await OnMyChatMember(update.MyChatMember);
-                break;
+            if (update == null)
+                return Ok();
+
+            var updateTransaction = SentrySdk.StartTransaction(
+                "update",
+                $"update-{update.Type.ToString().ToLowerInvariant()}"
+            );
+            SentrySdk.ConfigureScope(sentryScope => sentryScope.Transaction = updateTransaction);
+
+            switch (update.Type)
+            {
+                case UpdateType.Message:
+                    await OnMessage(update.Message);
+                    break;
+                case UpdateType.CallbackQuery:
+                    await OnCallbackQuery(update.CallbackQuery);
+                    break;
+                case UpdateType.MyChatMember:
+                    await OnMyChatMember(update.MyChatMember);
+                    break;
+            }
+
+            updateTransaction.Finish();
+        }
+        catch(Exception e)
+        {
+            Log.Error(e, "Error while processing update {UpdateId} with type {UpdateType}", update?.Id, update?.Type);
         }
 
-        updateTransaction.Finish();
         return Ok();
     }
     
