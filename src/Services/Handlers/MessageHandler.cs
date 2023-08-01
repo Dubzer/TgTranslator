@@ -33,11 +33,12 @@ public class MessageHandler : IMessageHandler
     private readonly MessageValidator _validator;
     private readonly UsersDatabaseService _users;
     private readonly GroupsBlacklistService _groupsBlacklist;
+    private readonly ILogger _logger;
 
     private readonly HashSet<string> _manualTranslationCommands;
         
     public MessageHandler(TelegramBotClient client, BotMenu botMenu, SettingsProcessor settingsProcessor, ILanguageDetector languageLanguageDetector, 
-        ITranslator translator, Metrics metrics, IOptions<Blacklists> blacklistsOptions, MessageValidator validator, UsersDatabaseService users, GroupsBlacklistService groupsBlacklist)
+        ITranslator translator, Metrics metrics, IOptions<Blacklists> blacklistsOptions, MessageValidator validator, UsersDatabaseService users, GroupsBlacklistService groupsBlacklist, ILogger logger)
     {
         _client = client;
         _botMenu = botMenu;
@@ -49,6 +50,7 @@ public class MessageHandler : IMessageHandler
         _validator = validator;
         _users = users;
         _groupsBlacklist = groupsBlacklist;
+        _logger = logger;
         _manualTranslationCommands = new HashSet<string> {$"@{Program.Username}", "!translate", "/tl", $"/tl@{Program.Username}"};
     }
 
@@ -57,7 +59,7 @@ public class MessageHandler : IMessageHandler
     public async Task HandleMessageAsync(Message message)
     {
         _metrics.HandleMessage();
-        Log.Information("Got new message {ChatId} | {From} | {ChatType}", message.Chat.Id, message.From, message.Chat.Type);
+        _logger.Information("Got new message {ChatId} | {From} | {ChatType}", message.Chat.Id, message.From, message.Chat.Type);
         SentrySdk.ConfigureScope(scope =>
         {
             scope.User = new Sentry.User
@@ -94,7 +96,7 @@ public class MessageHandler : IMessageHandler
         _metrics.HandleGroupMessage(message.Chat.Id, messageText.Length);
         if (!_validator.GroupMessageValid(message, messageText))
         {
-            Log.Information("Message by {ChatId} | {From} is not valid", message.Chat.Id, message.From);
+            _logger.Information("Message by {ChatId} | {From} is not valid", message.Chat.Id, message.From);
             return;
         }
 
@@ -103,7 +105,7 @@ public class MessageHandler : IMessageHandler
             
         if (message.IsCommand() && !_manualTranslationCommands.Contains(messageText))
         {
-            Log.Information("Message by {ChatId} | {From} is a command", message.Chat.Id, message.From);
+            _logger.Information("Message by {ChatId} | {From} is a command", message.Chat.Id, message.From);
             await HandleCommand(message);
             return;
         }
@@ -114,7 +116,7 @@ public class MessageHandler : IMessageHandler
             
         if (messageText.StartsWith($"@{Program.Username} set:", StringComparison.InvariantCulture))
         {
-            Log.Information("Message by {ChatId} | {From} is a setting changing", message.Chat.Id, message.From);
+            _logger.Information("Message by {ChatId} | {From} is a setting changing", message.Chat.Id, message.From);
             await HandleSettingChanging(message);
             return;
         }
@@ -122,7 +124,7 @@ public class MessageHandler : IMessageHandler
         switch (await _settingsProcessor.GetTranslationMode(message.Chat.Id))
         {
             case TranslationMode.Forwards:
-                Log.Information("Group {ChatId} | {From} is using Forwards translation mode", message.Chat.Id, message.From);
+                _logger.Information("Group {ChatId} | {From} is using Forwards translation mode", message.Chat.Id, message.From);
                 if ((message.ForwardFrom == null || message.ForwardFrom.Id == 1087968824)
                     && message.ForwardSenderName == null 
                     && message.ForwardFromChat == null
@@ -132,7 +134,7 @@ public class MessageHandler : IMessageHandler
                     return;
                 break;
             case TranslationMode.Manual:
-                Log.Information("Group {ChatId} | {From} is using Manual translation mode", message.Chat.Id, message.From);
+                _logger.Information("Group {ChatId} | {From} is using Manual translation mode", message.Chat.Id, message.From);
                 if (message.ReplyToMessage == null) 
                     return;
                 if (_manualTranslationCommands.Contains(messageText) && await RequireTranslation(message.ReplyToMessage.TextOrCaption(), await _settingsProcessor.GetGroupLanguage(message.Chat.Id)))
@@ -165,7 +167,7 @@ public class MessageHandler : IMessageHandler
 
     private async Task HandleTranslation(Message message, string text)
     {
-        Log.Information("Handling translation for {ChatId} | {From}...", message.Chat.Id, message.From);
+        _logger.Information("Handling translation for {ChatId} | {From}...", message.Chat.Id, message.From);
         _metrics.HandleTranslatorApiCall(message.Chat.Id, string.IsNullOrEmpty(text) ? 0 : text.Length);
         await _users.AddFromGroupIfNeeded(message.From.Id);
             
@@ -197,7 +199,7 @@ public class MessageHandler : IMessageHandler
             await SendLongMessage(message.Chat.Id, translation, message.MessageId);
         }
 
-        Log.Information("Sent translation to {ChatId} | {From}", message.Chat.Id, message.From);
+        _logger.Information("Sent translation to {ChatId} | {From}", message.Chat.Id, message.From);
     }
 
     private async Task SendLongMessage(long chatId, string message, int replyId)
@@ -318,6 +320,23 @@ public class MessageHandler : IMessageHandler
                 break;
             case "contact" when chatType == ChatType.Private:
                 await _client.SendTextMessageAsync(message.Chat.Id, "Developer: @Dubzer\nNews channel: @tgtrns\n\n☕️ Donate: yaso.su/feedme");
+                break;
+            case "testsettings" when chatType is ChatType.Group or ChatType.Supergroup:
+                var bot = await _client.GetChatMemberAsync(message.Chat.Id, Program.BotId);
+                if (message.From?.Id == 1087968824 && bot.Status != ChatMemberStatus.Administrator)
+                {
+                    await _client.SendTextMessageAsync(message.Chat.Id,
+                        $"⚠️ To change the settings, you need to promote @{Program.Username} to administrator status!");
+                    return;
+                }
+
+                await _client.SendTextMessageAsync(message.Chat.Id, "Test", replyMarkup: new InlineKeyboardMarkup(new[]
+                {
+                    new InlineKeyboardButton("Open settings")
+                    {
+                        Url = $"https://t.me/{Program.Username}/settings?startapp=i{message.Chat.Id}"
+                    }
+                }));
                 break;
             default:
                 return;
