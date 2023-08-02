@@ -108,22 +108,23 @@ public class TelegramBotController : Controller
         }
         catch (InvalidSettingException)
         {
-            await _client.SendTextMessageAsync(message.Chat.Id, "It seems that this setting is not supported", replyToMessageId: message.MessageId);
+            await _client.SendTextMessageAsync(message.Chat.Id, "It seems that this setting is not supported", replyToMessageId: message.MessageId, allowSendingWithoutReply: false);
         }
         catch (InvalidSettingValueException)
         {
-            await _client.SendTextMessageAsync(message.Chat.Id, "It seems that this value is not supported", replyToMessageId: message.MessageId);
+            await _client.SendTextMessageAsync(message.Chat.Id, "It seems that this value is not supported", replyToMessageId: message.MessageId, allowSendingWithoutReply: false);
         }
         catch (UnauthorizedSettingChangingException)
         {
             await _client.SendTextMessageAsync(message.Chat.Id, "Hey! Only admins can change settings of this bot!",
-                replyToMessageId: message.MessageId);
+                replyToMessageId: message.MessageId, allowSendingWithoutReply: false);
         }
         catch (ApiRequestException exception) when (exception.Message.Contains("CHAT_RESTRICTED")
                                                     || exception.Message.Contains("have no rights to send a message")
                                                     || exception.Message.Contains("not enough rights to"))
         {
             await _groupsBlacklist.AddGroup(message.Chat.Id);
+
         }
         catch (ApiRequestException exception) when (exception.Message.Contains("message not found", StringComparison.InvariantCultureIgnoreCase)) { }
         catch (ApiRequestException exception) when (exception.Message.Contains("Too Many Requests", StringComparison.InvariantCultureIgnoreCase)) { }
