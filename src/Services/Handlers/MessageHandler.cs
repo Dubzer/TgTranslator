@@ -192,7 +192,7 @@ public class MessageHandler : IMessageHandler
         {
             await _client.SendTextMessageAsync(message.Chat.Id, translation,
                 disableNotification: true, disableWebPagePreview: true,
-                replyToMessageId: message.MessageId);
+                replyToMessageId: message.MessageId, allowSendingWithoutReply: false);
         }
         else
         {
@@ -208,11 +208,11 @@ public class MessageHandler : IMessageHandler
 
         var firstPartResult = await _client.SendTextMessageAsync(chatId, firstPart,
             disableNotification: true, disableWebPagePreview: true,
-            replyToMessageId: replyId);
+            replyToMessageId: replyId, allowSendingWithoutReply: false);
 
         await _client.SendTextMessageAsync(chatId, secondPart,
             disableNotification: true, disableWebPagePreview: true,
-            replyToMessageId: firstPartResult.MessageId);
+            replyToMessageId: firstPartResult.MessageId, allowSendingWithoutReply: false);
     }
 
     private async Task HandleSettingChanging(Message message)
@@ -268,7 +268,7 @@ public class MessageHandler : IMessageHandler
                 break;
         }
 
-        await _client.SendTextMessageAsync(message.Chat.Id, "Done!", replyToMessageId: message.MessageId);
+        await _client.SendTextMessageAsync(message.Chat.Id, "Done!", replyToMessageId: message.MessageId, allowSendingWithoutReply: false);
     }
 
     private async Task HandleCommand(Message message)
