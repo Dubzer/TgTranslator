@@ -71,6 +71,7 @@ public class TelegramBotController : Controller
         catch(Exception e)
         {
             _logger.Error(e, "Error while processing update {UpdateId} with type {UpdateType}", update?.Id, update?.Type);
+            SentrySdk.CaptureException(e);
         }
 
         return Ok();
