@@ -321,6 +321,15 @@ public class MessageHandler : IMessageHandler
             case "contact" when chatType == ChatType.Private:
                 await _client.SendTextMessageAsync(message.Chat.Id, "Developer: @Dubzer\nNews channel: @tgtrns\n\n☕️ Donate: yaso.su/feedme");
                 break;
+            case "testsettings" when chatType is ChatType.Group or ChatType.Supergroup:
+                var bot = await _client.GetChatMemberAsync(message.Chat.Id, Program.BotId);
+                if (message.From?.Id == 1087968824 && bot.Status != ChatMemberStatus.Administrator)
+                {
+                    await _client.SendTextMessageAsync(message.Chat.Id,
+                        $"⚠️ To change the settings, you need to promote @{Program.Username} to administrator status!");
+                    return;
+                }
+                break;
             default:
                 return;
         }

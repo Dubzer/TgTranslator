@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using TgTranslator.Data.DTO;
 using TgTranslator.Data.Options;
 using TgTranslator.Menu;
 using TgTranslator.Models;
@@ -25,6 +26,16 @@ public class SettingsProcessor
         _languages = languages.Value;
         // TODO: Refactor it
         Program.Languages = languages.Value;
+    }
+
+    public async Task<Settings> GetGroupConfiguration(long chatId)
+    {
+        var group = await _database.GetAsync(chatId);
+        return new()
+        {
+            TranslationMode = group.TranslationMode,
+            Languages = new[] { group.Language }
+        };
     }
 
     public async Task<string> GetGroupLanguage(long chatId)

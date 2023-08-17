@@ -1,4 +1,7 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
@@ -42,6 +45,8 @@ public static class DiServices
         services.AddTransient<IpWhitelist>();
         services.AddHostedService<MetricsHostedService>();
 
+        services.AddSingleton<WebAppHashService>();
+
         if (telegramOptions.Webhooks)
             //  Register webhooks.
             //  IStartupFilter calls the service only once, after building the DI container, but before the app starts receiving messages 
@@ -49,7 +54,7 @@ public static class DiServices
         else
             //  Receive events using polling
             //  TelegramBotHostedService basically wraps Telegram.Bot lib's events into Controller 
-            services.AddHostedService<TelegramBotHostedService>();   
+            services.AddHostedService<TelegramBotHostedService>();
 
         return services;
     }

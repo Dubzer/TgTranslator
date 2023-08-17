@@ -21,7 +21,11 @@ public class TelegramBotHostedService : IHostedService
     {
         _scopeFactory = scopeFactory;
         _client = client;
-        Program.Username = client.GetMeAsync().Result.Username;
+
+        var me = client.GetMeAsync().GetAwaiter().GetResult();
+        Program.Username = me.Username;
+        Program.BotId = me.Id;
+
         SentrySdk.ConfigureScope(scope =>
         {
             scope.Contexts["bot"] = new
