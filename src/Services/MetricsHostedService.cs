@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TgTranslator.Data;
-using TgTranslator.Interfaces;
 using TgTranslator.Stats;
 
 namespace TgTranslator.Services;
@@ -21,7 +20,7 @@ public class MetricsHostedService : IHostedService
     {
         _scopeFactory = scopeFactory;
         _metrics = metrics;
-        _timer = new PeriodicTimer(TimeSpan.FromMinutes(15));
+        _timer = new PeriodicTimer(TimeSpan.FromMinutes(5));
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
@@ -30,6 +29,9 @@ public class MetricsHostedService : IHostedService
         {
             while (true)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
                 using var scope = _scopeFactory.CreateScope();
                 var context = scope.ServiceProvider.GetService<TgTranslatorContext>();
 
