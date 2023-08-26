@@ -316,7 +316,12 @@ public class MessageHandler : IMessageHandler
                 await _botMenu.SendMainMenu(message.Chat.Id);
                 break;
             case "help" when chatType == ChatType.Private:
-                await _client.SendVideoAsync(message.Chat.Id, new InputFileUrl("https://dubzer.dev/TgTranslatorHelp.mp4"));
+                await _client.SendTextMessageAsync(message.Chat.Id, "To start using the bot, you need to add it to the *group chat*.",
+                    parseMode: ParseMode.Markdown,
+                    replyMarkup: new InlineKeyboardMarkup(new InlineKeyboardButton("Select a group")
+                    {
+                        Url = "https://t.me/tgtranslatorbot?startgroup=fromhelp"
+                    }));
                 break;
             case "contact" when chatType == ChatType.Private:
                 await _client.SendTextMessageAsync(message.Chat.Id, "Developer: @Dubzer\nNews channel: @tgtrns\n\n☕️ Donate: yaso.su/feedme");
