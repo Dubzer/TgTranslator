@@ -12,7 +12,7 @@ public class MainMenu : MenuItem
     public MainMenu(IReadOnlyList<string> arguments)
     {
         Description =
-            "You must add this bot to your group. Type /help to learn how. \nThen, you can configure it here:";
+            "This bot translates messages in the group chats.\nWrite /help to get started.\n\n⚙️ Then you can tweak some settings:";
         ItemTitle = "MainMenu";
 
         _mainMenuItems = new List<Type>

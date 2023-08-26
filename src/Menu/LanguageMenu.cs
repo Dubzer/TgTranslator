@@ -25,7 +25,7 @@ class LanguageMenu : MenuItem
 
         ItemTitle = "Change group language";
         Command = Setting.Language.ToString().ToLowerInvariant();
-        Description = "Here you can setup primary language for your group:";
+        Description = $"*Here you can setup primary language for your group.*\n{Program.Username}won't translate messages written in this language";
     }
 
     protected override void GenerateButtons()
