@@ -17,7 +17,7 @@ public class ModeMenu : MenuItem
     public ModeMenu(IReadOnlyList<string> arguments)
     {
         ItemTitle = "Change translation mode";
-        Description = "*Here you can change translation mode* \n\n" +
+        Description = "*Change translation mode*\nHere you can customize when the bot will translate messages ✨\n\n" +
                       "*Auto* — translates all messages that require it \n" +
                       "*Forwards* — translates only forwarded messages that require it \n" +
                       "*Linked channel* — translates only posts from linked channel that require it. \n" +
