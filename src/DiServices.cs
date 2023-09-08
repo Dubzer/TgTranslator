@@ -43,6 +43,8 @@ public static class DiServices
         services.AddTransient<MyChatMemberHandler>();
 
         services.AddTransient<IpWhitelist>();
+        services.AddTransient<HandlersRouter>();
+
         services.AddHostedService<MetricsHostedService>();
 
         services.AddSingleton<WebAppHashService>();

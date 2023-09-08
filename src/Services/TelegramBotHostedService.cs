@@ -8,7 +8,6 @@ using Serilog;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using TgTranslator.Controllers;
 
 namespace TgTranslator.Services;
 
@@ -33,9 +32,8 @@ public class TelegramBotHostedService : IHostedService
                 Program.Username
             };
         });
-
     }
-        
+
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         await _client.DeleteWebhookAsync(cancellationToken: cancellationToken);
@@ -46,14 +44,14 @@ public class TelegramBotHostedService : IHostedService
                 Offset = -1,
                 AllowedUpdates = new[]
                 {
-                    UpdateType.Message, 
-                    UpdateType.CallbackQuery, 
+                    UpdateType.Message,
+                    UpdateType.CallbackQuery,
                     UpdateType.InlineQuery,
                     UpdateType.ChatMember,
                     UpdateType.MyChatMember
                 }
             });
-        
+
         await _client.SetMyCommandsAsync(new[]
         {
             new BotCommand
@@ -73,7 +71,7 @@ public class TelegramBotHostedService : IHostedService
             },
 
         }, BotCommandScope.AllPrivateChats(), cancellationToken: cancellationToken);
-        
+
         await _client.SetMyCommandsAsync(new[]
         {
             BotCommands.AdminCommand
@@ -82,20 +80,12 @@ public class TelegramBotHostedService : IHostedService
 
     private async Task UpdateHandler(ITelegramBotClient client, Update update, CancellationToken cancellationToken)
     {
-        try
-        {
-            using var scope = _scopeFactory.CreateScope();
-            var controller = scope.ServiceProvider.GetRequiredService<TelegramBotController>();
-            await controller.Post(update);
-        }
-        catch (Exception exception)
-        {
-            SentrySdk.CaptureException(exception);
-            Log.Error(exception, "OnMessage: An unhandled exception");
-        }
+        using var scope = _scopeFactory.CreateScope();
+        var router = scope.ServiceProvider.GetRequiredService<HandlersRouter>();
+        await router.HandleUpdate(update);
     }
 
-    private Task ErrorHandler(ITelegramBotClient client, Exception exception, CancellationToken cancellationToken)
+    private static Task ErrorHandler(ITelegramBotClient client, Exception exception, CancellationToken cancellationToken)
     {
         Log.Error(exception, "OnReceiveError");
         return Task.CompletedTask;
@@ -105,5 +95,4 @@ public class TelegramBotHostedService : IHostedService
     {
         return Task.CompletedTask;
     }
-
 }
