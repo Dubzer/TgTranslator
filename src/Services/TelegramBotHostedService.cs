@@ -52,29 +52,11 @@ public class TelegramBotHostedService : IHostedService
                 }
             });
 
-        await _client.SetMyCommandsAsync(new[]
-        {
-            new BotCommand
-            {
-                Command = "contact",
-                Description = "📩 Contact the developer"
-            },
-            new BotCommand
-            {
-                Command = "help",
-                Description = "❔ How to add the bot"
-            },
-            new BotCommand
-            {
-                Command = "settings",
-                Description = "⚙️ Change language and mode"
-            },
-
-        }, BotCommandScope.AllPrivateChats(), cancellationToken: cancellationToken);
+        await _client.SetMyCommandsAsync(BotCommands.PrivateChatCommands, BotCommandScope.AllPrivateChats(), cancellationToken: cancellationToken);
 
         await _client.SetMyCommandsAsync(new[]
         {
-            BotCommands.AdminCommand
+            BotCommands.SettingsCommand
         }, BotCommandScope.AllChatAdministrators(), cancellationToken: cancellationToken);
     }
 

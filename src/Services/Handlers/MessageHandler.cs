@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Sentry;
 using Serilog;
+using Serilog.Context;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -89,6 +90,7 @@ public class MessageHandler : IMessageHandler
 
     private async Task HandleGroupMessage(Message message)
     {
+        LogContext.PushProperty("ChatId", message.Chat.Id);
         string messageText = message.TextOrCaption();
         if (messageText == null)
             return; 
@@ -245,7 +247,7 @@ public class MessageHandler : IMessageHandler
                     case TranslationMode.Manual:
                         await _client.SetMyCommandsAsync(new[]
                         {
-                            BotCommands.AdminCommand,
+                            BotCommands.SettingsCommand,
                             BotCommands.TranslateCommand
                         }, BotCommandScope.ChatAdministrators(message.Chat.Id));
 
@@ -258,7 +260,7 @@ public class MessageHandler : IMessageHandler
                         await _client.DeleteMyCommandsAsync(BotCommandScope.Chat(message.Chat.Id));
                         await _client.SetMyCommandsAsync(new[]
                         {
-                            BotCommands.AdminCommand
+                            BotCommands.SettingsCommand
                         }, BotCommandScope.ChatAdministrators(message.Chat.Id));
                         break;
                 }
@@ -298,12 +300,21 @@ public class MessageHandler : IMessageHandler
                 if(!await message.From.IsAdministrator(message.Chat.Id, _client))
                     throw new UnauthorizedSettingChangingException();
                     
-                const string text = "You can access settings in the PM";
-                await _client.SendTextMessageAsync(message.Chat.Id, text, replyMarkup: new InlineKeyboardMarkup(new InlineKeyboardButton("Open settings")
+                var bot = await _client.GetChatMemberAsync(message.Chat.Id, Program.BotId);
+                if (message.From?.Id == 1087968824 && bot.Status != ChatMemberStatus.Administrator)
                 {
-                    Url = $"https://t.me/{Program.Username}?start=s"
-                }));
-                    
+                    await _client.SendTextMessageAsync(message.Chat.Id,
+                        $"⚠️ To change the settings, you need to promote @{Program.Username} to administrator status!");
+                }
+
+                await _client.SendTextMessageAsync(message.Chat.Id,
+                    "Press on the button bellow to change the settings." +
+                    $"\n\nIf your client doesn't support the menu [click here](https://t.me/{Program.Username}?start=s)",
+                    parseMode: ParseMode.Markdown,
+                    replyMarkup: new InlineKeyboardMarkup(new InlineKeyboardButton("Change settings")
+                    {
+                        Url = $"https://t.me/{Program.Username}/settings?startapp=i{message.Chat.Id}"
+                    }));
                 break;
             case "start" when chatType == ChatType.Private && !string.IsNullOrEmpty(payload):
                 if (payload != "s")
@@ -312,7 +323,7 @@ public class MessageHandler : IMessageHandler
                 await _botMenu.SendMainMenu(message.Chat.Id);
                 break;
             case "start" when chatType == ChatType.Private:
-            case "settings" when chatType == ChatType.Private:
+            case "old_settings" when chatType == ChatType.Private:
                 await _botMenu.SendMainMenu(message.Chat.Id);
                 break;
             case "help" when chatType == ChatType.Private:
@@ -325,15 +336,6 @@ public class MessageHandler : IMessageHandler
                 break;
             case "contact" when chatType == ChatType.Private:
                 await _client.SendTextMessageAsync(message.Chat.Id, "Developer: @Dubzer\nNews channel: @tgtrns\n\n☕️ Donate: yaso.su/feedme");
-                break;
-            case "testsettings" when chatType is ChatType.Group or ChatType.Supergroup:
-                var bot = await _client.GetChatMemberAsync(message.Chat.Id, Program.BotId);
-                if (message.From?.Id == 1087968824 && bot.Status != ChatMemberStatus.Administrator)
-                {
-                    await _client.SendTextMessageAsync(message.Chat.Id,
-                        $"⚠️ To change the settings, you need to promote @{Program.Username} to administrator status!");
-                    return;
-                }
                 break;
             default:
                 return;

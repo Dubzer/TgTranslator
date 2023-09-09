@@ -13,7 +13,7 @@ public class WebAppHashService
 
     public WebAppHashService(IOptions<TelegramOptions> options)
     {
-        _token = HMACSHA256.HashData("WebAppData"u8.ToArray(), Encoding.UTF8.GetBytes(options.Value.BotToken));
+        _token = HMACSHA256.HashData("WebAppData"u8, Encoding.UTF8.GetBytes(options.Value.BotToken));
     }
     
     public bool VerifyHash(string queryString, string hash)

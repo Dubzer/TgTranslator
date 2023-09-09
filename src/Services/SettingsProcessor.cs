@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using TgTranslator.Data;
 using TgTranslator.Data.DTO;
 using TgTranslator.Data.Options;
 using TgTranslator.Menu;
@@ -18,11 +19,13 @@ public enum Setting
 public class SettingsProcessor
 {
     private readonly GroupDatabaseService _database;
+    private readonly TgTranslatorContext _databaseContext;
     private readonly LanguagesList _languages;
 
-    public SettingsProcessor(GroupDatabaseService database, IOptions<LanguagesList> languages)
+    public SettingsProcessor(GroupDatabaseService database, TgTranslatorContext databaseContext, IOptions<LanguagesList> languages)
     {
         _database = database;
+        _databaseContext = databaseContext;
         _languages = languages.Value;
         // TODO: Refactor it
         Program.Languages = languages.Value;
@@ -36,6 +39,16 @@ public class SettingsProcessor
             TranslationMode = group.TranslationMode,
             Languages = new[] { group.Language }
         };
+    }
+
+
+    public async Task SetGroupConfiguration(long chatId, Settings settings)
+    {
+        var group = await _database.GetAsync(chatId);
+        group.Language = settings.Languages.First();
+        group.TranslationMode = settings.TranslationMode;
+        _databaseContext.Update(group);
+        await _databaseContext.SaveChangesAsync();
     }
 
     public async Task<string> GetGroupLanguage(long chatId)
