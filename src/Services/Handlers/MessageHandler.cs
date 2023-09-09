@@ -164,7 +164,7 @@ public class MessageHandler : IMessageHandler
             return;
         }
 
-        await _botMenu.SendMainMenu(message.Chat.Id);
+        await _botMenu.SendStart(message.Chat.Id);
     }
 
     private async Task HandleTranslation(Message message, string text)
@@ -282,7 +282,7 @@ public class MessageHandler : IMessageHandler
         if (command.Contains('@'))
         {
             int indexOfAt = command.IndexOf('@');
-            if(command.Substring(indexOfAt + 1) != Program.Username)
+            if(command[(indexOfAt + 1)..] != Program.Username)
                 return;
                 
             command = command[..indexOfAt];
@@ -305,6 +305,8 @@ public class MessageHandler : IMessageHandler
                 {
                     await _client.SendTextMessageAsync(message.Chat.Id,
                         $"⚠️ To change the settings, you need to promote @{Program.Username} to administrator status!");
+
+                    return;
                 }
 
                 await _client.SendTextMessageAsync(message.Chat.Id,
@@ -316,23 +318,14 @@ public class MessageHandler : IMessageHandler
                         Url = $"https://t.me/{Program.Username}/settings?startapp=i{message.Chat.Id}"
                     }));
                 break;
-            case "start" when chatType == ChatType.Private && !string.IsNullOrEmpty(payload):
-                if (payload != "s")
-                    await _users.AddFromPmIfNeeded(message.From.Id, payload);
-
-                await _botMenu.SendMainMenu(message.Chat.Id);
+            case "start" when chatType == ChatType.Private && payload == "s":
+                await _botMenu.SendSettings(message.Chat.Id);
                 break;
             case "start" when chatType == ChatType.Private:
-            case "old_settings" when chatType == ChatType.Private:
-                await _botMenu.SendMainMenu(message.Chat.Id);
-                break;
-            case "help" when chatType == ChatType.Private:
-                await _client.SendTextMessageAsync(message.Chat.Id, "To start using the bot, you need to add it to the *group chat*.",
-                    parseMode: ParseMode.Markdown,
-                    replyMarkup: new InlineKeyboardMarkup(new InlineKeyboardButton("Select a group")
-                    {
-                        Url = "https://t.me/tgtranslatorbot?startgroup=fromhelp"
-                    }));
+                if (!string.IsNullOrEmpty(payload))
+                    await _users.AddFromPmIfNeeded(message.From.Id, payload);
+
+                await _botMenu.SendStart(message.Chat.Id);
                 break;
             case "contact" when chatType == ChatType.Private:
                 await _client.SendTextMessageAsync(message.Chat.Id, "Developer: @Dubzer\nNews channel: @tgtrns\n\n☕️ Donate: yaso.su/feedme");
