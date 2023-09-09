@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Prometheus;
 using TgTranslator.Data;
 using TgTranslator.Data.Options;
@@ -29,7 +30,6 @@ public class Startup
         services.AddCors();
         services.AddMvc(options => { options.EnableEndpointRouting = false; })
             .AddControllersAsServices()
-            //.AddNewtonsoftJson()
             .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
@@ -49,11 +49,23 @@ public class Startup
     {
         app.UseDefaultFiles();
         app.UseStaticFiles();
-        app.UseCors(x => x
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .SetIsOriginAllowed(origin => true) // allow any origin
-            .AllowCredentials()); // allow credentials
+        if (env.IsDevelopment())
+        {
+            app.UseCors(x => x
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .SetIsOriginAllowed(origin => true) // allow any origin
+                .AllowCredentials()); // allow credentials
+
+        }
+        else
+        {
+            app.UseCors(x => x
+                .WithMethods("GET", "PUT", "OPTIONS", "HEAD")
+                .AllowAnyHeader()
+                .WithOrigins("tgtrnsl.dubzer.dev")
+                .AllowCredentials());
+        }
         app.UseMvcWithDefaultRoute();
 
         app.Map("/metrics", metricsApp =>

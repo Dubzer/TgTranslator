@@ -90,7 +90,6 @@ public class MessageHandler : IMessageHandler
 
     private async Task HandleGroupMessage(Message message)
     {
-        LogContext.PushProperty("ChatId", message.Chat.Id);
         string messageText = message.TextOrCaption();
         if (messageText == null)
             return; 
