@@ -21,7 +21,10 @@ public class TelegramBotHostedService : IHostedService
         _scopeFactory = scopeFactory;
         _client = client;
 
-        Program.Username = client.GetMeAsync().GetAwaiter().GetResult().Username;
+        var me = client.GetMeAsync().GetAwaiter().GetResult();
+        Program.Username = me.Username;
+        Program.BotId = me.Id;
+
         SentrySdk.ConfigureScope(scope =>
         {
             scope.Contexts["bot"] = new
@@ -49,29 +52,11 @@ public class TelegramBotHostedService : IHostedService
                 }
             });
 
-        await _client.SetMyCommandsAsync(new[]
-        {
-            new BotCommand
-            {
-                Command = "contact",
-                Description = "📩 Contact the developer"
-            },
-            new BotCommand
-            {
-                Command = "help",
-                Description = "❔ How to add the bot"
-            },
-            new BotCommand
-            {
-                Command = "settings",
-                Description = "⚙️ Change language and mode"
-            },
-
-        }, BotCommandScope.AllPrivateChats(), cancellationToken: cancellationToken);
+        await _client.SetMyCommandsAsync(BotCommands.PrivateChatCommands, BotCommandScope.AllPrivateChats(), cancellationToken: cancellationToken);
 
         await _client.SetMyCommandsAsync(new[]
         {
-            BotCommands.AdminCommand
+            BotCommands.SettingsCommand
         }, BotCommandScope.AllChatAdministrators(), cancellationToken: cancellationToken);
     }
 
