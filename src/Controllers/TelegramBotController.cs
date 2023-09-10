@@ -23,6 +23,9 @@ public class TelegramBotController : Controller
     [HttpPost]
     public async Task<OkResult> Post([FromBody] Update update)
     {
+        if (update == null)
+            return Ok();
+
         await _handlersRouter.HandleUpdate(update);
         return Ok();
     }
