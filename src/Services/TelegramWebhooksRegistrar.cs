@@ -37,7 +37,9 @@ public class TelegramWebhooksRegistrar : IStartupFilter
                         UpdateType.CallbackQuery
                     },
                     dropPendingUpdates: true).GetAwaiter().GetResult();
-                Program.Username = client.GetMeAsync().Result.Username;
+                var me = client.GetMeAsync().GetAwaiter().GetResult();
+                Program.Username = me.Username;
+                Program.BotId = me.Id;
             }
 
             next(builder);

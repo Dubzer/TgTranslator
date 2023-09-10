@@ -4,15 +4,29 @@ namespace TgTranslator.Services;
 
 public static class BotCommands
 {
-    public static readonly BotCommand AdminCommand = new()
+    public static readonly BotCommand[] PrivateChatCommands =
+    {
+        new()
+        {
+            Command = "contact",
+            Description = "📩 Contact the developer"
+        },
+        new()
+        {
+            Command = "help",
+            Description = "❔ How to add the bot"
+        },
+    };
+
+    public static readonly BotCommand SettingsCommand = new()
     {
         Command = "settings",
-        Description = "Change language and mode."
+        Description = "⚙️ Change language and mode"
     };
 
     public static readonly BotCommand TranslateCommand = new()
     {
         Command = "tl",
-        Description = "Translate replied message."
+        Description = "🌐 Translate replied message."
     };
 }
