@@ -54,16 +54,15 @@ public class Startup
             app.UseCors(x => x
                 .AllowAnyMethod()
                 .AllowAnyHeader()
-                .SetIsOriginAllowed(origin => true) // allow any origin
-                .AllowCredentials()); // allow credentials
-
+                .SetIsOriginAllowed(_ => true)
+                .AllowCredentials());
         }
         else
         {
             app.UseCors(x => x
                 .WithMethods("GET", "PUT", "OPTIONS", "HEAD")
                 .AllowAnyHeader()
-                .WithOrigins("tgtrnsl.dubzer.dev")
+                .WithOrigins("tgtrns.dubzer.dev")
                 .AllowCredentials());
         }
         app.UseMvcWithDefaultRoute();

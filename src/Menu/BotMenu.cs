@@ -41,7 +41,7 @@ public class BotMenu
     {
         return _client.SendTextMessageAsync(
             chatId,
-            "Hello!\nThis bot will translate messages in your group. It supports 134 languages and has different mods. You can check the demo settings page here\n\n" +
+            "Hello!\nThis bot will translate messages in your group. It supports 134 languages and has different mods. You can check the demo settings page [here](https://t.me/TgTranslatorBot/settings?startapp=mock)\n\n" +
             "To get started, add to the group chat.\nHere's a shortcut button:",
             parseMode: ParseMode.Markdown,
             replyMarkup: new InlineKeyboardMarkup(new InlineKeyboardButton("Select a group")
