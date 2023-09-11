@@ -66,7 +66,10 @@ public class Startup
                 .AllowCredentials());
         }
         app.UseMvcWithDefaultRoute();
-
+        app.UseWhen(
+            ctx => ctx.Request.Path.StartsWithSegments("/api/bot"),
+            ab => ab.UseMiddleware<EnableRequestBodyBufferingMiddleware>()
+        );
         app.Map("/metrics", metricsApp =>
         {
             metricsApp.UseMiddleware<BasicAuthMiddleware>(_configuration.GetValue<string>("prometheus:login"),
