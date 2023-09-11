@@ -62,7 +62,7 @@ public class Startup
             app.UseCors(x => x
                 .WithMethods("GET", "PUT", "OPTIONS", "HEAD")
                 .AllowAnyHeader()
-                .WithOrigins("tgtrns.dubzer.dev")
+                .WithOrigins("https://tgtrns.dubzer.dev")
                 .AllowCredentials());
         }
         app.UseMvcWithDefaultRoute();
