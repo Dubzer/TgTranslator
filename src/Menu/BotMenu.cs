@@ -39,6 +39,7 @@ public class BotMenu
             "🦈 Hello!\nThis bot will translate messages in your group. It supports 134 languages and has various modes. Check out the demo settings page [here](https://t.me/TgTranslatorBot/settings?startapp=mock).\n\n" +
             "To get started, add it to the group chat.",
             parseMode: ParseMode.Markdown,
+            disableWebPagePreview: true,
             replyMarkup: new InlineKeyboardMarkup(new InlineKeyboardButton("Select a group")
             {
                 Url = $"https://t.me/{Program.Username}?startgroup=frommenu"
