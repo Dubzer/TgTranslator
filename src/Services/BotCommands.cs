@@ -11,11 +11,6 @@ public static class BotCommands
             Command = "contact",
             Description = "📩 Contact the developer"
         },
-        new()
-        {
-            Command = "help",
-            Description = "❔ How to add the bot"
-        },
     };
 
     public static readonly BotCommand SettingsCommand = new()

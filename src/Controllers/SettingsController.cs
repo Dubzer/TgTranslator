@@ -20,13 +20,14 @@ public class SettingsController : ControllerBase
     private readonly TelegramBotClient _botClient;
     private readonly WebAppHashService _hashService;
     private readonly SettingsProcessor _settingsProcessor;
+
     private static GetSettingResponse _mockGet = new()
     {
         ChatTitle = "Cute sharks",
         Settings = new ()
         {
             TranslationMode = TranslationMode.Auto,
-            Languages = new []{"en"}
+            Languages = new [] {"en"}
         }
     };
 

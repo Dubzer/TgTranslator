@@ -14,17 +14,12 @@ namespace TgTranslator.Menu;
 
 public class BotMenu
 {
-    private const string HelpCaption =
-        "To start using a bot, simply add it to the group as on the video. Then you can change some settings here.";
-
     private readonly ImmutableHashSet<Type> _availableMenus;
     private readonly TelegramBotClient _client;
-    private readonly string _helpVideoUrl;
 
-    public BotMenu(TelegramBotClient client, IOptions<HelpmenuOptions> helpmenuOptions)
+    public BotMenu(TelegramBotClient client)
     {
         _client = client;
-        _helpVideoUrl = helpmenuOptions.Value.VideoUrl;
 
         _availableMenus = new HashSet<Type>
         {
@@ -46,7 +41,7 @@ public class BotMenu
             parseMode: ParseMode.Markdown,
             replyMarkup: new InlineKeyboardMarkup(new InlineKeyboardButton("Select a group")
             {
-                Url = $"https://t.me/{Program.Username}?startgroup=fromhelp"
+                Url = $"https://t.me/{Program.Username}?startgroup=frommenu"
             }));
     }
 
@@ -60,7 +55,7 @@ public class BotMenu
 
     public async Task SwitchMenu(Type menuType, string[] arguments, long chatId, int messageId)
     {
-        MenuItem item = GetMenuItem(menuType, arguments);
+        var item = GetMenuItem(menuType, arguments);
         await _client.EditMessageTextAsync(chatId, messageId, item.Description,
             ParseMode.Markdown,
             replyMarkup: item.GenerateMarkup());

@@ -40,7 +40,6 @@ public class Startup
         services.Configure<LanguagesList>(_configuration.GetSection("languages"));
         services.Configure<TgTranslatorOptions>(_configuration.GetSection("TgTranslator"));
         services.Configure<Blacklists>(_configuration.GetSection("blacklists"));
-        services.Configure<HelpmenuOptions>(_configuration.GetSection("helpmenu"));
         services.Configure<TelegramOptions>(_configuration.GetSection("telegram"));
     }
 
