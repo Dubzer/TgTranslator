@@ -312,6 +312,7 @@ public class MessageHandler : IMessageHandler
                     "Press on the button bellow to change the settings." +
                     $"\n\nIf your client doesn't support the menu [click here](https://t.me/{Program.Username}?start=s)",
                     parseMode: ParseMode.Markdown,
+                    disableWebPagePreview: true,
                     replyMarkup: new InlineKeyboardMarkup(new InlineKeyboardButton("Change settings")
                     {
                         Url = $"https://t.me/{Program.Username}/settings?startapp=i{message.Chat.Id}"
