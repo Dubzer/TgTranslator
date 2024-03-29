@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Sentry;
 using Serilog;
-using Serilog.Context;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -27,7 +26,6 @@ public class MessageHandler : IMessageHandler
     private readonly BotMenu _botMenu;
 
     private readonly TelegramBotClient _client;
-    private readonly ILanguageDetector _languageDetector;
     private readonly Metrics _metrics;
     private readonly SettingsProcessor _settingsProcessor;
     private readonly ITranslator _translator;
@@ -37,8 +35,8 @@ public class MessageHandler : IMessageHandler
     private readonly ILogger _logger;
 
     private readonly HashSet<string> _manualTranslationCommands;
-        
-    public MessageHandler(TelegramBotClient client, BotMenu botMenu, SettingsProcessor settingsProcessor, ILanguageDetector languageLanguageDetector, 
+
+    public MessageHandler(TelegramBotClient client, BotMenu botMenu, SettingsProcessor settingsProcessor,
         ITranslator translator, Metrics metrics, IOptions<Blacklists> blacklistsOptions, MessageValidator validator, UsersDatabaseService users, GroupsBlacklistService groupsBlacklist, ILogger logger)
     {
         _client = client;
@@ -46,7 +44,6 @@ public class MessageHandler : IMessageHandler
         _settingsProcessor = settingsProcessor;
         _translator = translator;
         _metrics = metrics;
-        _languageDetector = languageLanguageDetector;
         _blacklist = blacklistsOptions.Value;
         _validator = validator;
         _users = users;
@@ -92,8 +89,8 @@ public class MessageHandler : IMessageHandler
     {
         string messageText = message.TextOrCaption();
         if (messageText == null)
-            return; 
-            
+            return;
+
         _metrics.HandleGroupMessage(message.Chat.Id, messageText.Length);
         if (!_validator.GroupMessageValid(message, messageText))
         {
@@ -103,18 +100,18 @@ public class MessageHandler : IMessageHandler
 
         if (await _groupsBlacklist.InBlacklist(message.Chat.Id))
             return;
-            
+
         if (message.IsCommand() && !_manualTranslationCommands.Contains(messageText))
         {
             _logger.Information("Message by {ChatId} | {From} is a command", message.Chat.Id, message.From);
             await HandleCommand(message);
             return;
         }
-            
-            
+
+
         if(messageText.StartsWith('!') && !_manualTranslationCommands.Contains(messageText))
             return;
-            
+
         if (messageText.StartsWith($"@{Program.Username} set:", StringComparison.InvariantCulture))
         {
             _logger.Information("Message by {ChatId} | {From} is a setting changing", message.Chat.Id, message.From);
@@ -127,7 +124,7 @@ public class MessageHandler : IMessageHandler
             case TranslationMode.Forwards:
                 _logger.Information("Group {ChatId} | {From} is using Forwards translation mode", message.Chat.Id, message.From);
                 if ((message.ForwardFrom == null || message.ForwardFrom.Id == 1087968824)
-                    && message.ForwardSenderName == null 
+                    && message.ForwardSenderName == null
                     && message.ForwardFromChat == null
                     && message.ForwardSignature == null
                     && message.ForwardDate == null
@@ -136,13 +133,10 @@ public class MessageHandler : IMessageHandler
                 break;
             case TranslationMode.Manual:
                 _logger.Information("Group {ChatId} | {From} is using Manual translation mode", message.Chat.Id, message.From);
-                if (message.ReplyToMessage == null) 
+                if (message.ReplyToMessage == null)
                     return;
-                if (_manualTranslationCommands.Contains(messageText) && await RequireTranslation(message.ReplyToMessage.TextOrCaption(), await _settingsProcessor.GetGroupLanguage(message.Chat.Id)))
-                {
-                    await HandleTranslation(message.ReplyToMessage, message.ReplyToMessage.TextOrCaption());
-                }
-
+                if (_manualTranslationCommands.Contains(messageText))
+                    await HandleTranslation(message, messageText);
                 return;
             case TranslationMode.LinkedChannel:
                 if (message.From is not { Id: 777000 })
@@ -150,8 +144,7 @@ public class MessageHandler : IMessageHandler
                 break;
         }
 
-        if (await RequireTranslation(messageText, await _settingsProcessor.GetGroupLanguage(message.Chat.Id)))
-            await HandleTranslation(message, messageText);
+        await HandleTranslation(message, messageText);
     }
 
     private async Task HandlePrivateMessage(Message message)
@@ -171,33 +164,40 @@ public class MessageHandler : IMessageHandler
         _logger.Information("Handling translation for {ChatId} | {From}...", message.Chat.Id, message.From);
         _metrics.HandleTranslatorApiCall(message.Chat.Id, string.IsNullOrEmpty(text) ? 0 : text.Length);
         await _users.AddFromGroupIfNeeded(message.From.Id);
-            
+
+        if (!text.AnyLetters())
+            return;
+
         string groupLanguage = await _settingsProcessor.GetGroupLanguage(message.Chat.Id);
-        string translation = await _translator.TranslateTextAsync(text, groupLanguage);
+        var translation = await _translator.TranslateTextAsync(text, groupLanguage);
+        var translatedText = translation.Text;
+
+        if (translation.DetectedLanguage == groupLanguage)
+            return;
 
         var emojiRegex = new Regex(@"\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]", RegexOptions.Compiled);
         var nonLettersRegex = new Regex(@"\p{P}|\d|\s", RegexOptions.Compiled);
-        
+
         string normalizedText = nonLettersRegex.Replace(text, "");
         normalizedText = emojiRegex.Replace(normalizedText, "");
-        
-        string normalizedTranslation = nonLettersRegex.Replace(translation, "");
+
+        string normalizedTranslation = nonLettersRegex.Replace(translatedText, "");
         normalizedTranslation = emojiRegex.Replace(normalizedTranslation, "");
-        
+
         if (string.IsNullOrEmpty(normalizedTranslation) || string.Equals(normalizedText, normalizedTranslation, StringComparison.InvariantCultureIgnoreCase))
             return;
 
-        translation = TranslationUtils.FixEntities(message.Text, translation, message.Entities);
+        translatedText = TranslationUtils.FixEntities(message.Text, translatedText, message.Entities);
 
-        if (translation.Length <= 4096)
+        if (translatedText.Length <= 4096)
         {
-            await _client.SendTextMessageAsync(message.Chat.Id, translation,
+            await _client.SendTextMessageAsync(message.Chat.Id, translatedText,
                 disableNotification: true, disableWebPagePreview: true,
                 replyToMessageId: message.MessageId, allowSendingWithoutReply: false);
         }
         else
         {
-            await SendLongMessage(message.Chat.Id, translation, message.MessageId);
+            await SendLongMessage(message.Chat.Id, translatedText, message.MessageId);
         }
 
         _logger.Information("Sent translation to {ChatId} | {From}", message.Chat.Id, message.From);
@@ -238,9 +238,9 @@ public class MessageHandler : IMessageHandler
                 break;
             case Setting.Mode:
                 var mode = Enum.Parse<TranslationMode>(value, true);
-                
+
                 await _client.DeleteMyCommandsAsync(BotCommandScope.Chat(message.Chat.Id));
-                
+
                 switch (mode)
                 {
                     case TranslationMode.Manual:
@@ -264,7 +264,7 @@ public class MessageHandler : IMessageHandler
                         break;
                 }
 
-                
+
                 await _settingsProcessor.ChangeMode(message.Chat.Id, mode);
                 break;
         }
@@ -277,13 +277,13 @@ public class MessageHandler : IMessageHandler
         ChatType chatType = message.Chat.Type;
         string command = message.Text[1..];
         string payload = null;
-            
+
         if (command.Contains('@'))
         {
             int indexOfAt = command.IndexOf('@');
             if(command[(indexOfAt + 1)..] != Program.Username)
                 return;
-                
+
             command = command[..indexOfAt];
         }
 
@@ -298,7 +298,7 @@ public class MessageHandler : IMessageHandler
             case "settings" when chatType is ChatType.Group or ChatType.Supergroup:
                 if(!await message.From.IsAdministrator(message.Chat.Id, _client))
                     throw new UnauthorizedSettingChangingException();
-                    
+
                 var bot = await _client.GetChatMemberAsync(message.Chat.Id, Program.BotId);
                 if (message.From?.Id == 1087968824 && bot.Status != ChatMemberStatus.Administrator)
                 {
@@ -333,24 +333,5 @@ public class MessageHandler : IMessageHandler
             default:
                 return;
         }
-    }
-
-    private async Task<bool> RequireTranslation(string text, string mainLanguage)
-    {
-        #region Check if string contains only non-alphabetic chars
-
-        var regex = new Regex(@"\P{L}{1,}");
-        var matches = regex.Matches(text);
-
-        string match = matches.Count == 1 ? matches[0].Value : null;
-
-        if (match != null && match.Length == text.Length)
-            return false;
-
-        #endregion
-
-        string language = await _languageDetector.DetectLanguageAsync(text);
-
-        return language != mainLanguage;
     }
 }

@@ -1,7 +1,4 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
@@ -32,7 +29,6 @@ public static class DiServices
         services.AddSingleton<Metrics>();
         services.AddTransient<BotMenu>();
 
-        services.AddTransient<ILanguageDetector, TranslatePlaceholderService>();
         services.AddTransient<ITranslator, TranslatePlaceholderService>();
 
         services.AddTransient<MessageValidator>();

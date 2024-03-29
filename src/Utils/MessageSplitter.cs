@@ -4,7 +4,7 @@ namespace TgTranslator.Utils;
 
 public static class MessageSplitter
 {
-    private static readonly char[] SplitChars = {'.', '?', '!', ','};
+    private static readonly char[] SplitChars = ['.', '?', '!', ','];
 
     public static (string firstPart, string secondPart) Split(ReadOnlySpan<char> message)
     {
