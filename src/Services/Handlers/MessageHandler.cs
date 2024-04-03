@@ -201,15 +201,15 @@ public class MessageHandler : IMessageHandler
         }
 
 
-        var translationMilliseconds = ((DateTimeOffset)message.Date).ToUnixTimeMilliseconds() -
-                                      DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        var translationMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() -
+                            ((DateTimeOffset)message.Date).ToUnixTimeMilliseconds();
 
-        _metrics.TranslationResponseTime.Observe(translationMilliseconds);
-        if (translationMilliseconds > 10000)
+        _metrics.TranslationResponseTime.Observe(translationMs);
+        if (translationMs > 10000)
             _logger.Warning("Abnormal translation time for {ChatId} | {From} | {Time}ms",
                 message.Chat.Id,
                 message.From,
-                translationMilliseconds);
+                translationMs);
 
         _logger.Information("Sent translation to {ChatId} | {From}", message.Chat.Id, message.From);
     }
