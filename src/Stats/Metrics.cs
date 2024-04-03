@@ -1,3 +1,4 @@
+using System.Linq;
 using Prometheus;
 
 namespace TgTranslator.Stats;
@@ -12,6 +13,7 @@ public class Metrics
     public readonly Gauge TotalGroups;
     public readonly Gauge TotalUsers;
     public readonly Gauge TotalPmUsers;
+    public readonly Histogram TranslationResponseTime;
 
     public Metrics()
     {
@@ -26,6 +28,13 @@ public class Metrics
         TotalGroups = Prometheus.Metrics.CreateGauge("total_groups", "Total groups count");
         TotalUsers = Prometheus.Metrics.CreateGauge("total_users", "Total users count");
         TotalPmUsers = Prometheus.Metrics.CreateGauge("total_pm_users", "Total PM users count");
+
+        double[] buckets = [..Enumerable.Range(1, 15).Select(x => x * 150), 2000, 5000, 10000];
+
+        TranslationResponseTime = Prometheus.Metrics.CreateHistogram("translation_response_time_ms", "Translation response time", new HistogramConfiguration
+        {
+            Buckets = buckets
+        });
     }
         
     public void HandleMessage() => TotalMessagesInc();

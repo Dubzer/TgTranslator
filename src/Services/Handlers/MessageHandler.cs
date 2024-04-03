@@ -200,6 +200,17 @@ public class MessageHandler : IMessageHandler
             await SendLongMessage(message.Chat.Id, translatedText, message.MessageId);
         }
 
+
+        var translationMilliseconds = ((DateTimeOffset)message.Date).ToUnixTimeMilliseconds() -
+                                      DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+        _metrics.TranslationResponseTime.Observe(translationMilliseconds);
+        if (translationMilliseconds > 10000)
+            _logger.Warning("Abnormal translation time for {ChatId} | {From} | {Time}ms",
+                message.Chat.Id,
+                message.From,
+                translationMilliseconds);
+
         _logger.Information("Sent translation to {ChatId} | {From}", message.Chat.Id, message.From);
     }
 
