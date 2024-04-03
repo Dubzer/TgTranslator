@@ -29,7 +29,7 @@ public class Metrics
         TotalUsers = Prometheus.Metrics.CreateGauge("total_users", "Total users count");
         TotalPmUsers = Prometheus.Metrics.CreateGauge("total_pm_users", "Total PM users count");
 
-        double[] buckets = [..Enumerable.Range(1, 15).Select(x => x * 150), 2000, 5000, 10000];
+        double[] buckets = [..Enumerable.Range(1, 15).Select(x => x * 150), 3500, 5000, 10000];
 
         TranslationResponseTime = Prometheus.Metrics.CreateHistogram("translation_response_time_ms", "Translation response time", new HistogramConfiguration
         {
