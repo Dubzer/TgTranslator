@@ -189,19 +189,22 @@ public class MessageHandler : IMessageHandler
 
         translatedText = TranslationUtils.FixEntities(message.Text, translatedText, message.Entities);
 
+        // In case of multiple translation messages, will contain the last one sent
+        Message translationMessage;
         if (translatedText.Length <= 4096)
         {
-            await _client.SendTextMessageAsync(message.Chat.Id, translatedText,
+            translationMessage = await _client.SendTextMessageAsync(message.Chat.Id, translatedText,
                 disableNotification: true, disableWebPagePreview: true,
                 replyToMessageId: message.MessageId, allowSendingWithoutReply: false);
         }
         else
         {
-            await SendLongMessage(message.Chat.Id, translatedText, message.MessageId);
+            translationMessage = await SendLongMessage(message.Chat.Id, translatedText, message.MessageId);
         }
 
 
-        var translationMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() -
+        // The time between the original message and the translation message
+        var translationMs = ((DateTimeOffset)translationMessage.Date).ToUnixTimeMilliseconds() -
                             ((DateTimeOffset)message.Date).ToUnixTimeMilliseconds();
 
         _metrics.TranslationResponseTime.Observe(translationMs);
@@ -214,7 +217,7 @@ public class MessageHandler : IMessageHandler
         _logger.Information("Sent translation to {ChatId} | {From}", message.Chat.Id, message.From);
     }
 
-    private async Task SendLongMessage(long chatId, string message, int replyId)
+    private async Task<Message> SendLongMessage(long chatId, string message, int replyId)
     {
         var (firstPart, secondPart) = MessageSplitter.Split(message);
 
@@ -222,7 +225,7 @@ public class MessageHandler : IMessageHandler
             disableNotification: true, disableWebPagePreview: true,
             replyToMessageId: replyId, allowSendingWithoutReply: false);
 
-        await _client.SendTextMessageAsync(chatId, secondPart,
+        return await _client.SendTextMessageAsync(chatId, secondPart,
             disableNotification: true, disableWebPagePreview: true,
             replyToMessageId: firstPartResult.MessageId, allowSendingWithoutReply: false);
     }
