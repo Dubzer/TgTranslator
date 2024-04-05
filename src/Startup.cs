@@ -75,5 +75,6 @@ public class Startup
                 _configuration.GetValue<string>("prometheus:password"));
             metricsApp.UseMetricServer("");
         });
+        app.UseHttpMetrics();
     }
 }
