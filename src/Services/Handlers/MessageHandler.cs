@@ -60,7 +60,7 @@ public class MessageHandler : IMessageHandler
         _logger.Information("Got new message {ChatId} | {From} | {ChatType}", message.Chat.Id, message.From, message.Chat.Type);
         SentrySdk.ConfigureScope(scope =>
         {
-            scope.User = new Sentry.User
+            scope.User = new SentryUser
             {
                 Id = message.From?.Id.ToString(),
                 Username = message.From?.Username
