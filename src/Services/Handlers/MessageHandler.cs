@@ -136,7 +136,7 @@ public class MessageHandler : IMessageHandler
                 if (message.ReplyToMessage == null)
                     return;
                 if (_manualTranslationCommands.Contains(messageText))
-                    await HandleTranslation(message.ReplyToMessage, messageText);
+                    await HandleTranslation(message.ReplyToMessage, message.ReplyToMessage.TextOrCaption());
                 return;
             case TranslationMode.LinkedChannel:
                 if (message.From is not { Id: 777000 })
