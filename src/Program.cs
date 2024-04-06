@@ -7,7 +7,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Sentry;
 using Serilog;
-using Serilog.Events;
 using TgTranslator.Data.Options;
 using TgTranslator.Utils.Extensions;
 
@@ -58,13 +57,6 @@ public static class Program
                         "Microsoft.EntityFrameworkCore.Infrastructure"
                     ]);
                 loggerConfiguration.Enrich.FromLogContext();
-                if (hostingContext.HostingEnvironment.IsProduction())
-                {
-                    loggerConfiguration.WriteTo.Sentry(o =>
-                    {
-                        o.MinimumEventLevel = LogEventLevel.Fatal;
-                    });
-                }
             })
             .ConfigureAppConfiguration(config => config
                 .AddJsonFile("blacklists.json")
@@ -75,7 +67,6 @@ public static class Program
                 {
                     builder.Dsn = SentryOptions.Dsn;
                     builder.TracesSampleRate = SentryOptions.TracesSampleRate;
-                    builder.EnableTracing = true;
                 });
                 webBuilder.UseStartup<Startup>()
                     .UseKestrel((context, options) => options.Configure(context.Configuration.GetSection("Kestrel")));
