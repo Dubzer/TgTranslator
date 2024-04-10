@@ -65,8 +65,14 @@ public class HandlersRouter
 
     private async Task OnMessage(Message message)
     {
-        if (message.Date < Program.StartedTime - TimeSpan.FromSeconds(10))
-            return;
+        if (message.Date.ToUniversalTime() < DateTime.UtcNow - TimeSpan.FromSeconds(30))
+        {
+            _logger.Warning("Skipping update because it's too old! {MessageDate} {CurrentDate}",
+                message.Date,
+                DateTime.UtcNow);
+
+             return;
+        }
 
         try
         {
