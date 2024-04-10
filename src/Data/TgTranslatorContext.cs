@@ -42,6 +42,7 @@ public partial class TgTranslatorContext : DbContext
                 .HasDefaultValueSql("'en'::text");
 
             entity.Property(e => e.TranslationMode).HasColumnName("translation_mode");
+            entity.Property(e => e.Delay).HasColumnName("delay");
         });
 
         modelBuilder.Entity<GroupBlacklist>(entity =>

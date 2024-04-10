@@ -34,10 +34,12 @@ public class SettingsProcessor
     public async Task<Settings> GetGroupConfiguration(long chatId)
     {
         var group = await _database.GetAsync(chatId);
-        return new()
+
+        return new Settings
         {
             TranslationMode = group.TranslationMode,
-            Languages = new[] { group.Language }
+            Languages = [group.Language],
+            Delay = group.Delay
         };
     }
 
@@ -45,8 +47,11 @@ public class SettingsProcessor
     public async Task SetGroupConfiguration(long chatId, Settings settings)
     {
         var group = await _database.GetAsync(chatId);
+
         group.Language = settings.Languages.First();
         group.TranslationMode = settings.TranslationMode;
+        group.Delay = settings.Delay;
+
         _databaseContext.Update(group);
         await _databaseContext.SaveChangesAsync();
     }

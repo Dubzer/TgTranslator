@@ -3,7 +3,6 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Serilog;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -21,17 +20,20 @@ public class SettingsController : ControllerBase
     private readonly WebAppHashService _hashService;
     private readonly SettingsProcessor _settingsProcessor;
 
-    private static GetSettingResponse _mockGet = new()
+    private static readonly GetSettingResponse MockGet = new()
     {
         ChatTitle = "Cute sharks",
-        Settings = new ()
+        Settings = new Settings
         {
             TranslationMode = TranslationMode.Auto,
-            Languages = new [] {"en"}
+            Languages = ["en"],
+            Delay = 0
         }
     };
 
-    public SettingsController(TelegramBotClient botClient, WebAppHashService hashService, SettingsProcessor settingsProcessor)
+    public SettingsController(TelegramBotClient botClient,
+        WebAppHashService hashService,
+        SettingsProcessor settingsProcessor)
     {
         _botClient = botClient;
         _hashService = hashService;
@@ -42,12 +44,13 @@ public class SettingsController : ControllerBase
     public async Task<IActionResult> Get([Required] [FromQuery] VerifyQueryDto query)
     {
         if (query.StartParam.Contains("mock"))
-            return Ok(_mockGet);
+            return Ok(MockGet);
 
-        var (result, _, group) = await ExtractData(query);
-        if (!result)
+        var data = await ExtractData(query);
+        if (data == null)
             return BadRequest();
 
+        var group = data.Value.group;
         return Ok(new GetSettingResponse
         {
             ChatTitle = group.Title!,
@@ -62,21 +65,21 @@ public class SettingsController : ControllerBase
         if (query.StartParam.Contains("mock"))
             return Ok();
 
-        var (result, _, group) = await ExtractData(query);
-        if (!result)
+        var data = await ExtractData(query);
+        if (data == null)
             return BadRequest();
 
-        await _settingsProcessor.SetGroupConfiguration(group.Id, request.Settings);
+        await _settingsProcessor.SetGroupConfiguration(data.Value.group.Id, request.Settings);
         return Ok();
     }
 
-    private async Task<(bool result, ChatMember chatMember, Chat group)> ExtractData(VerifyQueryDto query)
+    private async Task<(ChatMember chatMember, Chat group)?> ExtractData(VerifyQueryDto query)
     {
         if (!_hashService.VerifyHash(GenerateDataString(), query.Hash))
-            return (false, default, default);
+            return null;
 
         if (!query.StartParam.StartsWith('i') || !long.TryParse(query.StartParam[1..], out var chatId))
-            return (false, default, default);
+            return null;
 
         var user = JsonSerializer.Deserialize<VerifyUserDto>(query.UserString);
         ChatMember chatMember;
@@ -86,17 +89,17 @@ public class SettingsController : ControllerBase
         }
         catch
         {
-            return (false, default, default);
+            return null;
         }
 
         if (chatMember.Status is not (ChatMemberStatus.Administrator or ChatMemberStatus.Creator))
-            return (false, default, default);
+            return null;
 
         var group = await _botClient.GetChatAsync(chatId);
         if (group.Type is not (ChatType.Supergroup or ChatType.Group))
-            return (false, default, default);
+            return null;
 
-        return (true, chatMember, group);
+        return (chatMember, group);
     }
 
     private string GenerateDataString()

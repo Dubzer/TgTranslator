@@ -168,11 +168,15 @@ public class MessageHandler : IMessageHandler
         if (!text.AnyLetters())
             return;
 
-        string groupLanguage = await _settingsProcessor.GetGroupLanguage(message.Chat.Id);
-        var translation = await _translator.TranslateTextAsync(text, groupLanguage);
+        var groupConfig = await _settingsProcessor.GetGroupConfiguration(message.Chat.Id);
+
+        if (groupConfig.Delay != 0)
+            await Task.Delay(TimeSpan.FromSeconds(groupConfig.Delay));
+
+        var translation = await _translator.TranslateTextAsync(text, groupConfig.Languages[0]);
         var translatedText = translation.Text;
 
-        if (translation.DetectedLanguage == groupLanguage)
+        if (translation.DetectedLanguage == groupConfig.Languages[0])
             return;
 
         var emojiRegex = new Regex(@"\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]", RegexOptions.Compiled);

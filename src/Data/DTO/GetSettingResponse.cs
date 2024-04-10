@@ -1,9 +1,9 @@
 #nullable enable
 namespace TgTranslator.Data.DTO;
 
-public class GetSettingResponse
+public record GetSettingResponse
 {
-    public required string ChatTitle { get; set; }
-    public string? ChatUsername { get; set; }
-    public required Settings Settings { get; set; }
+    public required string ChatTitle { get; init; }
+    public string? ChatUsername { get; init; }
+    public required Settings Settings { get; init; }
 }
