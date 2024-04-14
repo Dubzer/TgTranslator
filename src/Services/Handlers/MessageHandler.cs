@@ -49,7 +49,7 @@ public class MessageHandler : IMessageHandler
         _users = users;
         _groupsBlacklist = groupsBlacklist;
         _logger = logger;
-        _manualTranslationCommands = new HashSet<string> {$"@{Program.Username}", "!translate", "/tl", $"/tl@{Program.Username}"};
+        _manualTranslationCommands = [$"@{Static.Username}", "!translate", "/tl", $"/tl@{Static.Username}"];
     }
 
     #region IMessageHandler Members
@@ -112,7 +112,7 @@ public class MessageHandler : IMessageHandler
         if(messageText.StartsWith('!') && !_manualTranslationCommands.Contains(messageText))
             return;
 
-        if (messageText.StartsWith($"@{Program.Username} set:", StringComparison.InvariantCulture))
+        if (messageText.StartsWith($"@{Static.Username} set:", StringComparison.InvariantCulture))
         {
             _logger.Information("Message by {ChatId} | {From} is a setting changing", message.Chat.Id, message.From);
             await HandleSettingChanging(message);
@@ -239,7 +239,7 @@ public class MessageHandler : IMessageHandler
         if (!await message.From.IsAdministrator(message.Chat.Id, _client))
             throw new UnauthorizedSettingChangingException();
 
-        string tinyString = message.Text.Replace($"@{Program.Username} set:", "");
+        string tinyString = message.Text.Replace($"@{Static.Username} set:", "");
 
         (string param, string value) = (tinyString.Split('=')[0], tinyString.Split('=')[1]);
 
@@ -299,7 +299,7 @@ public class MessageHandler : IMessageHandler
         if (command.Contains('@'))
         {
             int indexOfAt = command.IndexOf('@');
-            if(command[(indexOfAt + 1)..] != Program.Username)
+            if(command[(indexOfAt + 1)..] != Static.Username)
                 return;
 
             command = command[..indexOfAt];
@@ -317,23 +317,23 @@ public class MessageHandler : IMessageHandler
                 if(!await message.From.IsAdministrator(message.Chat.Id, _client))
                     throw new UnauthorizedSettingChangingException();
 
-                var bot = await _client.GetChatMemberAsync(message.Chat.Id, Program.BotId);
+                var bot = await _client.GetChatMemberAsync(message.Chat.Id, Static.BotId);
                 if (message.From?.Id == 1087968824 && bot.Status != ChatMemberStatus.Administrator)
                 {
                     await _client.SendTextMessageAsync(message.Chat.Id,
-                        $"⚠️ To change the settings, you need to promote @{Program.Username} to administrator status!");
+                        $"⚠️ To change the settings, you need to promote @{Static.Username} to administrator status!");
 
                     return;
                 }
 
                 await _client.SendTextMessageAsync(message.Chat.Id,
                     "Press on the button bellow to change the settings." +
-                    $"\n\nIf your client doesn't support the menu [click here](https://t.me/{Program.Username}?start=s)",
+                    $"\n\nIf your client doesn't support the menu [click here](https://t.me/{Static.Username}?start=s)",
                     parseMode: ParseMode.Markdown,
                     disableWebPagePreview: true,
                     replyMarkup: new InlineKeyboardMarkup(new InlineKeyboardButton("Change settings")
                     {
-                        Url = $"https://t.me/{Program.Username}/settings?startapp=i{message.Chat.Id}"
+                        Url = $"https://t.me/{Static.Username}/settings?startapp=i{message.Chat.Id}"
                     }));
                 break;
             case "start" when chatType == ChatType.Private && payload == "s":

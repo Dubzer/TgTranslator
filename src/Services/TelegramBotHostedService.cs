@@ -22,14 +22,14 @@ public class TelegramBotHostedService : IHostedService
         _client = client;
 
         var me = client.GetMeAsync().GetAwaiter().GetResult();
-        Program.Username = me.Username;
-        Program.BotId = me.Id;
+        Static.Username = me.Username;
+        Static.BotId = me.Id;
 
         SentrySdk.ConfigureScope(scope =>
         {
             scope.Contexts["bot"] = new
             {
-                Program.Username
+                Static.Username
             };
         });
     }
@@ -42,14 +42,14 @@ public class TelegramBotHostedService : IHostedService
             pollingErrorHandler: ErrorHandler, receiverOptions: new()
             {
                 Offset = -1,
-                AllowedUpdates = new[]
-                {
+                AllowedUpdates =
+                [
                     UpdateType.Message,
                     UpdateType.CallbackQuery,
                     UpdateType.InlineQuery,
                     UpdateType.ChatMember,
                     UpdateType.MyChatMember
-                }
+                ]
             });
 
         await _client.SetMyCommandsAsync(BotCommands.PrivateChatCommands, BotCommandScope.AllPrivateChats(), cancellationToken: cancellationToken);

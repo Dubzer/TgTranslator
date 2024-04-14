@@ -28,7 +28,7 @@ public class SettingsProcessor
         _databaseContext = databaseContext;
         _languages = languages.Value;
         // TODO: Refactor it
-        Program.Languages = languages.Value;
+        Static.Languages = languages.Value;
     }
 
     public async Task<Settings> GetGroupConfiguration(long chatId)

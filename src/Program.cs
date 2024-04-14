@@ -1,74 +1,93 @@
 using System;
 using System.Globalization;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Sentry;
+using Prometheus;
 using Serilog;
+using TgTranslator;
 using TgTranslator.Data.Options;
+using TgTranslator.Services.Middlewares;
 using TgTranslator.Utils.Extensions;
 
-namespace TgTranslator;
+_ = Static.StartedTime;  // Initialize startup time
 
-public static class Program
+CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
+AppDomain.CurrentDomain.UnhandledException += (_, eventArgs) => Log.Fatal(eventArgs.ExceptionObject as Exception, "Something went terribly wrong");
+
+var builder = WebApplication.CreateBuilder(args);
+
+
+builder.Configuration
+    .AddJsonFile("blacklists.json")
+    .AddJsonFile("languages.json");
+
+builder
+    .ConfigureOptionFromSection<KestrelServerOptions>("Kestrel")
+    .ConfigureOptionFromSection<LanguagesList>("languages")
+    .ConfigureOptionFromSection<TgTranslatorOptions>("TgTranslator")
+    .ConfigureOptionFromSection<Blacklists>("Blacklists")
+    .ConfigureOptionFromSection<TelegramOptions>("Telegram");
+
+
+builder.Logging.Configure(options => options.ActivityTrackingOptions = ActivityTrackingOptions.TraceId);
+builder.WebHost.UseSentry(options =>
 {
-    public static readonly DateTime StartedTime = DateTime.UtcNow;
-    public static LanguagesList Languages;
-    public static string Username;
-    public static long BotId;
+    options.Dsn = "https://380e0a36b482415cabd1fd621c1a030d@o797589.ingest.sentry.io/6181857";
+    options.TracesSampleRate = 1.0;
+});
 
-    private static readonly SentryOptions SentryOptions = new()
-    {
-        Dsn = "https://380e0a36b482415cabd1fd621c1a030d@o797589.ingest.sentry.io/6181857",
-        TracesSampleRate = 1.0
-    };
+builder.Services.AddSerilog((_, loggerConfig) =>
+{
+    loggerConfig.ReadFrom.Configuration(builder.Configuration)
+        .Ignore([
+            "Microsoft.EntityFrameworkCore.Database.Command",
+            "Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker",
+            "Microsoft.AspNetCore.Hosting.Diagnostics",
+            "Microsoft.AspNetCore.Mvc.StatusCodeResult",
+            "Microsoft.EntityFrameworkCore.Infrastructure"
+        ]);
 
-    public static async Task Main()
-    {
-        SentrySdk.Init(SentryOptions);
+    loggerConfig.Enrich.FromLogContext();
+});
 
-        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
-        CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
-        AppDomain.CurrentDomain.UnhandledException += (_, eventArgs) => Log.Fatal(eventArgs.ExceptionObject as Exception, "Something went terribly wrong");
+builder.RegisterServices();
 
-        await CreateHostBuilder()
-            .Build()
-            .RunAsync();
-        
-        SentrySdk.Close();
-    }
 
-    private static IHostBuilder CreateHostBuilder() =>
-        Host.CreateDefaultBuilder()
-            .ConfigureLogging(builder =>
-            {
-                builder.Configure(options => options.ActivityTrackingOptions = ActivityTrackingOptions.TraceId);
-            })
-            .UseSerilog((hostingContext, loggerConfiguration) =>
-            {
-                loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration)
-                    .Ignore([
-                        "Microsoft.EntityFrameworkCore.Database.Command",
-                        "Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker",
-                        "Microsoft.AspNetCore.Hosting.Diagnostics",
-                        "Microsoft.AspNetCore.Mvc.StatusCodeResult",
-                        "Microsoft.EntityFrameworkCore.Infrastructure"
-                    ]);
-                loggerConfiguration.Enrich.FromLogContext();
-            })
-            .ConfigureAppConfiguration(config => config
-                .AddJsonFile("blacklists.json")
-                .AddJsonFile("languages.json"))
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseSentry(builder =>
-                {
-                    builder.Dsn = SentryOptions.Dsn;
-                    builder.TracesSampleRate = SentryOptions.TracesSampleRate;
-                });
-                webBuilder.UseStartup<Startup>()
-                    .UseKestrel((context, options) => options.Configure(context.Configuration.GetSection("Kestrel")));
-            });
+var app = builder.Build();
+
+if (builder.Environment.IsDevelopment())
+{
+    app.UseCors(x => x
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .SetIsOriginAllowed(_ => true)
+        .AllowCredentials());
 }
+else
+{
+    app.UseCors(x => x
+        .WithMethods("GET", "PUT", "OPTIONS", "HEAD")
+        .AllowAnyHeader()
+        .WithOrigins("https://tgtrns.dubzer.dev")
+        .AllowCredentials());
+}
+
+app.UseWhen(
+    ctx => ctx.Request.Path.StartsWithSegments("/api/bot"),
+    ab => ab.UseMiddleware<EnableRequestBodyBufferingMiddleware>()
+);
+app.Map("/metrics", metricsApp =>
+{
+    metricsApp.UseMiddleware<BasicAuthMiddleware>(builder.Configuration.GetValue<string>("prometheus:login"),
+        builder.Configuration.GetValue<string>("prometheus:password"));
+    metricsApp.UseMetricServer("");
+});
+app.UseHttpMetrics();
+
+
+await app.RunAsync();

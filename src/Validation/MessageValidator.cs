@@ -9,7 +9,7 @@ public class MessageValidator
 {
     private readonly Blacklists _blacklist;
 
-    public MessageValidator(IOptionsSnapshot<Blacklists> blacklistsOptions, IOptions<TgTranslatorOptions> tgTranslatorOptions)
+    public MessageValidator(IOptionsSnapshot<Blacklists> blacklistsOptions)
     {
         _blacklist = blacklistsOptions.Value;
     }
@@ -19,5 +19,5 @@ public class MessageValidator
         && messageText.Length > 1
         && !messageText.StartsWith('.')
         && !_blacklist.TextsBlacklist.Contains(messageText.ToLowerInvariant())
-        && (messageText == $"@{Program.Username}" || !message.IsOnlyEntities());
+        && (messageText == $"@{Static.Username}" || !message.IsOnlyEntities());
 }

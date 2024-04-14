@@ -3,11 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
-using TgTranslator.Data.Options;
 using TgTranslator.Exceptions;
 
 namespace TgTranslator.Menu;
@@ -42,7 +40,7 @@ public class BotMenu
             disableWebPagePreview: true,
             replyMarkup: new InlineKeyboardMarkup(new InlineKeyboardButton("Select a group")
             {
-                Url = $"https://t.me/{Program.Username}?startgroup=frommenu"
+                Url = $"https://t.me/{Static.Username}?startgroup=frommenu"
             }));
     }
 

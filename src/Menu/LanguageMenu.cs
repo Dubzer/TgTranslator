@@ -21,11 +21,11 @@ class LanguageMenu : MenuItem
             ? byte.Parse(arguments[0])
             : _currentPage = 1;
 
-        _pagesNeeded = (int) Math.Ceiling(Program.Languages.Count / (double) LangsOnPage);
+        _pagesNeeded = (int) Math.Ceiling(Static.Languages.Count / (double) LangsOnPage);
 
         ItemTitle = "Change group language";
         Command = Setting.Language.ToString().ToLowerInvariant();
-        Description = $"*Here you can setup primary language for your group.*\n{Program.Username}won't translate messages written in this language";
+        Description = $"*Here you can setup primary language for your group.*\n{Static.Username}won't translate messages written in this language";
     }
 
     protected override void GenerateButtons()
@@ -34,7 +34,7 @@ class LanguageMenu : MenuItem
 
         int previousPage = _currentPage - 1;
         int displayedLanguages = previousPage * LangsOnPage;
-        int languagesLeft = Program.Languages.Count - displayedLanguages;
+        int languagesLeft = Static.Languages.Count - displayedLanguages;
 
         int until = _currentPage == _pagesNeeded // Is this the last page?
             ? displayedLanguages + languagesLeft
@@ -49,7 +49,7 @@ class LanguageMenu : MenuItem
                 buffer.Clear();
             }
 
-            Language language = Program.Languages[i];
+            var language = Static.Languages[i];
             buffer.Add(new InlineKeyboardButton($@"{language.Flag} {language.Name}")
             {
                 CallbackData = $"switch {typeof(ApplyMenu)}#{Command}={language.Code}"

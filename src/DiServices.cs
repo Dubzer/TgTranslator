@@ -1,7 +1,12 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Telegram.Bot;
+using TgTranslator.Data;
 using TgTranslator.Data.Options;
 using TgTranslator.Interfaces;
 using TgTranslator.Menu;
@@ -16,44 +21,58 @@ namespace TgTranslator;
 
 public static class DiServices
 {
-    public static IServiceCollection RegisterServices(this IServiceCollection services, IConfiguration configuration)
+    public static IHostApplicationBuilder RegisterServices(this IHostApplicationBuilder builder)
     {
-        var telegramOptions = configuration.GetSection("telegram").Get<TelegramOptions>();
+        builder.Services.AddDbContext<TgTranslatorContext>(b =>
+            b.UseNpgsql(builder.Configuration.GetConnectionString("TgTranslatorContext")));
 
-        services.AddTransient<GroupDatabaseService>();
-        services.AddTransient<UsersDatabaseService>();
-        services.AddTransient<GroupsBlacklistService>();
+        builder.Services.AddCors();
+        builder.Services.AddMvc(options => { options.EnableEndpointRouting = false; })
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+            });
 
-        services.AddSingleton(new TelegramBotClient(telegramOptions.BotToken));
+        var telegramOptions = builder.Configuration.GetSection("telegram").Get<TelegramOptions>();
 
-        services.AddSingleton<Metrics>();
-        services.AddTransient<BotMenu>();
+        builder.Services.AddTransient<GroupDatabaseService>();
+        builder.Services.AddTransient<UsersDatabaseService>();
+        builder.Services.AddTransient<GroupsBlacklistService>();
 
-        services.AddTransient<ITranslator, TranslatePlaceholderService>();
+        builder.Services.AddSingleton(new TelegramBotClient(telegramOptions.BotToken));
 
-        services.AddTransient<MessageValidator>();
-        services.AddTransient<SettingsProcessor>();
+        builder.Services.AddSingleton<Metrics>();
+        builder.Services.AddTransient<BotMenu>();
 
-        services.AddTransient<IMessageHandler, MessageHandler>();
-        services.AddTransient<ICallbackQueryHandler, CallbackQueryHandler>();
-        services.AddTransient<MyChatMemberHandler>();
+        builder.Services.AddTransient<ITranslator, TranslatePlaceholderService>();
 
-        services.AddTransient<IpWhitelist>();
-        services.AddTransient<HandlersRouter>();
+        builder.Services.AddTransient<MessageValidator>();
+        builder.Services.AddTransient<SettingsProcessor>();
 
-        services.AddHostedService<MetricsHostedService>();
+        builder.Services.AddTransient<IMessageHandler, MessageHandler>();
+        builder.Services.AddTransient<ICallbackQueryHandler, CallbackQueryHandler>();
+        builder.Services.AddTransient<MyChatMemberHandler>();
 
-        services.AddSingleton<WebAppHashService>();
+        builder.Services.AddTransient<IpWhitelist>();
+        builder.Services.AddTransient<HandlersRouter>();
+
+        builder.Services.AddHostedService<MetricsHostedService>();
+
+        builder.Services.AddSingleton<WebAppHashService>();
 
         if (telegramOptions.Webhooks)
             //  Register webhooks.
             //  IStartupFilter calls the service only once, after building the DI container, but before the app starts receiving messages 
-            services.AddTransient<IStartupFilter, TelegramWebhooksRegistrar>();
+            builder.Services.AddTransient<IStartupFilter, TelegramWebhooksRegistrar>();
         else
             //  Receive events using polling
             //  TelegramBotHostedService basically wraps Telegram.Bot lib's events into Controller 
-            services.AddHostedService<TelegramBotHostedService>();
+            builder.Services.AddHostedService<TelegramBotHostedService>();
 
-        return services;
+        if (builder.Environment.IsDevelopment())
+            builder.Services.AddTransient<IStartupFilter, DatabaseMigrator>();
+
+        return builder;
     }
 }

@@ -12,18 +12,10 @@ namespace TgTranslator.Services;
 
 public class TelegramWebhooksRegistrar : IStartupFilter
 {
-    private readonly IServiceProvider _serviceProvider;
-
-    public TelegramWebhooksRegistrar(IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-    }
-        
-    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
-    {
-        return builder =>
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next) =>
+        builder =>
         {
-            using (var scope = _serviceProvider.CreateScope())
+            using (var scope = builder.ApplicationServices.CreateScope())
             {
                 var client = scope.ServiceProvider.GetRequiredService<TelegramBotClient>();
                 var domain = scope.ServiceProvider.GetRequiredService<IOptions<TelegramOptions>>().Value.WebhooksDomain;
@@ -31,18 +23,17 @@ public class TelegramWebhooksRegistrar : IStartupFilter
                 client.DeleteWebhookAsync().GetAwaiter().GetResult();
                 client
                     .SetWebhookAsync(domain.AppendPathSegments("api", "bot"),
-                    allowedUpdates:new[]
-                    {
-                        UpdateType.Message,
-                        UpdateType.CallbackQuery
-                    },
-                    dropPendingUpdates: true).GetAwaiter().GetResult();
+                        allowedUpdates:new[]
+                        {
+                            UpdateType.Message,
+                            UpdateType.CallbackQuery
+                        },
+                        dropPendingUpdates: true).GetAwaiter().GetResult();
                 var me = client.GetMeAsync().GetAwaiter().GetResult();
-                Program.Username = me.Username;
-                Program.BotId = me.Id;
+                Static.Username = me.Username;
+                Static.BotId = me.Id;
             }
 
             next(builder);
         };
-    }
 }

@@ -18,7 +18,7 @@ public class MyChatMemberHandler
         if (update.Chat.Type is not (ChatType.Group or ChatType.Supergroup))
            return;
 
-        if (update.NewChatMember.User.Username != Program.Username)
+        if (update.NewChatMember.User.Username != Static.Username)
             return;
         
         if (update.NewChatMember.Status is ChatMemberStatus.Restricted && !((ChatMemberRestricted)update.NewChatMember).CanSendMessages)

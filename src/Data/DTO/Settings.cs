@@ -9,6 +9,6 @@ public record Settings
 
     public string[] Languages { get; init; }
 
-    [Range((uint)0, 5)]
-    public uint Delay { get; init; }
+    [Range(0, 5)]
+    public int Delay { get; init; }
 }
