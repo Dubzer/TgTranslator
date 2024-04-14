@@ -7,9 +7,10 @@ using TgTranslator.Utils.Extensions;
 
 namespace TgTranslator.Controllers;
 
+[ApiController]
 [Route("api/bot")]
-[ServiceFilter(typeof(IpWhitelist))]
-public class TelegramBotController : Controller
+[ServiceFilter<IpWhitelist>]
+public class TelegramBotController : ControllerBase
 {
     private readonly HandlersRouter _handlersRouter;
 

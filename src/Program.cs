@@ -77,6 +77,7 @@ else
         .AllowCredentials());
 }
 
+app.MapControllers();
 app.UseWhen(
     ctx => ctx.Request.Path.StartsWithSegments("/api/bot"),
     ab => ab.UseMiddleware<EnableRequestBodyBufferingMiddleware>()
