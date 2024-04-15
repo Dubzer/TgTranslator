@@ -170,7 +170,7 @@ public class MessageHandler : IMessageHandler
 
         var groupConfig = await _settingsProcessor.GetGroupConfiguration(message.Chat.Id);
 
-        if (groupConfig.Delay != 0)
+        if (groupConfig.Delay != 0 && groupConfig.TranslationMode == TranslationMode.Auto)
             await Task.Delay(TimeSpan.FromSeconds(groupConfig.Delay));
 
         var translation = await _translator.TranslateTextAsync(text, groupConfig.Languages[0]);
