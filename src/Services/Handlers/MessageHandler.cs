@@ -336,6 +336,10 @@ public class MessageHandler : IMessageHandler
                         Url = $"https://t.me/{Static.Username}/settings?startapp=i{message.Chat.Id}"
                     }));
                 break;
+            case "settings" when chatType == ChatType.Private:
+                await _client.SendTextMessageAsync(message.Chat.Id,
+                    "You cannot configure the bot here 😳.\nPlease use this command in the group.");
+                break;
             case "start" when chatType == ChatType.Private && payload == "s":
                 await _botMenu.SendSettings(message.Chat.Id);
                 break;

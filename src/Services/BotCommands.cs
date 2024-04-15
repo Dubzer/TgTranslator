@@ -4,15 +4,6 @@ namespace TgTranslator.Services;
 
 public static class BotCommands
 {
-    public static readonly BotCommand[] PrivateChatCommands =
-    {
-        new()
-        {
-            Command = "contact",
-            Description = "📩 Contact the developer"
-        },
-    };
-
     public static readonly BotCommand SettingsCommand = new()
     {
         Command = "settings",
@@ -24,4 +15,14 @@ public static class BotCommands
         Command = "tl",
         Description = "🌐 Translate replied message."
     };
+
+    public static readonly BotCommand[] PrivateChatCommands =
+    [
+        new()
+        {
+            Command = "contact",
+            Description = "📩 Contact the developer"
+        },
+        SettingsCommand
+    ];
 }
