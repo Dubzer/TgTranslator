@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TgTranslator.Data.Options;
 
@@ -21,20 +20,21 @@ public class TelegramWebhooksRegistrar : IStartupFilter
                 var client = scope.ServiceProvider.GetRequiredService<TelegramBotClient>();
                 var domain = scope.ServiceProvider.GetRequiredService<IOptions<TelegramOptions>>().Value.WebhooksDomain;
 
-                client
-                    .SetMyCommandsAsync(BotCommands.PrivateChatCommands, BotCommandScope.AllPrivateChats())
-                    .ConfigureAwait(false)
+                client.DeleteWebhookAsync()
                     .GetAwaiter().GetResult();
 
-                client.DeleteWebhookAsync().GetAwaiter().GetResult();
                 client
                     .SetWebhookAsync(domain.AppendPathSegments("api", "bot"),
-                        allowedUpdates:new[]
-                        {
+                        allowedUpdates:
+                        [
                             UpdateType.Message,
                             UpdateType.CallbackQuery
-                        },
+                        ],
                         dropPendingUpdates: true).GetAwaiter().GetResult();
+
+                BotCommands.SetDefaultSettings(client)
+                    .GetAwaiter().GetResult();
+
                 var me = client.GetMeAsync().GetAwaiter().GetResult();
                 Static.Username = me.Username;
                 Static.BotId = me.Id;

@@ -52,12 +52,7 @@ public class TelegramBotHostedService : IHostedService
                 ]
             });
 
-        await _client.SetMyCommandsAsync(BotCommands.PrivateChatCommands, BotCommandScope.AllPrivateChats(), cancellationToken: cancellationToken);
-
-        await _client.SetMyCommandsAsync(new[]
-        {
-            BotCommands.SettingsCommand
-        }, BotCommandScope.AllChatAdministrators(), cancellationToken: cancellationToken);
+        await BotCommands.SetDefaultSettings(_client);
     }
 
     private async Task UpdateHandler(ITelegramBotClient client, Update update, CancellationToken cancellationToken)
