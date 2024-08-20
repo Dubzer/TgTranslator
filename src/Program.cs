@@ -49,7 +49,8 @@ builder.Services.AddSerilog((_, loggerConfig) =>
             "Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker",
             "Microsoft.AspNetCore.Hosting.Diagnostics",
             "Microsoft.AspNetCore.Mvc.StatusCodeResult",
-            "Microsoft.EntityFrameworkCore.Infrastructure"
+            "Microsoft.EntityFrameworkCore.Infrastructure",
+            "Microsoft.AspNetCore.Routing.EndpointMiddleware"
         ]);
 
     loggerConfig.Enrich.FromLogContext();
