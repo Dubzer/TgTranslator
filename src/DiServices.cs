@@ -1,5 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -27,12 +25,7 @@ public static class DiServices
             b.UseNpgsql(builder.Configuration.GetConnectionString("TgTranslatorContext")));
 
         builder.Services.AddCors();
-        builder.Services.AddMvc(options => { options.EnableEndpointRouting = false; })
-            .AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
-            });
+        builder.Services.ConfigureTelegramBotMvc();
 
         var telegramOptions = builder.Configuration.GetSection("telegram").Get<TelegramOptions>();
 

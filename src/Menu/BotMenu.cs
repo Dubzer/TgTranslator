@@ -7,6 +7,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using TgTranslator.Exceptions;
+using TgTranslator.Utils;
 
 namespace TgTranslator.Menu;
 
@@ -37,7 +38,7 @@ public class BotMenu
             "🦈 Hello!\nThis bot will translate messages in your group. It supports 134 languages and has various modes. Check out the demo settings page [here](https://t.me/TgTranslatorBot/settings?startapp=mock).\n\n" +
             "To get started, add it to the group chat.",
             parseMode: ParseMode.Markdown,
-            disableWebPagePreview: true,
+            linkPreviewOptions: TelegramUtils.DisabledLinkPreview,
             replyMarkup: new InlineKeyboardMarkup(new InlineKeyboardButton("Select a group")
             {
                 Url = $"https://t.me/{Static.Username}?startgroup=frommenu"

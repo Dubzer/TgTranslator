@@ -198,8 +198,8 @@ public class MessageHandler : IMessageHandler
         if (translatedText.Length <= 4096)
         {
             translationMessage = await _client.SendTextMessageAsync(message.Chat.Id, translatedText,
-                disableNotification: true, disableWebPagePreview: true,
-                replyToMessageId: message.MessageId, allowSendingWithoutReply: false);
+                disableNotification: true, linkPreviewOptions: TelegramUtils.DisabledLinkPreview,
+                replyParameters: TelegramUtils.SafeReplyTo(message.MessageId));
         }
         else
         {
@@ -226,12 +226,12 @@ public class MessageHandler : IMessageHandler
         var (firstPart, secondPart) = MessageSplitter.Split(message);
 
         var firstPartResult = await _client.SendTextMessageAsync(chatId, firstPart,
-            disableNotification: true, disableWebPagePreview: true,
-            replyToMessageId: replyId, allowSendingWithoutReply: false);
+            disableNotification: true, linkPreviewOptions: TelegramUtils.DisabledLinkPreview,
+            replyParameters: TelegramUtils.SafeReplyTo(replyId));
 
         return await _client.SendTextMessageAsync(chatId, secondPart,
-            disableNotification: true, disableWebPagePreview: true,
-            replyToMessageId: firstPartResult.MessageId, allowSendingWithoutReply: false);
+            disableNotification: true, linkPreviewOptions: TelegramUtils.DisabledLinkPreview,
+            replyParameters: TelegramUtils.SafeReplyTo(firstPartResult.MessageId));
     }
 
     private async Task HandleSettingChanging(Message message)
@@ -287,7 +287,14 @@ public class MessageHandler : IMessageHandler
                 break;
         }
 
-        await _client.SendTextMessageAsync(message.Chat.Id, "Done!", replyToMessageId: message.MessageId, allowSendingWithoutReply: false);
+        await _client.SendTextMessageAsync(
+            message.Chat.Id,
+            "Done!",
+            replyParameters: new ReplyParameters
+            {
+                MessageId = message.MessageId,
+                AllowSendingWithoutReply = false,
+            });
     }
 
     private async Task HandleCommand(Message message)
@@ -330,7 +337,7 @@ public class MessageHandler : IMessageHandler
                     "Press on the button bellow to change the settings." +
                     $"\n\nIf your client doesn't support the menu [click here](https://t.me/{Static.Username}?start=s)",
                     parseMode: ParseMode.Markdown,
-                    disableWebPagePreview: true,
+                    linkPreviewOptions: TelegramUtils.DisabledLinkPreview,
                     replyMarkup: new InlineKeyboardMarkup(new InlineKeyboardButton("Change settings")
                     {
                         Url = $"https://t.me/{Static.Username}/settings?startapp=i{message.Chat.Id}"

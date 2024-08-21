@@ -9,6 +9,7 @@ using Telegram.Bot.Types.Enums;
 using TgTranslator.Exceptions;
 using TgTranslator.Interfaces;
 using TgTranslator.Services.Handlers;
+using TgTranslator.Utils;
 
 namespace TgTranslator.Services;
 
@@ -80,16 +81,21 @@ public class HandlersRouter
         }
         catch (InvalidSettingException)
         {
-            await _client.SendTextMessageAsync(message.Chat.Id, "It seems that this setting is not supported", replyToMessageId: message.MessageId, allowSendingWithoutReply: false);
+            await _client.SendTextMessageAsync(message.Chat.Id,
+                "It seems that this setting is not supported",
+                replyParameters: TelegramUtils.SafeReplyTo(message.MessageId));
         }
         catch (InvalidSettingValueException)
         {
-            await _client.SendTextMessageAsync(message.Chat.Id, "It seems that this value is not supported", replyToMessageId: message.MessageId, allowSendingWithoutReply: false);
+            await _client.SendTextMessageAsync(message.Chat.Id,
+                "It seems that this value is not supported",
+                replyParameters: TelegramUtils.SafeReplyTo(message.MessageId));
         }
         catch (UnauthorizedSettingChangingException)
         {
-            await _client.SendTextMessageAsync(message.Chat.Id, "Hey! Only admins can change settings of this bot!",
-                replyToMessageId: message.MessageId, allowSendingWithoutReply: false);
+            await _client.SendTextMessageAsync(message.Chat.Id,
+                "Hey! Only admins can change settings of this bot!",
+                replyParameters: TelegramUtils.SafeReplyTo(message.MessageId));
         }
         catch (ApiRequestException exception) when (exception.Message.Contains("CHAT_RESTRICTED")
                                                     || exception.Message.Contains("have no rights to send a message")

@@ -36,10 +36,10 @@ public class TelegramBotHostedService : IHostedService
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        await _client.DeleteWebhookAsync(cancellationToken: cancellationToken);
-        _client.StartReceiving(cancellationToken: cancellationToken,
+        _client.StartReceiving(
             updateHandler: UpdateHandler,
-            pollingErrorHandler: ErrorHandler, receiverOptions: new()
+            errorHandler: ErrorHandler,
+            receiverOptions: new()
             {
                 Offset = -1,
                 AllowedUpdates =
@@ -50,7 +50,8 @@ public class TelegramBotHostedService : IHostedService
                     UpdateType.ChatMember,
                     UpdateType.MyChatMember
                 ]
-            });
+            },
+            cancellationToken: cancellationToken);
 
         await BotCommands.SetDefaultSettings(_client);
     }
