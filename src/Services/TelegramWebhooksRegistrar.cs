@@ -32,10 +32,17 @@ public class TelegramWebhooksRegistrar : IStartupFilter
                         ],
                         dropPendingUpdates: true).GetAwaiter().GetResult();
 
-                BotCommands.SetDefaultSettings(client)
-                    .GetAwaiter().GetResult();
+                var commandsManager = scope.ServiceProvider.GetRequiredService<CommandsManager>();
+                commandsManager.SetDefaultCommands()
+                    .ConfigureAwait(false)
+                    .GetAwaiter()
+                    .GetResult();
 
-                var me = client.GetMeAsync().GetAwaiter().GetResult();
+                var me = client.GetMeAsync()
+                    .ConfigureAwait(false)
+                    .GetAwaiter()
+                    .GetResult();
+
                 Static.Username = me.Username;
                 Static.BotId = me.Id;
             }

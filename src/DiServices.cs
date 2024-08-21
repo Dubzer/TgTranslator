@@ -42,6 +42,7 @@ public static class DiServices
 
         builder.Services.AddTransient<MessageValidator>();
         builder.Services.AddTransient<SettingsProcessor>();
+        builder.Services.AddTransient<CommandsManager>();
 
         builder.Services.AddTransient<IMessageHandler, MessageHandler>();
         builder.Services.AddTransient<ICallbackQueryHandler, CallbackQueryHandler>();

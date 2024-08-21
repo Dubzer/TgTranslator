@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace TgTranslator.Services;
@@ -18,18 +16,9 @@ public static class BotCommands
         Description = "🌐 Translate replied message."
     };
 
-    public static async Task SetDefaultSettings(ITelegramBotClient client)
+    public static readonly BotCommand ContactCommand = new()
     {
-        await client.SetMyCommandsAsync(
-        [
-            SettingsCommand,
-            new()
-            {
-                Command = "contact",
-                Description = "📩 Contact the developer"
-            }
-        ], BotCommandScope.AllPrivateChats());
-
-        await client.SetMyCommandsAsync([SettingsCommand], BotCommandScope.AllChatAdministrators());
-    }
+        Command = "contact",
+        Description = "📩 Contact the developer"
+    };
 }

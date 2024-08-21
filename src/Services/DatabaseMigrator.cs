@@ -9,9 +9,6 @@ namespace TgTranslator.Services;
 
 public class DatabaseMigrator : IStartupFilter
 {
-    /// <summary>
-    ///
-    /// </summary>
     public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next) =>
         builder =>
         {

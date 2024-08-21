@@ -15,11 +15,13 @@ public class TelegramBotHostedService : IHostedService
 {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly TelegramBotClient _client;
+    private readonly CommandsManager _commandsManager;
 
-    public TelegramBotHostedService(IServiceScopeFactory scopeFactory, TelegramBotClient client)
+    public TelegramBotHostedService(IServiceScopeFactory scopeFactory, TelegramBotClient client, CommandsManager commandsManager)
     {
         _scopeFactory = scopeFactory;
         _client = client;
+        _commandsManager = commandsManager;
 
         var me = client.GetMeAsync().GetAwaiter().GetResult();
         Static.Username = me.Username;
@@ -53,7 +55,7 @@ public class TelegramBotHostedService : IHostedService
             },
             cancellationToken: cancellationToken);
 
-        await BotCommands.SetDefaultSettings(_client);
+        await _commandsManager.SetDefaultCommands();
     }
 
     private async Task UpdateHandler(ITelegramBotClient client, Update update, CancellationToken cancellationToken)

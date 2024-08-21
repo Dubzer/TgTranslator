@@ -28,6 +28,7 @@ public class MessageHandler : IMessageHandler
     private readonly TelegramBotClient _client;
     private readonly Metrics _metrics;
     private readonly SettingsProcessor _settingsProcessor;
+    private readonly CommandsManager _commandsManager;
     private readonly ITranslator _translator;
     private readonly MessageValidator _validator;
     private readonly UsersDatabaseService _users;
@@ -36,12 +37,13 @@ public class MessageHandler : IMessageHandler
 
     private readonly HashSet<string> _manualTranslationCommands;
 
-    public MessageHandler(TelegramBotClient client, BotMenu botMenu, SettingsProcessor settingsProcessor,
+    public MessageHandler(TelegramBotClient client, BotMenu botMenu, SettingsProcessor settingsProcessor, CommandsManager commandsManager,
         ITranslator translator, Metrics metrics, IOptions<Blacklists> blacklistsOptions, MessageValidator validator, UsersDatabaseService users, GroupsBlacklistService groupsBlacklist, ILogger logger)
     {
         _client = client;
         _botMenu = botMenu;
         _settingsProcessor = settingsProcessor;
+        _commandsManager = commandsManager;
         _translator = translator;
         _metrics = metrics;
         _blacklist = blacklistsOptions.Value;
@@ -257,33 +259,9 @@ public class MessageHandler : IMessageHandler
             case Setting.Mode:
                 var mode = Enum.Parse<TranslationMode>(value, true);
 
-                await _client.DeleteMyCommandsAsync(BotCommandScope.Chat(message.Chat.Id));
-
-                switch (mode)
-                {
-                    case TranslationMode.Manual:
-                        await _client.SetMyCommandsAsync(new[]
-                        {
-                            BotCommands.SettingsCommand,
-                            BotCommands.TranslateCommand
-                        }, BotCommandScope.ChatAdministrators(message.Chat.Id));
-
-                        await _client.SetMyCommandsAsync(new[]
-                        {
-                            BotCommands.TranslateCommand
-                        }, BotCommandScope.Chat(message.Chat.Id));
-                        break;
-                    default:
-                        await _client.DeleteMyCommandsAsync(BotCommandScope.Chat(message.Chat.Id));
-                        await _client.SetMyCommandsAsync(new[]
-                        {
-                            BotCommands.SettingsCommand
-                        }, BotCommandScope.ChatAdministrators(message.Chat.Id));
-                        break;
-                }
-
-
+                await _commandsManager.ChangeGroupMode(message.Chat.Id, mode);
                 await _settingsProcessor.ChangeMode(message.Chat.Id, mode);
+
                 break;
         }
 
