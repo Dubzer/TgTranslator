@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -11,6 +12,7 @@ using Prometheus;
 using Serilog;
 using TgTranslator;
 using TgTranslator.Data.Options;
+using TgTranslator.Menu;
 using TgTranslator.Services.Middlewares;
 using TgTranslator.Utils.Extensions;
 
@@ -57,7 +59,12 @@ builder.Services.AddSerilog((_, loggerConfig) =>
     loggerConfig.Enrich.FromLogContext();
 });
 
-builder.Services.AddControllers();
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter<TranslationMode>());
+    });
 
 builder.RegisterServices();
 
