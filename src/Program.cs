@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Prometheus;
@@ -55,6 +56,8 @@ builder.Services.AddSerilog((_, loggerConfig) =>
 
     loggerConfig.Enrich.FromLogContext();
 });
+
+builder.Services.AddControllers();
 
 builder.RegisterServices();
 
