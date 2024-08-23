@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using Telegram.Bot.Types;
 using TgTranslator.Services;
 using TgTranslator.Utils.Extensions;
@@ -23,15 +22,12 @@ public class TelegramBotController : ControllerBase
     public IActionResult Get() => Ok();
 
     [HttpPost]
-    public async Task<OkResult> Post()
+    public async Task<OkResult> Post([FromBody] Update update)
     {
-        var body = await HttpContext.Request.GetRawBodyAsync();
-        if (body == null)
+        if (update == null)
             return Ok();
 
-        var update = JsonConvert.DeserializeObject<Update>(body);
         await _handlersRouter.HandleUpdate(update);
-
         return Ok();
     }
 }
