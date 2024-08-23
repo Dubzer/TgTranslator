@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -63,7 +64,8 @@ builder.Services
     .AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter<TranslationMode>());
+        options.JsonSerializerOptions.Converters
+            .Add(new JsonStringEnumConverter<TranslationMode>(JsonNamingPolicy.CamelCase));
     });
 
 builder.RegisterServices();
