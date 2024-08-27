@@ -9,6 +9,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
+using TgTranslator.Data.DTO;
 using TgTranslator.Data.Options;
 using TgTranslator.Exceptions;
 using TgTranslator.Interfaces;
@@ -27,7 +28,7 @@ public class MessageHandler : IMessageHandler
 
     private readonly TelegramBotClient _client;
     private readonly Metrics _metrics;
-    private readonly SettingsProcessor _settingsProcessor;
+    private readonly SettingsService _settingsService;
     private readonly CommandsManager _commandsManager;
     private readonly ITranslator _translator;
     private readonly MessageValidator _validator;
@@ -37,12 +38,12 @@ public class MessageHandler : IMessageHandler
 
     private readonly HashSet<string> _manualTranslationCommands;
 
-    public MessageHandler(TelegramBotClient client, BotMenu botMenu, SettingsProcessor settingsProcessor, CommandsManager commandsManager,
+    public MessageHandler(TelegramBotClient client, BotMenu botMenu, SettingsService settingsService, CommandsManager commandsManager,
         ITranslator translator, Metrics metrics, IOptions<Blacklists> blacklistsOptions, MessageValidator validator, UsersDatabaseService users, GroupsBlacklistService groupsBlacklist, ILogger logger)
     {
         _client = client;
         _botMenu = botMenu;
-        _settingsProcessor = settingsProcessor;
+        _settingsService = settingsService;
         _commandsManager = commandsManager;
         _translator = translator;
         _metrics = metrics;
@@ -121,7 +122,8 @@ public class MessageHandler : IMessageHandler
             return;
         }
 
-        switch (await _settingsProcessor.GetTranslationMode(message.Chat.Id))
+        var groupSettings = await _settingsService.GetSettings(message.Chat.Id);
+        switch (groupSettings.TranslationMode)
         {
             case TranslationMode.Forwards:
                 _logger.Information("Group {ChatId} | {From} is using Forwards translation mode", message.Chat.Id, message.From);
@@ -138,7 +140,7 @@ public class MessageHandler : IMessageHandler
                 if (message.ReplyToMessage == null)
                     return;
                 if (_manualTranslationCommands.Contains(messageText))
-                    await HandleTranslation(message.ReplyToMessage, message.ReplyToMessage.TextOrCaption());
+                    await HandleTranslation(message.ReplyToMessage, message.ReplyToMessage.TextOrCaption(), groupSettings);
                 return;
             case TranslationMode.LinkedChannel:
                 if (message.From is not { Id: 777000 })
@@ -146,7 +148,7 @@ public class MessageHandler : IMessageHandler
                 break;
         }
 
-        await HandleTranslation(message, messageText);
+        await HandleTranslation(message, messageText, groupSettings);
     }
 
     private async Task HandlePrivateMessage(Message message)
@@ -161,7 +163,7 @@ public class MessageHandler : IMessageHandler
         await _botMenu.SendStart(message.Chat.Id);
     }
 
-    private async Task HandleTranslation(Message message, string text)
+    private async Task HandleTranslation(Message message, string text, Settings groupConfig)
     {
         _logger.Information("Handling translation for {ChatId} | {From}...", message.Chat.Id, message.From);
         _metrics.HandleTranslatorApiCall(message.Chat.Id, string.IsNullOrEmpty(text) ? 0 : text.Length);
@@ -169,8 +171,6 @@ public class MessageHandler : IMessageHandler
 
         if (!text.AnyLetters())
             return;
-
-        var groupConfig = await _settingsProcessor.GetGroupConfiguration(message.Chat.Id);
 
         if (groupConfig.Delay != 0 && groupConfig.TranslationMode == TranslationMode.Auto)
             await Task.Delay(TimeSpan.FromSeconds(groupConfig.Delay));
@@ -248,19 +248,19 @@ public class MessageHandler : IMessageHandler
         if (!Enum.TryParse(param, true, out Setting setting) || !Enum.IsDefined(typeof(Setting), setting))
             throw new InvalidSettingException();
 
-        if (!_settingsProcessor.ValidateSettings(Enum.Parse<Setting>(param, true), value))
+        if (!_settingsService.ValidateSettings(Enum.Parse<Setting>(param, true), value))
             throw new InvalidSettingValueException();
 
         switch (setting)
         {
             case Setting.Language:
-                await _settingsProcessor.ChangeLanguage(message.Chat.Id, value);
+                await _settingsService.SetLanguage(message.Chat.Id, value);
                 break;
             case Setting.Mode:
                 var mode = Enum.Parse<TranslationMode>(value, true);
 
                 await _commandsManager.ChangeGroupMode(message.Chat.Id, mode);
-                await _settingsProcessor.ChangeMode(message.Chat.Id, mode);
+                await _settingsService.SetMode(message.Chat.Id, mode);
 
                 break;
         }

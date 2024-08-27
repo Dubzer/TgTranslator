@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Telegram.Bot;
 using TgTranslator.Data;
+using TgTranslator.Data.DTO;
 using TgTranslator.Data.Options;
 using TgTranslator.Interfaces;
 using TgTranslator.Menu;
@@ -29,7 +30,6 @@ public static class DiServices
 
         var telegramOptions = builder.Configuration.GetSection("telegram").Get<TelegramOptions>();
 
-        builder.Services.AddTransient<GroupDatabaseService>();
         builder.Services.AddTransient<UsersDatabaseService>();
         builder.Services.AddTransient<GroupsBlacklistService>();
 
@@ -41,8 +41,9 @@ public static class DiServices
         builder.Services.AddTransient<ITranslator, TranslatePlaceholderService>();
 
         builder.Services.AddTransient<MessageValidator>();
-        builder.Services.AddTransient<SettingsProcessor>();
+        builder.Services.AddTransient<SettingsService>();
         builder.Services.AddTransient<CommandsManager>();
+        builder.Services.AddSingleton<SettingsValidator>();
 
         builder.Services.AddTransient<IMessageHandler, MessageHandler>();
         builder.Services.AddTransient<ICallbackQueryHandler, CallbackQueryHandler>();

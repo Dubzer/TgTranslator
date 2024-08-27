@@ -18,7 +18,8 @@ public class SettingsController : ControllerBase
 {
     private readonly TelegramBotClient _botClient;
     private readonly WebAppHashService _hashService;
-    private readonly SettingsProcessor _settingsProcessor;
+    private readonly SettingsService _settingsService;
+    private readonly SettingsValidator _settingsValidator;
 
     private static readonly GetSettingResponse MockGet = new()
     {
@@ -33,11 +34,13 @@ public class SettingsController : ControllerBase
 
     public SettingsController(TelegramBotClient botClient,
         WebAppHashService hashService,
-        SettingsProcessor settingsProcessor)
+        SettingsService settingsService,
+        SettingsValidator settingsValidator)
     {
         _botClient = botClient;
         _hashService = hashService;
-        _settingsProcessor = settingsProcessor;
+        _settingsService = settingsService;
+        _settingsValidator = settingsValidator;
     }
 
     [HttpGet]
@@ -55,7 +58,7 @@ public class SettingsController : ControllerBase
         {
             ChatTitle = group.Title!,
             ChatUsername = group.Username,
-            Settings = await _settingsProcessor.GetGroupConfiguration(group.Id)
+            Settings = await _settingsService.GetSettings(group.Id)
         });
     }
 
@@ -66,10 +69,10 @@ public class SettingsController : ControllerBase
             return Ok();
 
         var data = await ExtractData(query);
-        if (data == null)
+        if (data == null || !_settingsValidator.Validate(request.Settings).IsValid)
             return BadRequest();
 
-        await _settingsProcessor.SetGroupConfiguration(data.Value.group.Id, request.Settings);
+        await _settingsService.SetSettings(data.Value.group.Id, request.Settings);
         return Ok();
     }
 
