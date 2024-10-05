@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TgTranslator.Data;
@@ -11,9 +12,11 @@ using TgTranslator.Data;
 namespace TgTranslator.Migrations
 {
     [DbContext(typeof(TgTranslatorContext))]
-    partial class TgTranslatorContextModelSnapshot : ModelSnapshot
+    [Migration("20241005221500_TranslateWithLinks")]
+    partial class TranslateWithLinks
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

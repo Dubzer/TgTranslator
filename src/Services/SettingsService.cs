@@ -38,7 +38,8 @@ public class SettingsService
         {
             TranslationMode = group.TranslationMode,
             Languages = [group.Language],
-            Delay = group.Delay
+            Delay = group.Delay,
+            TranslateWithLinks = group.TranslateWithLinks
         };
     }
 
@@ -49,7 +50,8 @@ public class SettingsService
             GroupId = chatId,
             Delay = 0,
             Language = "en",
-            TranslationMode = TranslationMode.Auto
+            TranslationMode = TranslationMode.Auto,
+            TranslateWithLinks = true
         };
 
         _databaseContext.Groups.Add(group);
@@ -66,6 +68,7 @@ public class SettingsService
         group.Language = settings.Languages.First();
         group.TranslationMode = settings.TranslationMode;
         group.Delay = settings.Delay;
+        group.TranslateWithLinks = settings.TranslateWithLinks;
 
         _databaseContext.Update(group);
         await _databaseContext.SaveChangesAsync();

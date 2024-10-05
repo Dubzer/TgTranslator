@@ -1,9 +1,11 @@
 using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Serilog;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using TgTranslator.Data.DTO;
 using TgTranslator.Interfaces;
 using TgTranslator.Menu;
@@ -37,6 +39,12 @@ public partial class TranslateHandler
     {
         _logger.Information("Handling translation for {ChatId} | {From}...", message.Chat.Id, message.From);
         _metrics.HandleTranslatorApiCall(message.Chat.Id, string.IsNullOrEmpty(originalText) ? 0 : originalText.Length);
+
+        // a setting that prevents automatically translating messages with links
+        if (!groupConfig.TranslateWithLinks
+            && groupConfig.TranslationMode is TranslationMode.Auto or TranslationMode.Forwards
+            && message.Entities?.Any(x => x.Type is MessageEntityType.TextLink or MessageEntityType.Url) == true)
+            return;
 
         if (!originalText.AnyLetters())
             return;

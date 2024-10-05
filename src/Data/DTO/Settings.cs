@@ -16,6 +16,8 @@ public record Settings
     public string[] Languages { get; init; }
 
     public int Delay { get; init; }
+
+    public bool TranslateWithLinks { get; init; }
 }
 
 public class SettingsValidator : AbstractValidator<Settings>
