@@ -9,7 +9,7 @@ using TgTranslator.Exceptions;
 using TgTranslator.Interfaces;
 using TgTranslator.Menu;
 
-namespace TgTranslator.Services.Handlers;
+namespace TgTranslator.Services.EventHandlers;
 
 public class CallbackQueryHandler : ICallbackQueryHandler
 {

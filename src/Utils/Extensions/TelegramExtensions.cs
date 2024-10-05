@@ -54,5 +54,5 @@ public static class TelegramExtensions
     }
 
     public static bool IsCommand(this Message message) => 
-        message.Entities?.Length == 1 && message.Entities[0].Type == MessageEntityType.BotCommand;
+        message.Entities?.Length == 1 && message.Entities[0].Type == MessageEntityType.BotCommand && message.Text != null;
 }

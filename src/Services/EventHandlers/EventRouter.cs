@@ -8,25 +8,25 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TgTranslator.Exceptions;
 using TgTranslator.Interfaces;
-using TgTranslator.Services.Handlers;
+using TgTranslator.Services.EventHandlers.Messages;
 using TgTranslator.Utils;
 
-namespace TgTranslator.Services;
+namespace TgTranslator.Services.EventHandlers;
 
-public class HandlersRouter
+public class EventRouter
 {
     private readonly ICallbackQueryHandler _callbackQueryHandler;
     private readonly MyChatMemberHandler _myChatMemberHandler;
     private readonly TelegramBotClient _client;
-    private readonly IMessageHandler _messageHandler;
+    private readonly MessageRouter _messageRouter;
     private readonly GroupsBlacklistService _groupsBlacklist;
     private readonly ILogger _logger;
 
-    public HandlersRouter(TelegramBotClient client, IMessageHandler messageHandler, ICallbackQueryHandler callbackQueryHandler, MyChatMemberHandler myChatMemberHandler, GroupsBlacklistService groupsBlacklist, ILogger logger)
+    public EventRouter(TelegramBotClient client, MessageRouter messageRouter, ICallbackQueryHandler callbackQueryHandler, MyChatMemberHandler myChatMemberHandler, GroupsBlacklistService groupsBlacklist, ILogger logger)
     {
         _client = client;
-        _messageHandler = messageHandler ?? throw new ArgumentNullException(nameof(messageHandler));
-        _callbackQueryHandler = callbackQueryHandler ?? throw new ArgumentNullException(nameof(callbackQueryHandler));
+        _messageRouter = messageRouter;
+        _callbackQueryHandler = callbackQueryHandler;
         _myChatMemberHandler = myChatMemberHandler;
         _groupsBlacklist = groupsBlacklist;
         _logger = logger;
@@ -77,7 +77,7 @@ public class HandlersRouter
 
         try
         {
-            await _messageHandler.HandleMessageAsync(message);
+            await _messageRouter.HandleMessage(message);
         }
         catch (InvalidSettingException)
         {

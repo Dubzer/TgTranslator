@@ -8,6 +8,7 @@ using Serilog;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using TgTranslator.Services.EventHandlers;
 
 namespace TgTranslator.Services;
 
@@ -61,7 +62,7 @@ public class TelegramBotHostedService : IHostedService
     private async Task UpdateHandler(ITelegramBotClient client, Update update, CancellationToken cancellationToken)
     {
         using var scope = _scopeFactory.CreateScope();
-        var router = scope.ServiceProvider.GetRequiredService<HandlersRouter>();
+        var router = scope.ServiceProvider.GetRequiredService<EventRouter>();
         await router.HandleUpdate(update);
     }
 

@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace TgTranslator.Services.Handlers;
+namespace TgTranslator.Services.EventHandlers;
 
 public class MyChatMemberHandler
 {

@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot.Types;
-using TgTranslator.Services;
+using TgTranslator.Services.EventHandlers;
 using TgTranslator.Utils.Extensions;
 
 namespace TgTranslator.Controllers;
@@ -11,11 +11,11 @@ namespace TgTranslator.Controllers;
 [ServiceFilter<IpWhitelist>]
 public class TelegramBotController : ControllerBase
 {
-    private readonly HandlersRouter _handlersRouter;
+    private readonly EventRouter _eventRouter;
 
-    public TelegramBotController(HandlersRouter handlersRouter)
+    public TelegramBotController(EventRouter eventRouter)
     {
-        _handlersRouter = handlersRouter;
+        _eventRouter = eventRouter;
     }
 
     [HttpGet]
@@ -27,7 +27,7 @@ public class TelegramBotController : ControllerBase
         if (update == null)
             return Ok();
 
-        await _handlersRouter.HandleUpdate(update);
+        await _eventRouter.HandleUpdate(update);
         return Ok();
     }
 }

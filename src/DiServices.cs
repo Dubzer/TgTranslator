@@ -10,7 +10,8 @@ using TgTranslator.Data.Options;
 using TgTranslator.Interfaces;
 using TgTranslator.Menu;
 using TgTranslator.Services;
-using TgTranslator.Services.Handlers;
+using TgTranslator.Services.EventHandlers;
+using TgTranslator.Services.EventHandlers.Messages;
 using TgTranslator.Services.Translation;
 using TgTranslator.Stats;
 using TgTranslator.Utils.Extensions;
@@ -45,12 +46,16 @@ public static class DiServices
         builder.Services.AddTransient<CommandsManager>();
         builder.Services.AddSingleton<SettingsValidator>();
 
-        builder.Services.AddTransient<IMessageHandler, MessageHandler>();
+        builder.Services.AddTransient<MessageRouter>();
         builder.Services.AddTransient<ICallbackQueryHandler, CallbackQueryHandler>();
         builder.Services.AddTransient<MyChatMemberHandler>();
 
+        builder.Services.AddTransient<TranslateHandler>();
+        builder.Services.AddTransient<CommandHandler>();
+        builder.Services.AddTransient<SettingsChangeHandler>();
+
         builder.Services.AddTransient<IpWhitelist>();
-        builder.Services.AddTransient<HandlersRouter>();
+        builder.Services.AddTransient<EventRouter>();
 
         builder.Services.AddHostedService<MetricsHostedService>();
 
