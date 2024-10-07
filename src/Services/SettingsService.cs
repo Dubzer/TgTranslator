@@ -20,11 +20,13 @@ public class SettingsService
 {
     private readonly TgTranslatorContext _databaseContext;
     private readonly SettingsValidator _settingsValidator;
+    private readonly CommandsManager _commandsManager;
 
-    public SettingsService(TgTranslatorContext databaseContext, IOptions<LanguagesList> languages, SettingsValidator settingsValidator)
+    public SettingsService(TgTranslatorContext databaseContext, IOptions<LanguagesList> languages, SettingsValidator settingsValidator, CommandsManager commandsManager)
     {
         _databaseContext = databaseContext;
         _settingsValidator = settingsValidator;
+        _commandsManager = commandsManager;
         // TODO: Refactor it
         Static.Languages = languages.Value;
     }
@@ -66,12 +68,14 @@ public class SettingsService
                     ?? await InitSettings(chatId);
 
         group.Language = settings.Languages.First();
-        group.TranslationMode = settings.TranslationMode;
         group.Delay = settings.Delay;
         group.TranslateWithLinks = settings.TranslateWithLinks;
 
         _databaseContext.Update(group);
         await _databaseContext.SaveChangesAsync();
+
+        if (group.TranslationMode != settings.TranslationMode)
+            await SetMode(chatId, settings.TranslationMode);
     }
 
     public async Task SetLanguage(long chatId, string language)
@@ -88,6 +92,8 @@ public class SettingsService
             .Where(x => x.GroupId == chatId)
             .ExecuteUpdateAsync(x =>
                 x.SetProperty(g => g.TranslationMode, mode));
+
+        await _commandsManager.ChangeGroupMode(chatId, mode);
     }
 
     public bool ValidateSettings(Setting setting, string value) =>

@@ -12,13 +12,11 @@ public class SettingsChangeHandler
 {
     private readonly TelegramBotClient _client;
     private readonly SettingsService _settingsService;
-    private readonly CommandsManager _commandsManager;
 
-    public SettingsChangeHandler(TelegramBotClient client, SettingsService settingsService, CommandsManager commandsManager)
+    public SettingsChangeHandler(TelegramBotClient client, SettingsService settingsService)
     {
         _client = client;
         _settingsService = settingsService;
-        _commandsManager = commandsManager;
     }
 
     public async Task Handle(Message message)
@@ -43,10 +41,7 @@ public class SettingsChangeHandler
                 break;
             case Setting.Mode:
                 var mode = Enum.Parse<TranslationMode>(value, true);
-
-                await _commandsManager.ChangeGroupMode(message.Chat.Id, mode);
                 await _settingsService.SetMode(message.Chat.Id, mode);
-
                 break;
         }
 
