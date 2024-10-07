@@ -46,6 +46,7 @@ public class CommandsManager
             case TranslationMode.LinkedChannel:
             default:
                 // the default commands will be shown after deleting the scoped ones
+                await _botClient.DeleteMyCommandsAsync(BotCommandScope.ChatAdministrators(chatId));
                 await _botClient.DeleteMyCommandsAsync(BotCommandScope.Chat(chatId));
                 break;
         }
