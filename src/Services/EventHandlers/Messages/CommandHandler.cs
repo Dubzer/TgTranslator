@@ -87,7 +87,7 @@ public class CommandHandler
                 await _botMenu.SendStart(message.Chat.Id);
                 break;
             case "contact" or "donate" when chatType == ChatType.Private:
-                await _client.SendTextMessageAsync(message.Chat.Id, _contactInfo);
+                await _client.SendTextMessageAsync(message.Chat.Id, _contactInfo, parseMode: ParseMode.Html);
                 break;
             default:
                 return;
