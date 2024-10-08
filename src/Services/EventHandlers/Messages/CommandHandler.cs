@@ -1,8 +1,10 @@
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
+using TgTranslator.Data.Options;
 using TgTranslator.Exceptions;
 using TgTranslator.Menu;
 using TgTranslator.Utils;
@@ -15,12 +17,14 @@ public class CommandHandler
     private readonly TelegramBotClient _client;
     private readonly BotMenu _botMenu;
     private readonly UsersDatabaseService _users;
+    private readonly string _contactInfo;
 
-    public CommandHandler(TelegramBotClient client, BotMenu botMenu, UsersDatabaseService users)
+    public CommandHandler(TelegramBotClient client, BotMenu botMenu, UsersDatabaseService users, IOptions<TgTranslatorOptions> options)
     {
         _client = client;
         _botMenu = botMenu;
         _users = users;
+        _contactInfo = options.Value.Contacts;
     }
 
     public async Task Handle(Message message)
@@ -82,8 +86,8 @@ public class CommandHandler
 
                 await _botMenu.SendStart(message.Chat.Id);
                 break;
-            case "contact" when chatType == ChatType.Private:
-                await _client.SendTextMessageAsync(message.Chat.Id, "Developer: @Dubzer\nNews channel: @tgtrns\n\n☕️ Donate: yaso.su/feedme");
+            case "contact" or "donate" when chatType == ChatType.Private:
+                await _client.SendTextMessageAsync(message.Chat.Id, _contactInfo);
                 break;
             default:
                 return;

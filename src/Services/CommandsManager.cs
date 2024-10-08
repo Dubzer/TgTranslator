@@ -20,7 +20,8 @@ public class CommandsManager
         await _botClient.SetMyCommandsAsync(
         [
             BotCommands.SettingsCommand,
-            BotCommands.ContactCommand
+            BotCommands.ContactCommand,
+            BotCommands.DonateCommand
         ], BotCommandScope.AllPrivateChats());
 
         // group chat administrators

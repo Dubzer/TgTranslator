@@ -21,4 +21,10 @@ public static class BotCommands
         Command = "contact",
         Description = "📩 Contact the developer"
     };
+
+    public static readonly BotCommand DonateCommand = new()
+    {
+        Command = "donate",
+        Description = "☕ Donate"
+    };
 }
