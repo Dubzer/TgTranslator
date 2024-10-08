@@ -1,13 +1,26 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace TgTranslator.Data.DTO;
 
+[BindRequired]
 public class VerifyQueryDto
 {
-    [FromQuery(Name = "chat_instance")] public required long ChatInstance { get; set; }
-    [FromQuery(Name = "chat_type")] public required string ChatType { get; set; }
-    [FromQuery(Name = "start_param")] public required string StartParam { get; set; }
-    [FromQuery(Name = "auth_date")] public required long AuthDate { get; set; }
-    [FromQuery(Name = "hash")] public required string Hash { get; set; }
-    [FromQuery(Name = "user")] public required string UserString { get; set; }
+    [FromQuery(Name = "chat_instance")]
+    public long ChatInstance { get; init; }
+
+    [FromQuery(Name = "chat_type")]
+    public string ChatType { get; init; }
+
+    [FromQuery(Name = "start_param")]
+    public string StartParam { get; init; }
+
+    [FromQuery(Name = "auth_date")]
+    public long AuthDate { get; init; }
+
+    [FromQuery(Name = "hash")]
+    public string Hash { get; init; }
+
+    [FromQuery(Name = "user")]
+    public string UserString { get; init; }
 }

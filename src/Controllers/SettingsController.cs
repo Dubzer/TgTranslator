@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -44,7 +43,7 @@ public class SettingsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get([Required] [FromQuery] VerifyQueryDto query)
+    public async Task<IActionResult> Get([FromQuery] VerifyQueryDto query)
     {
         if (query.StartParam.Contains("mock"))
             return Ok(MockGet);
@@ -63,7 +62,7 @@ public class SettingsController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<IActionResult> Put([Required] [FromQuery] VerifyQueryDto query, [FromBody] PutSettingRequest request)
+    public async Task<IActionResult> Put([FromQuery] VerifyQueryDto query, [FromBody] PutSettingRequest request)
     {
         if (query.StartParam.Contains("mock"))
             return Ok();
