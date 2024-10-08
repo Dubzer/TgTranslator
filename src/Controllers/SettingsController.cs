@@ -49,9 +49,6 @@ public class SettingsController : ControllerBase
         if (query.StartParam.Contains("mock"))
             return Ok(MockGet);
 
-        if (DateTimeOffset.FromUnixTimeSeconds(query.AuthDate).UtcDateTime.AddMinutes(30) < DateTime.UtcNow)
-            return BadRequest();
-
         var data = await ExtractData(query);
         if (data == null)
             return BadRequest();
@@ -103,6 +100,9 @@ public class SettingsController : ControllerBase
 
         var group = await _botClient.GetChatAsync(chatId);
         if (group.Type is not (ChatType.Supergroup or ChatType.Group))
+            return null;
+
+        if (DateTimeOffset.FromUnixTimeSeconds(query.AuthDate).UtcDateTime.AddMinutes(30) < DateTime.UtcNow)
             return null;
 
         return (chatMember, group);
