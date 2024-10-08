@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -47,6 +48,9 @@ public class SettingsController : ControllerBase
     {
         if (query.StartParam.Contains("mock"))
             return Ok(MockGet);
+
+        if (DateTimeOffset.FromUnixTimeSeconds(query.AuthDate).UtcDateTime.AddMinutes(30) < DateTime.UtcNow)
+            return BadRequest();
 
         var data = await ExtractData(query);
         if (data == null)
