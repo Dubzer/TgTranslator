@@ -9,7 +9,7 @@ namespace TgTranslator.Services;
 
 public class TranslatedMessagesCache
 {
-    public const int Capacity = 350;
+    public const int Capacity = 80000;
     private readonly ILogger _logger;
     private readonly Metrics _metrics;
 
