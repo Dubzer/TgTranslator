@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TgTranslator.Services.EventHandlers.Messages;
+using TgTranslator.Stats;
 using TgTranslator.Utils.Extensions;
 
 namespace TgTranslator.Services.EventHandlers;
@@ -12,13 +13,15 @@ public class EditedMessageHandler
     private readonly TranslatedMessagesCache _translatedMessagesCache;
     private readonly TranslateHandler _translateHandler;
     private readonly SettingsService _settings;
+    private readonly Metrics _metrics;
 
-    public EditedMessageHandler(TranslatedMessagesCache translatedMessagesCache, TranslateHandler translateHandler, SettingsService settings, TelegramBotClient client)
+    public EditedMessageHandler(TranslatedMessagesCache translatedMessagesCache, TranslateHandler translateHandler, SettingsService settings, TelegramBotClient client, Metrics metrics)
     {
         _translatedMessagesCache = translatedMessagesCache;
         _translateHandler = translateHandler;
         _settings = settings;
         _client = client;
+        _metrics = metrics;
     }
 
     public async Task Handle(Message message)
@@ -37,5 +40,6 @@ public class EditedMessageHandler
             return;
 
         await _client.EditMessageTextAsync(message.Chat.Id, translationId, translation);
+        _metrics.TranslationEdits.Inc();
     }
 }

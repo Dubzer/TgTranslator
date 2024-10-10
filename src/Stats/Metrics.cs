@@ -1,5 +1,7 @@
 using System.Linq;
+using System.Threading;
 using Prometheus;
+using TgTranslator.Services;
 
 namespace TgTranslator.Stats;
 
@@ -10,10 +12,14 @@ public class Metrics
     private readonly Counter _totalMessages;
     private readonly Counter _translatorApiCalls;
     private readonly Counter _translatorApiCharacters;
+    private readonly Counter _translationsCacheRotations;
+    public readonly Counter TranslationEdits;
     public readonly Gauge TotalGroups;
     public readonly Gauge TotalUsers;
     public readonly Gauge TotalPmUsers;
     public readonly Histogram TranslationResponseTime;
+
+    private int _translationsCacheCounter;
 
     public Metrics()
     {
@@ -24,6 +30,8 @@ public class Metrics
 
         _translatorApiCalls = Prometheus.Metrics.CreateCounter("translator_api_calls", "Translator API calls", "group_id");
         _translatorApiCharacters = Prometheus.Metrics.CreateCounter("translator_api_characters", "Translator API characters", "group_id");
+        _translationsCacheRotations = Prometheus.Metrics.CreateCounter("translations_cache_rotations", "Translation cache rotations");
+        TranslationEdits = Prometheus.Metrics.CreateCounter("translation_edits", "Translation edits");
 
         TotalGroups = Prometheus.Metrics.CreateGauge("total_groups", "Total groups count");
         TotalUsers = Prometheus.Metrics.CreateGauge("total_users", "Total users count");
@@ -47,6 +55,15 @@ public class Metrics
     {
         TranslatorApiCallsInc(groupId);
         TranslatorApiCharactersInc(groupId, charactersCount);
+    }
+
+    public void TranslationCacheCounterInc()
+    {
+        if (Interlocked.CompareExchange(ref _translationsCacheCounter, 0, TranslatedMessagesCache.Capacity) ==
+            TranslatedMessagesCache.Capacity)
+        {
+            _translationsCacheRotations.Inc();
+        }
     }
 
     private void TotalMessagesInc() => _totalMessages.Inc();
