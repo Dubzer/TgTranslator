@@ -20,6 +20,7 @@ public class Metrics
     public readonly Histogram TranslationResponseTime;
 
     private int _translationsCacheCounter;
+    private readonly object _translationsCacheCounterLock = new();
 
     public Metrics()
     {
@@ -59,10 +60,14 @@ public class Metrics
 
     public void TranslationCacheCounterInc()
     {
-        if (Interlocked.CompareExchange(ref _translationsCacheCounter, 0, TranslatedMessagesCache.Capacity) ==
-            TranslatedMessagesCache.Capacity)
+        lock (_translationsCacheCounterLock)
         {
-            _translationsCacheRotations.Inc();
+            if (++_translationsCacheCounter >= TranslatedMessagesCache.Capacity)
+            {
+                _translationsCacheRotations.Inc();
+                _translationsCacheCounter = 0;
+            }
+
         }
     }
 
