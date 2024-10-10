@@ -19,10 +19,11 @@ public class EventRouter
     private readonly MyChatMemberHandler _myChatMemberHandler;
     private readonly TelegramBotClient _client;
     private readonly MessageRouter _messageRouter;
+    private readonly EditedMessageHandler _editedMessageHandler;
     private readonly GroupsBlacklistService _groupsBlacklist;
     private readonly ILogger _logger;
 
-    public EventRouter(TelegramBotClient client, MessageRouter messageRouter, ICallbackQueryHandler callbackQueryHandler, MyChatMemberHandler myChatMemberHandler, GroupsBlacklistService groupsBlacklist, ILogger logger)
+    public EventRouter(TelegramBotClient client, MessageRouter messageRouter, ICallbackQueryHandler callbackQueryHandler, MyChatMemberHandler myChatMemberHandler, GroupsBlacklistService groupsBlacklist, ILogger logger, EditedMessageHandler editedMessageHandler)
     {
         _client = client;
         _messageRouter = messageRouter;
@@ -30,6 +31,7 @@ public class EventRouter
         _myChatMemberHandler = myChatMemberHandler;
         _groupsBlacklist = groupsBlacklist;
         _logger = logger;
+        _editedMessageHandler = editedMessageHandler;
     }
 
     public async Task HandleUpdate(Update update)
@@ -52,6 +54,9 @@ public class EventRouter
                     break;
                 case UpdateType.MyChatMember:
                     await OnMyChatMember(update.MyChatMember);
+                    break;
+                case UpdateType.EditedMessage:
+                    await _editedMessageHandler.Handle(update.EditedMessage);
                     break;
             }
 

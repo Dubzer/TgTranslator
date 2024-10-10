@@ -37,6 +37,8 @@ public static class DiServices
         builder.Services.AddSingleton(new TelegramBotClient(telegramOptions.BotToken));
 
         builder.Services.AddSingleton<Metrics>();
+        builder.Services.AddSingleton<TranslatedMessagesCache>();
+
         builder.Services.AddTransient<BotMenu>();
 
         builder.Services.AddTransient<ITranslator, TranslatePlaceholderService>();
@@ -46,10 +48,11 @@ public static class DiServices
         builder.Services.AddTransient<CommandsManager>();
         builder.Services.AddSingleton<SettingsValidator>();
 
-        builder.Services.AddTransient<MessageRouter>();
         builder.Services.AddTransient<ICallbackQueryHandler, CallbackQueryHandler>();
         builder.Services.AddTransient<MyChatMemberHandler>();
+        builder.Services.AddTransient<EditedMessageHandler>();
 
+        builder.Services.AddTransient<MessageRouter>();
         builder.Services.AddTransient<TranslateHandler>();
         builder.Services.AddTransient<CommandHandler>();
         builder.Services.AddTransient<SettingsChangeHandler>();

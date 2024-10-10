@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -26,13 +27,15 @@ public partial class TranslateHandler
     private readonly TelegramBotClient _client;
     private readonly ITranslator _translator;
     private readonly Metrics _metrics;
+    private readonly TranslatedMessagesCache _translatedMessagesCache;
 
-    public TranslateHandler(ILogger logger, TelegramBotClient client, ITranslator translator, Metrics metrics)
+    public TranslateHandler(ILogger logger, TelegramBotClient client, ITranslator translator, Metrics metrics, TranslatedMessagesCache translatedMessagesCache)
     {
         _logger = logger;
         _client = client;
         _translator = translator;
         _metrics = metrics;
+        _translatedMessagesCache = translatedMessagesCache;
     }
 
     public async Task Handle(Message message, string originalText, Settings groupConfig)
@@ -52,13 +55,9 @@ public partial class TranslateHandler
         if (groupConfig.Delay != 0 && groupConfig.TranslationMode == TranslationMode.Auto)
             await Task.Delay(TimeSpan.FromSeconds(groupConfig.Delay));
 
-        var translation = await _translator.TranslateTextAsync(originalText, groupConfig.Languages[0]);
-        var translatedText = translation.Text;
-
-        if (translation.DetectedLanguage == groupConfig.Languages[0] && TranslationHappened(originalText, translatedText))
+        var translatedText = await TranslateAndFix(message, originalText, groupConfig);
+        if (translatedText == null)
             return;
-
-        translatedText = TranslationUtils.FixEntities(originalText, translatedText, message.Entities);
 
         // In case of multiple translation messages, will contain the last one sent
         Message translationMessage;
@@ -67,6 +66,8 @@ public partial class TranslateHandler
             translationMessage = await _client.SendTextMessageAsync(message.Chat.Id, translatedText,
                 disableNotification: true, linkPreviewOptions: TelegramUtils.DisabledLinkPreview,
                 replyParameters: TelegramUtils.SafeReplyTo(message.MessageId));
+
+            _translatedMessagesCache.AddTranslation(message.MessageId, message.Chat.Id, originalText, translationMessage.MessageId);
         }
         else
         {
@@ -88,6 +89,18 @@ public partial class TranslateHandler
         _logger.Information("Sent translation to {ChatId} | {From}", message.Chat.Id, message.From);
     }
 
+    public async Task<string?> TranslateAndFix(Message message, string originalText, Settings groupConfig)
+    {
+        var translation = await _translator.TranslateTextAsync(originalText, groupConfig.Languages[0]);
+        var translatedText = translation.Text;
+
+        if (translation.DetectedLanguage == groupConfig.Languages[0] || !TranslationHappened(originalText, translatedText))
+            return null;
+
+        translatedText = TranslationUtils.FixEntities(originalText, translatedText, message.Entities);
+        return translatedText;
+    }
+
     // This method compares the result of the translation to original text,
     // while preventing some of the hallucinations of the translation service
     private static bool TranslationHappened(string originalText, string translatedText)
@@ -101,8 +114,8 @@ public partial class TranslateHandler
         var normalizedTranslation = nonLettersRegex.Replace(translatedText, "");
         normalizedTranslation = emojiRegex.Replace(normalizedTranslation, "");
 
-        return string.IsNullOrEmpty(normalizedTranslation)
-               || string.Equals(normalizedText, normalizedTranslation, StringComparison.InvariantCultureIgnoreCase);
+        return !string.IsNullOrEmpty(normalizedTranslation)
+               && !string.Equals(normalizedText, normalizedTranslation, StringComparison.InvariantCultureIgnoreCase);
     }
 
     private async Task<Message> SendLongMessage(long chatId, string message, int replyId)

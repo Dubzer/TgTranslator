@@ -28,7 +28,11 @@ public class TelegramWebhooksRegistrar : IStartupFilter
                         allowedUpdates:
                         [
                             UpdateType.Message,
-                            UpdateType.CallbackQuery
+                            UpdateType.CallbackQuery,
+                            UpdateType.InlineQuery,
+                            UpdateType.ChatMember,
+                            UpdateType.MyChatMember,
+                            UpdateType.EditedMessage
                         ],
                         dropPendingUpdates: true).GetAwaiter().GetResult();
 

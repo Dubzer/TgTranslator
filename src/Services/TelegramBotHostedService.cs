@@ -51,7 +51,8 @@ public class TelegramBotHostedService : IHostedService
                     UpdateType.CallbackQuery,
                     UpdateType.InlineQuery,
                     UpdateType.ChatMember,
-                    UpdateType.MyChatMember
+                    UpdateType.MyChatMember,
+                    UpdateType.EditedMessage
                 ]
             },
             cancellationToken: cancellationToken);
