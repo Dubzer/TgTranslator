@@ -33,7 +33,7 @@ public class BotMenu
 
     public Task SendStart(long chatId)
     {
-        return _client.SendTextMessageAsync(
+        return _client.SendMessage(
             chatId,
             "🦈 Hello!\nThis bot will translate messages in your group. It supports 134 languages and has various modes. Check out the demo settings page [here](https://t.me/TgTranslatorBot/settings?startapp=mock).\n\n" +
             "To get started, add it to the group chat.",
@@ -48,7 +48,7 @@ public class BotMenu
     public async Task SendSettings(long chatId)
     {
         var menu = new MainMenu(null);
-        await _client.SendTextMessageAsync(chatId, menu.Description,
+        await _client.SendMessage(chatId, menu.Description,
             parseMode: ParseMode.Markdown,
             replyMarkup: menu.GenerateMarkup());
     }
@@ -56,7 +56,7 @@ public class BotMenu
     public async Task SwitchMenu(Type menuType, string[] arguments, long chatId, int messageId)
     {
         var item = GetMenuItem(menuType, arguments);
-        await _client.EditMessageTextAsync(chatId, messageId, item.Description,
+        await _client.EditMessageText(chatId, messageId, item.Description,
             ParseMode.Markdown,
             replyMarkup: item.GenerateMarkup());
     }

@@ -19,9 +19,9 @@ namespace TgTranslator.Services.EventHandlers.Messages;
 public partial class TranslateHandler
 {
     [GeneratedRegex(@"\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]", RegexOptions.Compiled)]
-    private static partial Regex Emoji();
+    private static partial Regex EmojiRegex { get; }
     [GeneratedRegex(@"\p{P}|\d|\s", RegexOptions.Compiled)]
-    private static partial Regex NonLetters();
+    private static partial Regex NonLettersRegex { get; }
 
     private readonly ILogger _logger;
     private readonly TelegramBotClient _client;
@@ -63,7 +63,7 @@ public partial class TranslateHandler
         Message translationMessage;
         if (translatedText.Length <= 4096)
         {
-            translationMessage = await _client.SendTextMessageAsync(message.Chat.Id, translatedText,
+            translationMessage = await _client.SendMessage(message.Chat.Id, translatedText,
                 disableNotification: true, linkPreviewOptions: TelegramUtils.DisabledLinkPreview,
                 replyParameters: TelegramUtils.SafeReplyTo(message.MessageId));
 
@@ -105,14 +105,11 @@ public partial class TranslateHandler
     // while preventing some of the hallucinations of the translation service
     private static bool TranslationHappened(string originalText, string translatedText)
     {
-        var emojiRegex = Emoji();
-        var nonLettersRegex = NonLetters();
+        var normalizedText = NonLettersRegex.Replace(originalText, "");
+        normalizedText = EmojiRegex.Replace(normalizedText, "");
 
-        var normalizedText = nonLettersRegex.Replace(originalText, "");
-        normalizedText = emojiRegex.Replace(normalizedText, "");
-
-        var normalizedTranslation = nonLettersRegex.Replace(translatedText, "");
-        normalizedTranslation = emojiRegex.Replace(normalizedTranslation, "");
+        var normalizedTranslation = NonLettersRegex.Replace(translatedText, "");
+        normalizedTranslation = EmojiRegex.Replace(normalizedTranslation, "");
 
         return !string.IsNullOrEmpty(normalizedTranslation)
                && !string.Equals(normalizedText, normalizedTranslation, StringComparison.InvariantCultureIgnoreCase);
@@ -122,11 +119,11 @@ public partial class TranslateHandler
     {
         var (firstPart, secondPart) = MessageSplitter.Split(message);
 
-        var firstPartResult = await _client.SendTextMessageAsync(chatId, firstPart,
+        var firstPartResult = await _client.SendMessage(chatId, firstPart,
             disableNotification: true, linkPreviewOptions: TelegramUtils.DisabledLinkPreview,
             replyParameters: TelegramUtils.SafeReplyTo(replyId));
 
-        return await _client.SendTextMessageAsync(chatId, secondPart,
+        return await _client.SendMessage(chatId, secondPart,
             disableNotification: true, linkPreviewOptions: TelegramUtils.DisabledLinkPreview,
             replyParameters: TelegramUtils.SafeReplyTo(firstPartResult.MessageId));
     }

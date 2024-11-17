@@ -39,7 +39,7 @@ public class EditedMessageHandler
         if (translation == null || translation.Length > 4096)
             return;
 
-        await _client.EditMessageTextAsync(message.Chat.Id, translationId, translation);
+        await _client.EditMessageText(message.Chat.Id, translationId, translation);
         _metrics.TranslationEdits.Inc();
     }
 }

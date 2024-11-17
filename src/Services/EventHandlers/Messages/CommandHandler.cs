@@ -54,16 +54,16 @@ public class CommandHandler
                 if (!await message.From.IsAdministrator(message.Chat.Id, _client))
                     throw new UnauthorizedSettingChangingException();
 
-                var bot = await _client.GetChatMemberAsync(message.Chat.Id, Static.BotId);
+                var bot = await _client.GetChatMember(message.Chat.Id, Static.BotId);
                 if (message.From?.Id == 1087968824 && bot.Status != ChatMemberStatus.Administrator)
                 {
-                    await _client.SendTextMessageAsync(message.Chat.Id,
+                    await _client.SendMessage(message.Chat.Id,
                         $"⚠️ To change the settings, you need to promote @{Static.Username} to administrator status!");
 
                     return;
                 }
 
-                await _client.SendTextMessageAsync(message.Chat.Id,
+                await _client.SendMessage(message.Chat.Id,
                     "Press on the button bellow to change the settings." +
                     $"\n\nIf your client doesn't support the menu [click here](https://t.me/{Static.Username}?start=s)",
                     parseMode: ParseMode.Markdown,
@@ -74,7 +74,7 @@ public class CommandHandler
                     }));
                 break;
             case "settings" when chatType == ChatType.Private:
-                await _client.SendTextMessageAsync(message.Chat.Id,
+                await _client.SendMessage(message.Chat.Id,
                     "You cannot configure the bot here 😳\nPlease use this command in the group.");
                 break;
             case "start" when chatType == ChatType.Private && payload == "s":
@@ -87,7 +87,7 @@ public class CommandHandler
                 await _botMenu.SendStart(message.Chat.Id);
                 break;
             case "contact" or "donate" when chatType == ChatType.Private:
-                await _client.SendTextMessageAsync(message.Chat.Id, _contactInfo, parseMode: ParseMode.Html);
+                await _client.SendMessage(message.Chat.Id, _contactInfo, parseMode: ParseMode.Html);
                 break;
             default:
                 return;

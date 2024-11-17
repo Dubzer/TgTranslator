@@ -24,7 +24,7 @@ public class TelegramBotHostedService : IHostedService
         _client = client;
         _commandsManager = commandsManager;
 
-        var me = client.GetMeAsync().GetAwaiter().GetResult();
+        var me = client.GetMe().GetAwaiter().GetResult();
         Static.Username = me.Username;
         Static.BotId = me.Id;
 

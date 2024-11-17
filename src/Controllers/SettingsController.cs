@@ -88,7 +88,7 @@ public class SettingsController : ControllerBase
         ChatMember chatMember;
         try
         {
-            chatMember = await _botClient.GetChatMemberAsync(chatId, user.Id);
+            chatMember = await _botClient.GetChatMember(chatId, user.Id);
         }
         catch
         {
@@ -98,7 +98,7 @@ public class SettingsController : ControllerBase
         if (chatMember.Status is not (ChatMemberStatus.Administrator or ChatMemberStatus.Creator))
             return null;
 
-        var group = await _botClient.GetChatAsync(chatId);
+        var group = await _botClient.GetChat(chatId);
         if (group.Type is not (ChatType.Supergroup or ChatType.Group))
             return null;
 

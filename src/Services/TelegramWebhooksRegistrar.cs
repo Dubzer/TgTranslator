@@ -20,11 +20,11 @@ public class TelegramWebhooksRegistrar : IStartupFilter
                 var client = scope.ServiceProvider.GetRequiredService<TelegramBotClient>();
                 var domain = scope.ServiceProvider.GetRequiredService<IOptions<TelegramOptions>>().Value.WebhooksDomain;
 
-                client.DeleteWebhookAsync()
+                client.DeleteWebhook()
                     .GetAwaiter().GetResult();
 
                 client
-                    .SetWebhookAsync(domain.AppendPathSegments("api", "bot"),
+                    .SetWebhook(domain.AppendPathSegments("api", "bot"),
                         allowedUpdates:
                         [
                             UpdateType.Message,
@@ -42,7 +42,7 @@ public class TelegramWebhooksRegistrar : IStartupFilter
                     .GetAwaiter()
                     .GetResult();
 
-                var me = client.GetMeAsync()
+                var me = client.GetMe()
                     .ConfigureAwait(false)
                     .GetAwaiter()
                     .GetResult();

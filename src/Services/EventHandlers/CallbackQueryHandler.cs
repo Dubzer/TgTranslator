@@ -60,7 +60,7 @@ public class CallbackQueryHandler : ICallbackQueryHandler
                 break;
         }
 
-        await _client.AnswerCallbackQueryAsync(callbackQuery.Id);
+        await _client.AnswerCallbackQuery(callbackQuery.Id);
     }
 
     #endregion

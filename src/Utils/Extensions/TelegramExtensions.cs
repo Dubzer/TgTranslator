@@ -47,7 +47,7 @@ public static class TelegramExtensions
     /// </summary>
     public static async Task<bool> IsAdministrator(this User user, long chatId, TelegramBotClient client)
     {
-        ChatMember[] chatAdmins = await client.GetChatAdministratorsAsync(chatId);
+        ChatMember[] chatAdmins = await client.GetChatAdministrators(chatId);
 
         //                                                  Todo: replace with something better when telegram lib will update
         return chatAdmins.Any(x => x.User.Id == user.Id) || user.Id == 1087968824;

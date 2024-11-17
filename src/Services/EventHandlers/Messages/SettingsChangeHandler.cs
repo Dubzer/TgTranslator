@@ -45,7 +45,7 @@ public class SettingsChangeHandler
                 break;
         }
 
-        await _client.SendTextMessageAsync(
+        await _client.SendMessage(
             message.Chat.Id,
             "Done!",
             replyParameters: new ReplyParameters

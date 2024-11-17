@@ -17,7 +17,7 @@ public class CommandsManager
     public async Task SetDefaultCommands()
     {
         // pm
-        await _botClient.SetMyCommandsAsync(
+        await _botClient.SetMyCommands(
         [
             BotCommands.SettingsCommand,
             BotCommands.ContactCommand,
@@ -25,7 +25,7 @@ public class CommandsManager
         ], BotCommandScope.AllPrivateChats());
 
         // group chat administrators
-        await _botClient.SetMyCommandsAsync([BotCommands.SettingsCommand], BotCommandScope.AllChatAdministrators());
+        await _botClient.SetMyCommands([BotCommands.SettingsCommand], BotCommandScope.AllChatAdministrators());
     }
 
     public async Task ChangeGroupMode(ChatId chatId, TranslationMode translationMode)
@@ -33,12 +33,12 @@ public class CommandsManager
         switch (translationMode)
         {
             case TranslationMode.Manual:
-                await _botClient.SetMyCommandsAsync([
+                await _botClient.SetMyCommands([
                     BotCommands.SettingsCommand,
                     BotCommands.TranslateCommand
                 ], BotCommandScope.ChatAdministrators(chatId));
 
-                await _botClient.SetMyCommandsAsync([
+                await _botClient.SetMyCommands([
                     BotCommands.TranslateCommand
                 ], BotCommandScope.Chat(chatId));
                 break;
@@ -47,8 +47,8 @@ public class CommandsManager
             case TranslationMode.LinkedChannel:
             default:
                 // the default commands will be shown after deleting the scoped ones
-                await _botClient.DeleteMyCommandsAsync(BotCommandScope.ChatAdministrators(chatId));
-                await _botClient.DeleteMyCommandsAsync(BotCommandScope.Chat(chatId));
+                await _botClient.DeleteMyCommands(BotCommandScope.ChatAdministrators(chatId));
+                await _botClient.DeleteMyCommands(BotCommandScope.Chat(chatId));
                 break;
         }
     }

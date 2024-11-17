@@ -86,19 +86,19 @@ public class EventRouter
         }
         catch (InvalidSettingException)
         {
-            await _client.SendTextMessageAsync(message.Chat.Id,
+            await _client.SendMessage(message.Chat.Id,
                 "It seems that this setting is not supported",
                 replyParameters: TelegramUtils.SafeReplyTo(message.MessageId));
         }
         catch (InvalidSettingValueException)
         {
-            await _client.SendTextMessageAsync(message.Chat.Id,
+            await _client.SendMessage(message.Chat.Id,
                 "It seems that this value is not supported",
                 replyParameters: TelegramUtils.SafeReplyTo(message.MessageId));
         }
         catch (UnauthorizedSettingChangingException)
         {
-            await _client.SendTextMessageAsync(message.Chat.Id,
+            await _client.SendMessage(message.Chat.Id,
                 "Hey! Only admins can change settings of this bot!",
                 replyParameters: TelegramUtils.SafeReplyTo(message.MessageId));
         }
