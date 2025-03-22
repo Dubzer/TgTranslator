@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Serilog;
@@ -28,14 +29,21 @@ public partial class TranslateHandler
     private readonly ITranslator _translator;
     private readonly Metrics _metrics;
     private readonly TranslatedMessagesCache _translatedMessagesCache;
+    private readonly LanguagesProvider _languagesProvider;
 
-    public TranslateHandler(ILogger logger, TelegramBotClient client, ITranslator translator, Metrics metrics, TranslatedMessagesCache translatedMessagesCache)
+    public TranslateHandler(ILogger logger,
+        TelegramBotClient client,
+        ITranslator translator,
+        Metrics metrics,
+        TranslatedMessagesCache translatedMessagesCache,
+        LanguagesProvider languagesProvider)
     {
         _logger = logger;
         _client = client;
         _translator = translator;
         _metrics = metrics;
         _translatedMessagesCache = translatedMessagesCache;
+        _languagesProvider = languagesProvider;
     }
 
     public async Task Handle(Message message, string originalText, Settings groupConfig)
@@ -63,8 +71,11 @@ public partial class TranslateHandler
         Message translationMessage;
         if (translatedText.Length <= 4096)
         {
-            translationMessage = await _client.SendMessage(message.Chat.Id, translatedText,
-                disableNotification: true, linkPreviewOptions: TelegramUtils.DisabledLinkPreview,
+            translationMessage = await _client.SendMessage(message.Chat.Id,
+                translatedText,
+                parseMode: ParseMode.Html,
+                disableNotification: true,
+                linkPreviewOptions: TelegramUtils.DisabledLinkPreview,
                 replyParameters: TelegramUtils.SafeReplyTo(message.MessageId));
 
             _translatedMessagesCache.AddTranslation(message.MessageId, message.Chat.Id, originalText, translationMessage.MessageId);
@@ -91,14 +102,31 @@ public partial class TranslateHandler
 
     public async Task<string?> TranslateAndFix(Message message, string originalText, Settings groupConfig)
     {
-        var translation = await _translator.TranslateTextAsync(originalText, groupConfig.Languages[0]);
-        var translatedText = translation.Text;
+        var includeLanguageName = groupConfig.Languages.Length > 1;
 
-        if (translation.DetectedLanguage == groupConfig.Languages[0] || !TranslationHappened(originalText, translatedText))
-            return null;
+        var sb = new StringBuilder();
+        foreach (var targetCode in groupConfig.Languages)
+        {
+            var translation = await _translator.TranslateTextAsync(originalText, targetCode);
+            var translatedText = translation.Text;
 
-        translatedText = TranslationUtils.FixEntities(originalText, translatedText, message.Entities);
-        return translatedText;
+            if (translation.DetectedLanguage == targetCode || !TranslationHappened(originalText, translatedText))
+                continue;
+
+            translatedText = TranslationUtils.FixEntities(originalText, translatedText, message.Entities);
+            if (includeLanguageName)
+                sb.AppendLine($"<b>{_languagesProvider.GetName(targetCode)}:</b>");
+
+            var escapedText = new StringBuilder(translatedText)
+                .Replace("&", "&amp;")
+                .Replace("<", "&lt;")
+                .Replace(">", "&gt;");
+
+            sb.Append(escapedText);
+            sb.AppendLine();
+        }
+
+        return sb.ToString();
     }
 
     // This method compares the result of the translation to original text,
@@ -119,12 +147,18 @@ public partial class TranslateHandler
     {
         var (firstPart, secondPart) = MessageSplitter.Split(message);
 
-        var firstPartResult = await _client.SendMessage(chatId, firstPart,
-            disableNotification: true, linkPreviewOptions: TelegramUtils.DisabledLinkPreview,
+        var firstPartResult = await _client.SendMessage(chatId,
+            firstPart,
+            parseMode: ParseMode.Html,
+            disableNotification: true,
+            linkPreviewOptions: TelegramUtils.DisabledLinkPreview,
             replyParameters: TelegramUtils.SafeReplyTo(replyId));
 
-        return await _client.SendMessage(chatId, secondPart,
-            disableNotification: true, linkPreviewOptions: TelegramUtils.DisabledLinkPreview,
+        return await _client.SendMessage(chatId,
+            secondPart,
+            parseMode: ParseMode.Html,
+            disableNotification: true,
+            linkPreviewOptions: TelegramUtils.DisabledLinkPreview,
             replyParameters: TelegramUtils.SafeReplyTo(firstPartResult.MessageId));
     }
 }

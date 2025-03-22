@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -39,7 +40,7 @@ public class SettingsService
         return new Settings
         {
             TranslationMode = group.TranslationMode,
-            Languages = [group.Language],
+            Languages = group.Languages.ToArray(),
             Delay = group.Delay,
             TranslateWithLinks = group.TranslateWithLinks
         };
@@ -51,7 +52,7 @@ public class SettingsService
         {
             GroupId = chatId,
             Delay = 0,
-            Language = "en",
+            Languages = ["en"],
             TranslationMode = TranslationMode.Auto,
             TranslateWithLinks = true
         };
@@ -67,7 +68,7 @@ public class SettingsService
         var group = await _databaseContext.Groups.FindAsync(chatId)
                     ?? await InitSettings(chatId);
 
-        group.Language = settings.Languages.First();
+        group.Languages = settings.Languages;
         group.Delay = settings.Delay;
         group.TranslateWithLinks = settings.TranslateWithLinks;
 
@@ -78,12 +79,12 @@ public class SettingsService
             await SetMode(chatId, settings.TranslationMode);
     }
 
-    public async Task SetLanguage(long chatId, string language)
+    public async Task SetLanguages(long chatId, ICollection<string> languages)
     {
         await _databaseContext.Groups
             .Where(x => x.GroupId == chatId)
             .ExecuteUpdateAsync(x =>
-                x.SetProperty(g => g.Language, language));
+                x.SetProperty(g => g.Languages, languages));
     }
 
     public async Task SetMode(long chatId, TranslationMode mode)

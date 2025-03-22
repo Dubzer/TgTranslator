@@ -36,10 +36,10 @@ public partial class TgTranslatorContext : DbContext
                 .HasColumnName("group_id")
                 .ValueGeneratedNever();
 
-            entity.Property(e => e.Language)
+            entity.Property(e => e.Languages)
                 .IsRequired()
-                .HasColumnName("language")
-                .HasDefaultValueSql("'en'::text");
+                .HasColumnName("languages")
+                .HasDefaultValueSql("ARRAY['en']::text[]");
 
             entity.Property(e => e.TranslationMode).HasColumnName("translation_mode");
             entity.Property(e => e.Delay).HasColumnName("delay");

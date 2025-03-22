@@ -37,7 +37,7 @@ public class SettingsChangeHandler
         switch (setting)
         {
             case Setting.Language:
-                await _settingsService.SetLanguage(message.Chat.Id, value);
+                await _settingsService.SetLanguages(message.Chat.Id, [value]);
                 break;
             case Setting.Mode:
                 var mode = Enum.Parse<TranslationMode>(value, true);

@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using TgTranslator.Services.EventHandlers.Messages;
 using TgTranslator.Stats;
 using TgTranslator.Utils.Extensions;
@@ -39,7 +40,7 @@ public class EditedMessageHandler
         if (translation == null || translation.Length > 4096)
             return;
 
-        await _client.EditMessageText(message.Chat.Id, translationId, translation);
+        await _client.EditMessageText(message.Chat.Id, translationId, translation, ParseMode.Html);
         _metrics.TranslationEdits.Inc();
     }
 }

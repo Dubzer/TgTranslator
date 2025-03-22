@@ -80,14 +80,18 @@ public class CommandHandler
             case "start" when chatType == ChatType.Private && payload == "s":
                 await _botMenu.SendSettings(message.Chat.Id);
                 break;
+            case "start" when chatType == ChatType.Private && payload == "d":
+            case "contact" or "donate" when chatType == ChatType.Private:
+                await _client.SendMessage(message.Chat.Id,
+                    _contactInfo,
+                    parseMode: ParseMode.Html,
+                    linkPreviewOptions: TelegramUtils.DisabledLinkPreview);
+                break;
             case "start" when chatType == ChatType.Private:
                 if (!string.IsNullOrEmpty(payload) && message.From != null)
                     await _users.AddFromPmIfNeeded(message.From.Id, payload);
 
                 await _botMenu.SendStart(message.Chat.Id);
-                break;
-            case "contact" or "donate" when chatType == ChatType.Private:
-                await _client.SendMessage(message.Chat.Id, _contactInfo, parseMode: ParseMode.Html);
                 break;
             default:
                 return;
