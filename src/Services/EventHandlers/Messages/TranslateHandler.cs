@@ -64,7 +64,7 @@ public partial class TranslateHandler
             await Task.Delay(TimeSpan.FromSeconds(groupConfig.Delay));
 
         var translatedText = await TranslateAndFix(message, originalText, groupConfig);
-        if (translatedText == null)
+        if (string.IsNullOrWhiteSpace(translatedText))
             return;
 
         // In case of multiple translation messages, will contain the last one sent
