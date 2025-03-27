@@ -42,7 +42,7 @@ public static class DiServices
 
         builder.Services.AddTransient<BotMenu>();
 
-        builder.Services.AddTransient<ITranslator, TranslatePlaceholderService>();
+        builder.Services.AddSingleton<ITranslator, TranslatePlaceholderService>();
 
         builder.Services.AddTransient<MessageValidator>();
         builder.Services.AddTransient<SettingsService>();
