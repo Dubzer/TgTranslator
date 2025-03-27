@@ -104,10 +104,16 @@ public partial class TranslateHandler
     {
         var includeLanguageName = groupConfig.Languages.Length > 1;
 
+        var translationTasks = groupConfig.Languages
+            .Select(targetCode => _translator.TranslateTextAsync(originalText, targetCode));
+        var translations = await Task.WhenAll(translationTasks);
+
         var sb = new StringBuilder();
-        foreach (var targetCode in groupConfig.Languages)
+        for (var i = 0; i < groupConfig.Languages.Length; i++)
         {
-            var translation = await _translator.TranslateTextAsync(originalText, targetCode);
+            var targetCode = groupConfig.Languages[i];
+            var translation = translations[i];
+
             var translatedText = translation.Text;
 
             if (translation.DetectedLanguage == targetCode || !TranslationHappened(originalText, translatedText))
