@@ -65,10 +65,12 @@ public class Metrics : IDisposable
 
     public void HandleTranslatorApiCall(int charactersCount, string sourceLanguage, string targetLanguage)
     {
+        Span<string> pair = [sourceLanguage, targetLanguage];
+        pair.Sort();
+
         var tags = new TagList
         {
-            { "source_language", sourceLanguage },
-            { "target_language", targetLanguage }
+            { "language_pair", $"{pair[0]}:{pair[1]}" }
         };
         _translatorApiCalls.Add(1, tags);
         _translatorApiCharacters.Add(charactersCount, tags);
