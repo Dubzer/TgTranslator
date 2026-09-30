@@ -18,4 +18,19 @@
   <data name="DonateDescription" xml:space="preserve">
     <value>☕ Donate</value>
   </data>
+  <data name="PromoteBotToAdmin" xml:space="preserve">
+    <value>⚠️ To change the settings, make @{0} an admin first!</value>
+  </data>
+  <data name="GroupSettingsPrompt" xml:space="preserve">
+    <value>Press the button below to change the settings.
+
+If your client doesn't support the menu, [click here](https://t.me/{0}?start=s).</value>
+  </data>
+  <data name="ChangeSettingsButton" xml:space="preserve">
+    <value>Change settings</value>
+  </data>
+  <data name="SettingsOnlyInGroups" xml:space="preserve">
+    <value>You cannot configure the bot here 😳
+Please use this command in the group.</value>
+  </data>
 </root>

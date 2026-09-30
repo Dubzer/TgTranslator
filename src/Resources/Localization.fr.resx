@@ -18,4 +18,19 @@
   <data name="DonateDescription" xml:space="preserve">
     <value>☕ Faire un don</value>
   </data>
+  <data name="PromoteBotToAdmin" xml:space="preserve">
+    <value>⚠️ Pour modifier les paramètres, vous devez nommer @{0} administrateur !</value>
+  </data>
+  <data name="GroupSettingsPrompt" xml:space="preserve">
+    <value>Appuyez sur le bouton ci-dessous pour modifier les paramètres.
+
+Si votre application ne prend pas en charge le menu, [cliquez ici](https://t.me/{0}?start=s).</value>
+  </data>
+  <data name="ChangeSettingsButton" xml:space="preserve">
+    <value>Modifier les paramètres</value>
+  </data>
+  <data name="SettingsOnlyInGroups" xml:space="preserve">
+    <value>Vous ne pouvez pas configurer le bot ici 😳
+Veuillez utiliser cette commande dans le groupe.</value>
+  </data>
 </root>

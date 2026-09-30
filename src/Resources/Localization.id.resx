@@ -18,4 +18,19 @@
   <data name="DonateDescription" xml:space="preserve">
     <value>☕ Donasi</value>
   </data>
+  <data name="PromoteBotToAdmin" xml:space="preserve">
+    <value>⚠️ Untuk mengubah pengaturan, Anda perlu menjadikan @{0} sebagai admin!</value>
+  </data>
+  <data name="GroupSettingsPrompt" xml:space="preserve">
+    <value>Tekan tombol di bawah untuk mengubah pengaturan.
+
+Jika aplikasi Anda tidak mendukung menu, [klik di sini](https://t.me/{0}?start=s).</value>
+  </data>
+  <data name="ChangeSettingsButton" xml:space="preserve">
+    <value>Ubah pengaturan</value>
+  </data>
+  <data name="SettingsOnlyInGroups" xml:space="preserve">
+    <value>Anda tidak dapat mengubah pengaturan bot di sini 😳
+Gunakan perintah ini di grup.</value>
+  </data>
 </root>

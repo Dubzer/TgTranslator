@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
@@ -7,6 +8,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 using TgTranslator.Data.Options;
 using TgTranslator.Exceptions;
 using TgTranslator.Menu;
+using TgTranslator.Resources;
 using TgTranslator.Utils;
 using TgTranslator.Utils.Extensions;
 
@@ -48,6 +50,8 @@ public class CommandHandler
             command = command.Split(" ")[0];
         }
 
+        var localization = new Localization(CultureInfo.GetCultureInfo(message.From?.LanguageCode ?? ""));
+
         switch (command)
         {
             case "settings" when chatType is ChatType.Group or ChatType.Supergroup:
@@ -58,24 +62,23 @@ public class CommandHandler
                 if (message.From?.Id == 1087968824 && bot.Status != ChatMemberStatus.Administrator)
                 {
                     await _client.SendMessage(message.Chat.Id,
-                        $"⚠️ To change the settings, you need to promote @{Static.Username} to administrator status!");
+                        string.Format(localization.PromoteBotToAdmin, Static.Username));
 
                     return;
                 }
 
                 await _client.SendMessage(message.Chat.Id,
-                    "Press on the button bellow to change the settings." +
-                    $"\n\nIf your client doesn't support the menu [click here](https://t.me/{Static.Username}?start=s)",
+                    string.Format(localization.GroupSettingsPrompt, Static.Username),
                     parseMode: ParseMode.Markdown,
                     linkPreviewOptions: TelegramUtils.DisabledLinkPreview,
-                    replyMarkup: new InlineKeyboardMarkup(new InlineKeyboardButton("Change settings")
+                    replyMarkup: new InlineKeyboardMarkup(new InlineKeyboardButton(localization.ChangeSettingsButton)
                     {
                         Url = $"https://t.me/{Static.Username}/settings?startapp=i{message.Chat.Id}"
                     }));
                 break;
             case "settings" when chatType == ChatType.Private:
                 await _client.SendMessage(message.Chat.Id,
-                    "You cannot configure the bot here 😳\nPlease use this command in the group.");
+                    localization.SettingsOnlyInGroups);
                 break;
             case "start" when chatType == ChatType.Private && payload == "s":
                 await _botMenu.SendSettings(message.Chat.Id);

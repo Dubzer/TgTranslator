@@ -18,4 +18,19 @@
   <data name="DonateDescription" xml:space="preserve">
     <value>☕ کمک مالی</value>
   </data>
+  <data name="PromoteBotToAdmin" xml:space="preserve">
+    <value>⚠️ برای تغییر تنظیمات، ابتدا @{0} را به‌عنوان مدیر گروه تعیین کنید!</value>
+  </data>
+  <data name="GroupSettingsPrompt" xml:space="preserve">
+    <value>برای تغییر تنظیمات، روی دکمهٔ زیر کلیک کنید.
+
+اگر برنامهٔ شما از منو پشتیبانی نمی‌کند، [اینجا کلیک کنید](https://t.me/{0}?start=s).</value>
+  </data>
+  <data name="ChangeSettingsButton" xml:space="preserve">
+    <value>تغییر تنظیمات</value>
+  </data>
+  <data name="SettingsOnlyInGroups" xml:space="preserve">
+    <value>نمی‌توانید تنظیمات ربات را اینجا تغییر دهید 😳
+لطفاً از این دستور در گروه استفاده کنید.</value>
+  </data>
 </root>

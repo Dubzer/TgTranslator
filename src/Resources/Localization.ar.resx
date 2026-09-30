@@ -18,4 +18,19 @@
   <data name="DonateDescription" xml:space="preserve">
     <value>☕ تبرّع</value>
   </data>
+  <data name="PromoteBotToAdmin" xml:space="preserve">
+    <value>⚠️ لتغيير الإعدادات، عيّن @{0} مشرفًا أولًا!</value>
+  </data>
+  <data name="GroupSettingsPrompt" xml:space="preserve">
+    <value>اضغط على الزر أدناه لتغيير الإعدادات.
+
+إذا كان تطبيقك لا يدعم القائمة، [اضغط هنا](https://t.me/{0}?start=s).</value>
+  </data>
+  <data name="ChangeSettingsButton" xml:space="preserve">
+    <value>تغيير الإعدادات</value>
+  </data>
+  <data name="SettingsOnlyInGroups" xml:space="preserve">
+    <value>لا يمكنك تغيير إعدادات البوت هنا 😳
+يرجى استخدام هذا الأمر في المجموعة.</value>
+  </data>
 </root>
