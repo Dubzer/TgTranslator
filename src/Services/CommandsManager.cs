@@ -1,7 +1,9 @@
+using System.Globalization;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TgTranslator.Menu;
+using TgTranslator.Resources;
 
 namespace TgTranslator.Services;
 
@@ -16,40 +18,48 @@ public class CommandsManager
 
     public async Task SetDefaultCommands()
     {
-        // pm
-        await _botClient.SetMyCommands(
-        [
-            BotCommands.SettingsCommand,
-            BotCommands.ContactCommand,
-            BotCommands.DonateCommand
-        ], BotCommandScope.AllPrivateChats());
+        foreach (var languageCode in Localization.SupportedLanguages)
+        {
+            var commands = new BotCommands(CultureInfo.GetCultureInfo(languageCode));
 
-        // group chat administrators
-        await _botClient.SetMyCommands([BotCommands.SettingsCommand], BotCommandScope.AllChatAdministrators());
+            // pm
+            await _botClient.SetMyCommands(
+            [
+                commands.SettingsCommand,
+                commands.ContactCommand,
+                commands.DonateCommand
+            ], BotCommandScope.AllPrivateChats(), languageCode: languageCode);
+
+            // group chat administrators
+            await _botClient.SetMyCommands([commands.SettingsCommand],
+                BotCommandScope.AllChatAdministrators(), languageCode: languageCode);
+        }
     }
 
     public async Task ChangeGroupMode(ChatId chatId, TranslationMode translationMode)
     {
-        switch (translationMode)
+        foreach (var languageCode in Localization.SupportedLanguages)
         {
-            case TranslationMode.Manual:
-                await _botClient.SetMyCommands([
-                    BotCommands.SettingsCommand,
-                    BotCommands.TranslateCommand
-                ], BotCommandScope.ChatAdministrators(chatId));
+            if (translationMode == TranslationMode.Manual)
+            {
+                var commands = new BotCommands(CultureInfo.GetCultureInfo(languageCode));
 
                 await _botClient.SetMyCommands([
-                    BotCommands.TranslateCommand
-                ], BotCommandScope.Chat(chatId));
-                break;
-            case TranslationMode.Auto:
-            case TranslationMode.Forwards:
-            case TranslationMode.LinkedChannel:
-            default:
+                    commands.SettingsCommand,
+                    commands.TranslateCommand
+                ], BotCommandScope.ChatAdministrators(chatId), languageCode: languageCode);
+
+                await _botClient.SetMyCommands([
+                    commands.TranslateCommand
+                ], BotCommandScope.Chat(chatId), languageCode: languageCode);
+            }
+            else
+            {
                 // the default commands will be shown after deleting the scoped ones
-                await _botClient.DeleteMyCommands(BotCommandScope.ChatAdministrators(chatId));
-                await _botClient.DeleteMyCommands(BotCommandScope.Chat(chatId));
-                break;
+                await _botClient.DeleteMyCommands(BotCommandScope.ChatAdministrators(chatId),
+                    languageCode: languageCode);
+                await _botClient.DeleteMyCommands(BotCommandScope.Chat(chatId), languageCode: languageCode);
+            }
         }
     }
 }

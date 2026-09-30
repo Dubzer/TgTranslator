@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <data name="SettingsDescription" xml:space="preserve">
+    <value>⚙️ Изменить язык или режим</value>
+  </data>
+  <data name="TranslateDescription" xml:space="preserve">
+    <value>🌐 Перевести сообщение, на которое вы ответили</value>
+  </data>
+  <data name="ContactDescription" xml:space="preserve">
+    <value>📩 Связаться с разработчиком</value>
+  </data>
+  <data name="DonateDescription" xml:space="preserve">
+    <value>☕ Поддержать проект</value>
+  </data>
+</root>

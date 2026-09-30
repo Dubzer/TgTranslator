@@ -1,30 +1,34 @@
+using System.Globalization;
 using Telegram.Bot.Types;
+using TgTranslator.Resources;
 
 namespace TgTranslator.Services;
 
-public static class BotCommands
+public class BotCommands(CultureInfo culture)
 {
-    public static readonly BotCommand SettingsCommand = new()
+    private readonly Localization _localization = new(culture);
+
+    public BotCommand SettingsCommand => new()
     {
         Command = "settings",
-        Description = "⚙️ Change language and mode"
+        Description = _localization.SettingsDescription
     };
 
-    public static readonly BotCommand TranslateCommand = new()
+    public BotCommand TranslateCommand => new()
     {
         Command = "tl",
-        Description = "🌐 Translate replied message."
+        Description = _localization.TranslateDescription
     };
 
-    public static readonly BotCommand ContactCommand = new()
+    public BotCommand ContactCommand => new()
     {
         Command = "contact",
-        Description = "📩 Contact the developer"
+        Description = _localization.ContactDescription
     };
 
-    public static readonly BotCommand DonateCommand = new()
+    public BotCommand DonateCommand => new()
     {
         Command = "donate",
-        Description = "☕ Donate"
+        Description = _localization.DonateDescription
     };
 }
