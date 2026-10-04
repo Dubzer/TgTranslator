@@ -6,6 +6,9 @@
   <resheader name="version">
     <value>2.0</value>
   </resheader>
+  <data name="BotDescription" xml:space="preserve">
+    <value>@tgtrns | Gruplardaki mesajları çeviren bot. Destek için: @Dubzer 🦈</value>
+  </data>
   <data name="SettingsDescription" xml:space="preserve">
     <value>⚙️ Dili veya modu değiştir</value>
   </data>

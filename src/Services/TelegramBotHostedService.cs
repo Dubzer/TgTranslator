@@ -58,6 +58,7 @@ public class TelegramBotHostedService : IHostedService
             cancellationToken: cancellationToken);
 
         await _commandsManager.SetDefaultCommands();
+        await _commandsManager.SetBotDescriptions(cancellationToken);
     }
 
     private async Task UpdateHandler(ITelegramBotClient client, Update update, CancellationToken cancellationToken)

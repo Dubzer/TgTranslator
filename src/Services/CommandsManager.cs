@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -33,6 +34,18 @@ public class CommandsManager
             // group chat administrators
             await _botClient.SetMyCommands([commands.SettingsCommand],
                 BotCommandScope.AllChatAdministrators(), languageCode: languageCode);
+        }
+    }
+
+    public async Task SetBotDescriptions(CancellationToken cancellationToken = default)
+    {
+        foreach (var languageCode in Localization.SupportedLanguages)
+        {
+            var localization = new Localization(CultureInfo.GetCultureInfo(languageCode));
+            await _botClient.SetMyDescription(localization.BotDescription,
+                languageCode: languageCode, cancellationToken: cancellationToken);
+            await _botClient.SetMyShortDescription(localization.BotDescription,
+                languageCode: languageCode, cancellationToken: cancellationToken);
         }
     }
 

@@ -6,6 +6,9 @@
   <resheader name="version">
     <value>2.0</value>
   </resheader>
+  <data name="BotDescription" xml:space="preserve">
+    <value>@tgtrns | Бот, які перакладае паведамленні ў групах. Па дапамогу: @Dubzer 🦈</value>
+  </data>
   <data name="SettingsDescription" xml:space="preserve">
     <value>⚙️ Змяніць мову або рэжым</value>
   </data>

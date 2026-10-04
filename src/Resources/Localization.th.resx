@@ -6,6 +6,9 @@
   <resheader name="version">
     <value>2.0</value>
   </resheader>
+  <data name="BotDescription" xml:space="preserve">
+    <value>@tgtrns | บอตที่แปลข้อความในกลุ่ม หากต้องการความช่วยเหลือ ติดต่อ: @Dubzer 🦈</value>
+  </data>
   <data name="SettingsDescription" xml:space="preserve">
     <value>⚙️ เปลี่ยนภาษาหรือโหมด</value>
   </data>

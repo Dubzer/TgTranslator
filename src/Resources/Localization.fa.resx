@@ -6,6 +6,9 @@
   <resheader name="version">
     <value>2.0</value>
   </resheader>
+  <data name="BotDescription" xml:space="preserve">
+    <value>@tgtrns | رباتی که پیام‌ها را در گروه‌ها ترجمه می‌کند. پشتیبانی: @Dubzer 🦈</value>
+  </data>
   <data name="SettingsDescription" xml:space="preserve">
     <value>⚙️ تغییر زبان یا حالت</value>
   </data>

@@ -6,6 +6,9 @@
   <resheader name="version">
     <value>2.0</value>
   </resheader>
+  <data name="BotDescription" xml:space="preserve">
+    <value>@tgtrns | Боте, ки паёмҳоро дар гурӯҳҳо тарҷума мекунад. Кӯмак: @Dubzer 🦈</value>
+  </data>
   <data name="SettingsDescription" xml:space="preserve">
     <value>⚙️ Иваз кардани забон ё реҷа</value>
   </data>

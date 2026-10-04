@@ -1,9 +1,11 @@
 using System;
+using System.Threading.Tasks;
 using Flurl;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Serilog;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 using TgTranslator.Data.Options;
@@ -36,12 +38,6 @@ public class TelegramWebhooksRegistrar : IStartupFilter
                         ],
                         dropPendingUpdates: true).GetAwaiter().GetResult();
 
-                var commandsManager = scope.ServiceProvider.GetRequiredService<CommandsManager>();
-                commandsManager.SetDefaultCommands()
-                    .ConfigureAwait(false)
-                    .GetAwaiter()
-                    .GetResult();
-
                 var me = client.GetMe()
                     .ConfigureAwait(false)
                     .GetAwaiter()
@@ -49,6 +45,20 @@ public class TelegramWebhooksRegistrar : IStartupFilter
 
                 Static.Username = me.Username;
                 Static.BotId = me.Id;
+
+                var commandsManager = scope.ServiceProvider.GetRequiredService<CommandsManager>();
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await commandsManager.SetDefaultCommands();
+                        await commandsManager.SetBotDescriptions();
+                    }
+                    catch (Exception exception)
+                    {
+                        Log.Error(exception, "Failed to update bot commands or descriptions");
+                    }
+                });
             }
 
             next(builder);

@@ -6,8 +6,11 @@
   <resheader name="version">
     <value>2.0</value>
   </resheader>
+  <data name="BotDescription" xml:space="preserve">
+    <value>@tgtrns | Bot que traduz mensagens em grupos. Suporte: @Dubzer 🦈</value>
+  </data>
   <data name="SettingsDescription" xml:space="preserve">
-    <value>⚙️ Alterar o idioma ou modo</value>
+    <value>⚙️ Alterar o idioma ou o modo</value>
   </data>
   <data name="TranslateDescription" xml:space="preserve">
     <value>🌐 Traduzir a mensagem à qual você está respondendo</value>
