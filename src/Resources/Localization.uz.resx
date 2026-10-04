@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <data name="SettingsDescription" xml:space="preserve">
+    <value>⚙️ Til yoki rejimni oʻzgartirish</value>
+  </data>
+  <data name="TranslateDescription" xml:space="preserve">
+    <value>🌐 Siz javob berayotgan xabarni tarjima qilish</value>
+  </data>
+  <data name="ContactDescription" xml:space="preserve">
+    <value>📩 Dasturchi bilan bogʻlanish</value>
+  </data>
+  <data name="DonateDescription" xml:space="preserve">
+    <value>☕ Xayriya qilish</value>
+  </data>
+  <data name="PromoteBotToAdmin" xml:space="preserve">
+    <value>⚠️ Sozlamalarni oʻzgartirish uchun avval @{0} botini administrator qiling!</value>
+  </data>
+  <data name="GroupSettingsPrompt" xml:space="preserve">
+    <value>Sozlamalarni oʻzgartirish uchun quyidagi tugmani bosing.
+
+Ilovangiz menyuni qoʻllab-quvvatlamasa, [bu yerga bosing](https://t.me/{0}?start=s).</value>
+  </data>
+  <data name="ChangeSettingsButton" xml:space="preserve">
+    <value>Sozlamalarni oʻzgartirish</value>
+  </data>
+  <data name="SettingsOnlyInGroups" xml:space="preserve">
+    <value>Botni bu yerda sozlab boʻlmaydi 😳
+Bu buyruqdan guruhda foydalaning.</value>
+  </data>
+</root>

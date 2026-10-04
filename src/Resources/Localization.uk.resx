@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <data name="SettingsDescription" xml:space="preserve">
+    <value>⚙️ Змінити мову або режим</value>
+  </data>
+  <data name="TranslateDescription" xml:space="preserve">
+    <value>🌐 Перекласти повідомлення, на яке ви відповідаєте</value>
+  </data>
+  <data name="ContactDescription" xml:space="preserve">
+    <value>📩 Зв’язатися з розробником</value>
+  </data>
+  <data name="DonateDescription" xml:space="preserve">
+    <value>☕ Підтримати проєкт</value>
+  </data>
+  <data name="PromoteBotToAdmin" xml:space="preserve">
+    <value>⚠️ Щоб змінити налаштування, спочатку призначте @{0} адміністратором!</value>
+  </data>
+  <data name="GroupSettingsPrompt" xml:space="preserve">
+    <value>Натисніть кнопку нижче, щоб змінити налаштування.
+
+Якщо ваш застосунок не підтримує меню, [натисніть тут](https://t.me/{0}?start=s).</value>
+  </data>
+  <data name="ChangeSettingsButton" xml:space="preserve">
+    <value>Змінити налаштування</value>
+  </data>
+  <data name="SettingsOnlyInGroups" xml:space="preserve">
+    <value>Тут не можна налаштувати бота 😳
+Використовуйте цю команду в групі.</value>
+  </data>
+</root>

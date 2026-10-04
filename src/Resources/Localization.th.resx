@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <data name="SettingsDescription" xml:space="preserve">
+    <value>⚙️ เปลี่ยนภาษาหรือโหมด</value>
+  </data>
+  <data name="TranslateDescription" xml:space="preserve">
+    <value>🌐 แปลข้อความที่คุณกำลังตอบกลับ</value>
+  </data>
+  <data name="ContactDescription" xml:space="preserve">
+    <value>📩 ติดต่อผู้พัฒนา</value>
+  </data>
+  <data name="DonateDescription" xml:space="preserve">
+    <value>☕ บริจาค</value>
+  </data>
+  <data name="PromoteBotToAdmin" xml:space="preserve">
+    <value>⚠️ หากต้องการเปลี่ยนการตั้งค่า ให้ตั้ง @{0} เป็นผู้ดูแลก่อน!</value>
+  </data>
+  <data name="GroupSettingsPrompt" xml:space="preserve">
+    <value>กดปุ่มด้านล่างเพื่อเปลี่ยนการตั้งค่า
+
+หากแอปของคุณไม่รองรับเมนู ให้[คลิกที่นี่](https://t.me/{0}?start=s)</value>
+  </data>
+  <data name="ChangeSettingsButton" xml:space="preserve">
+    <value>เปลี่ยนการตั้งค่า</value>
+  </data>
+  <data name="SettingsOnlyInGroups" xml:space="preserve">
+    <value>เปลี่ยนการตั้งค่าบอทที่นี่ไม่ได้ 😳
+โปรดใช้คำสั่งนี้ในกลุ่ม</value>
+  </data>
+</root>

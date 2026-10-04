@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <data name="SettingsDescription" xml:space="preserve">
+    <value>⚙️ Иваз кардани забон ё реҷа</value>
+  </data>
+  <data name="TranslateDescription" xml:space="preserve">
+    <value>🌐 Тарҷумаи паёме, ки ба он ҷавоб медиҳед</value>
+  </data>
+  <data name="ContactDescription" xml:space="preserve">
+    <value>📩 Тамос бо таҳиягар</value>
+  </data>
+  <data name="DonateDescription" xml:space="preserve">
+    <value>☕ Дастгирии лоиҳа</value>
+  </data>
+  <data name="PromoteBotToAdmin" xml:space="preserve">
+    <value>⚠️ Барои тағйир додани танзимот, аввал @{0}-ро мудир таъин кунед!</value>
+  </data>
+  <data name="GroupSettingsPrompt" xml:space="preserve">
+    <value>Барои тағйир додани танзимот тугмаи поёнро пахш кунед.
+
+Агар барномаи шумо менюро дастгирӣ накунад, [ин ҷо пахш кунед](https://t.me/{0}?start=s).</value>
+  </data>
+  <data name="ChangeSettingsButton" xml:space="preserve">
+    <value>Тағйир додани танзимот</value>
+  </data>
+  <data name="SettingsOnlyInGroups" xml:space="preserve">
+    <value>Ботро дар ин ҷо танзим кардан мумкин нест 😳
+Ин фармонро дар гурӯҳ истифода баред.</value>
+  </data>
+</root>

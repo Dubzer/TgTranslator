@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <data name="SettingsDescription" xml:space="preserve">
+    <value>⚙️ ენის ან რეჟიმის შეცვლა</value>
+  </data>
+  <data name="TranslateDescription" xml:space="preserve">
+    <value>🌐 იმ შეტყობინების თარგმნა, რომელსაც პასუხობთ</value>
+  </data>
+  <data name="ContactDescription" xml:space="preserve">
+    <value>📩 დეველოპერთან დაკავშირება</value>
+  </data>
+  <data name="DonateDescription" xml:space="preserve">
+    <value>☕ შემოწირულობის გაღება</value>
+  </data>
+  <data name="PromoteBotToAdmin" xml:space="preserve">
+    <value>⚠️ პარამეტრების შესაცვლელად ჯერ @{0} დანიშნეთ ადმინისტრატორად!</value>
+  </data>
+  <data name="GroupSettingsPrompt" xml:space="preserve">
+    <value>პარამეტრების შესაცვლელად დააჭირეთ ქვემოთ მოცემულ ღილაკს.
+
+თუ თქვენი აპი მენიუს არ უჭერს მხარს, [დააჭირეთ აქ](https://t.me/{0}?start=s).</value>
+  </data>
+  <data name="ChangeSettingsButton" xml:space="preserve">
+    <value>პარამეტრების შეცვლა</value>
+  </data>
+  <data name="SettingsOnlyInGroups" xml:space="preserve">
+    <value>ბოტის აქ გამართვა შეუძლებელია 😳
+ეს ბრძანება ჯგუფში გამოიყენეთ.</value>
+  </data>
+</root>

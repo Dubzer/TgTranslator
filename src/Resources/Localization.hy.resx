@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <data name="SettingsDescription" xml:space="preserve">
+    <value>⚙️ Փոխել լեզուն կամ ռեժիմը</value>
+  </data>
+  <data name="TranslateDescription" xml:space="preserve">
+    <value>🌐 Թարգմանել հաղորդագրությունը, որին պատասխանում եք</value>
+  </data>
+  <data name="ContactDescription" xml:space="preserve">
+    <value>📩 Կապվել մշակողի հետ</value>
+  </data>
+  <data name="DonateDescription" xml:space="preserve">
+    <value>☕ Նվիրաբերել</value>
+  </data>
+  <data name="PromoteBotToAdmin" xml:space="preserve">
+    <value>⚠️ Կարգավորումները փոխելու համար նախ @{0} բոտին նշանակեք ադմինիստրատոր։</value>
+  </data>
+  <data name="GroupSettingsPrompt" xml:space="preserve">
+    <value>Կարգավորումները փոխելու համար սեղմեք ներքևի կոճակը։
+
+Եթե ձեր հավելվածում ընտրացանկը հասանելի չէ, [սեղմեք այստեղ](https://t.me/{0}?start=s)։</value>
+  </data>
+  <data name="ChangeSettingsButton" xml:space="preserve">
+    <value>Փոխել կարգավորումները</value>
+  </data>
+  <data name="SettingsOnlyInGroups" xml:space="preserve">
+    <value>Այստեղ հնարավոր չէ կարգավորել բոտը 😳
+Օգտագործեք այս հրամանը խմբում։</value>
+  </data>
+</root>

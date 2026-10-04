@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <data name="SettingsDescription" xml:space="preserve">
+    <value>⚙️ Dili və ya rejimi dəyiş</value>
+  </data>
+  <data name="TranslateDescription" xml:space="preserve">
+    <value>🌐 Cavab verdiyiniz mesajı tərcümə et</value>
+  </data>
+  <data name="ContactDescription" xml:space="preserve">
+    <value>📩 Tərtibatçı ilə əlaqə saxla</value>
+  </data>
+  <data name="DonateDescription" xml:space="preserve">
+    <value>☕ İanə et</value>
+  </data>
+  <data name="PromoteBotToAdmin" xml:space="preserve">
+    <value>⚠️ Ayarları dəyişmək üçün əvvəlcə @{0} botunu inzibatçı təyin edin!</value>
+  </data>
+  <data name="GroupSettingsPrompt" xml:space="preserve">
+    <value>Ayarları dəyişmək üçün aşağıdakı düyməyə toxunun.
+
+Tətbiqiniz menyunu dəstəkləmirsə, [buraya toxunun](https://t.me/{0}?start=s).</value>
+  </data>
+  <data name="ChangeSettingsButton" xml:space="preserve">
+    <value>Ayarları dəyiş</value>
+  </data>
+  <data name="SettingsOnlyInGroups" xml:space="preserve">
+    <value>Botu burada sazlamaq mümkün deyil 😳
+Bu əmri qrupda istifadə edin.</value>
+  </data>
+</root>

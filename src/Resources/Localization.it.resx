@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <data name="SettingsDescription" xml:space="preserve">
+    <value>⚙️ Cambia lingua o modalità</value>
+  </data>
+  <data name="TranslateDescription" xml:space="preserve">
+    <value>🌐 Traduci il messaggio a cui stai rispondendo</value>
+  </data>
+  <data name="ContactDescription" xml:space="preserve">
+    <value>📩 Contatta lo sviluppatore</value>
+  </data>
+  <data name="DonateDescription" xml:space="preserve">
+    <value>☕ Fai una donazione</value>
+  </data>
+  <data name="PromoteBotToAdmin" xml:space="preserve">
+    <value>⚠️ Per modificare le impostazioni, prima rendi @{0} amministratore!</value>
+  </data>
+  <data name="GroupSettingsPrompt" xml:space="preserve">
+    <value>Tocca il pulsante qui sotto per modificare le impostazioni.
+
+Se la tua app non supporta il menu, [clicca qui](https://t.me/{0}?start=s).</value>
+  </data>
+  <data name="ChangeSettingsButton" xml:space="preserve">
+    <value>Modifica impostazioni</value>
+  </data>
+  <data name="SettingsOnlyInGroups" xml:space="preserve">
+    <value>Non puoi configurare il bot qui 😳
+Usa questo comando nel gruppo.</value>
+  </data>
+</root>
