@@ -119,7 +119,7 @@ public class EventRouter
                     throw;
             }
 
-            var (ephemeralParams, replyParams) = TelegramUtils.OptionalEphemeralReply(message);
+            var (replyParams, ephemeralParams) = TelegramUtils.OptionalEphemeralReply(message);
 
             await _client.SendMessage(
                 message.Chat.Id,
