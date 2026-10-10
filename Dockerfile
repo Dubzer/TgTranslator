@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
 WORKDIR /source
 
-COPY *.sln .
+COPY *.slnx .
 COPY src/ ./src
 RUN dotnet restore -r linux-musl-x64
 
