@@ -27,8 +27,12 @@ public class EditedMessageHandler
 
     public async Task Handle(Message message)
     {
+        var text = message.TextOrCaption;
+        if (text == null)
+            return;
+        
         var cached = _translatedMessagesCache
-            .RequiresTranslationUpdate(message.MessageId, message.Chat.Id, message.TextOrCaption());
+            .RequiresTranslationUpdate(message.MessageId, message.Chat.Id, text);
 
         if (cached == null)
             return;
@@ -36,7 +40,7 @@ public class EditedMessageHandler
         var translationId = cached.Value;
         var groupSettings = await _settings.GetSettings(message.Chat.Id);
 
-        var translation = await _translateHandler.TranslateAndFix(message, message.TextOrCaption(), groupSettings);
+        var translation = await _translateHandler.TranslateAndFix(message, text, groupSettings);
         if (translation == null || translation.Length > 4096)
             return;
 

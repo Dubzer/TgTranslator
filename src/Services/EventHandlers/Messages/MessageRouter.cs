@@ -85,7 +85,7 @@ public class MessageRouter
 
     private async Task HandleGroupMessage(Message message)
     {
-        string messageText = message.TextOrCaption();
+        string messageText = message.TextOrCaption;
         if (messageText == null)
             return;
 
@@ -99,7 +99,7 @@ public class MessageRouter
         if (await _groupsBlacklist.InBlacklist(message.Chat.Id))
             return;
 
-        if (message.IsCommand() && !ManualTranslationCommands.Contains(message.Text))
+        if (message.IsCommand && !ManualTranslationCommands.Contains(message.Text))
         {
             _logger.Information("Message by {ChatId} | {From} is a command", message.Chat.Id, message.From);
             await _commandHandler.Handle(message);
@@ -121,7 +121,7 @@ public class MessageRouter
         {
             case TranslationMode.Forwards:
                 _logger.Information("Group {ChatId} | {From} is using Forwards translation mode", message.Chat.Id, message.From);
-                if ((message.ForwardFrom == null || message.ForwardFrom.Id == 1087968824)
+                if ((message.ForwardFrom == null || message.ForwardFrom.IsAnonymousAdmin)
                     && message.ForwardSenderName == null
                     && message.ForwardFromChat == null
                     && message.ForwardSignature == null
@@ -135,7 +135,7 @@ public class MessageRouter
                 if (message.ReplyToMessage == null || !ManualTranslationCommands.Contains(messageText))
                     return;
 
-                messageText = message.ReplyToMessage.TextOrCaption();
+                messageText = message.ReplyToMessage.TextOrCaption;
                 break;
             case TranslationMode.LinkedChannel:
                 if (message.From is not { Id: 777000 })
@@ -157,7 +157,7 @@ public class MessageRouter
 
         await _users.AddFromPmIfNeeded(message.From.Id, null);
 
-        if (message.IsCommand())
+        if (message.IsCommand)
         {
             await _commandHandler.Handle(message);
             return;

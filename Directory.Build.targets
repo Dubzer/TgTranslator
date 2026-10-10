@@ -1,0 +1,5 @@
+<Project>
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <RunWorkingDirectory>$(TargetDir)</RunWorkingDirectory>
+    </PropertyGroup>
+</Project>

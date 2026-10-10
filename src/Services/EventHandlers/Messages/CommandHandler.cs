@@ -59,17 +59,21 @@ public class CommandHandler
                     throw new UnauthorizedSettingChangingException();
 
                 var bot = await _client.GetChatMember(message.Chat.Id, Static.BotId);
-                if (message.From?.Id == 1087968824 && bot.Status != ChatMemberStatus.Administrator)
-                {
-                    await _client.SendMessage(message.Chat.Id,
-                        string.Format(localization.PromoteBotToAdmin, Static.Username));
+                var isBotAdmin = bot.Status == ChatMemberStatus.Administrator;
 
+                if (message.From?.IsAnonymousAdmin == true && !isBotAdmin)
+                {
+                    await _client.SendMessage(message.Chat.Id, string.Format(localization.PromoteBotToAdmin, Static.Username));
                     return;
                 }
+
+                var (replyParameters, ephemeralParameters) = TelegramUtils.OptionalEphemeralReply(message, isBotAdmin);
 
                 await _client.SendMessage(message.Chat.Id,
                     string.Format(localization.GroupSettingsPrompt, Static.Username),
                     parseMode: ParseMode.Markdown,
+                    replyParameters: replyParameters,
+                    ephemeralMessageParameters: ephemeralParameters,
                     linkPreviewOptions: TelegramUtils.DisabledLinkPreview,
                     replyMarkup: new InlineKeyboardMarkup(new InlineKeyboardButton(localization.ChangeSettingsButton)
                     {

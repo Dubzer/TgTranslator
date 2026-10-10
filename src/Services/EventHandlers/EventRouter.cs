@@ -84,33 +84,50 @@ public class EventRouter
         {
             await _messageRouter.HandleMessage(message);
         }
-        catch (InvalidSettingException)
+        catch (Exception e)
         {
-            await _client.SendMessage(message.Chat.Id,
-                "It seems that this setting is not supported",
-                replyParameters: TelegramUtils.SafeReplyTo(message.MessageId));
-        }
-        catch (InvalidSettingValueException)
-        {
-            await _client.SendMessage(message.Chat.Id,
-                "It seems that this value is not supported",
-                replyParameters: TelegramUtils.SafeReplyTo(message.MessageId));
-        }
-        catch (UnauthorizedSettingChangingException)
-        {
-            await _client.SendMessage(message.Chat.Id,
-                "Hey! Only admins can change settings of this bot!",
-                replyParameters: TelegramUtils.SafeReplyTo(message.MessageId));
-        }
-        catch (ApiRequestException exception) when (exception.Message.Contains("CHAT_RESTRICTED")
-                                                    || exception.Message.Contains("have no rights to send a message")
-                                                    || exception.Message.Contains("not enough rights to"))
-        {
-            await _groupsBlacklist.AddGroup(message.Chat.Id);
+            if (e is ApiRequestException apiException)
+            {
+                if (apiException.Message.Contains("message not found", StringComparison.InvariantCultureIgnoreCase)
+                    || apiException.Message.Contains("Too Many Requests", StringComparison.InvariantCultureIgnoreCase))
+                    return;
 
+                if (apiException.Message.Contains("CHAT_RESTRICTED")
+                    || apiException.Message.Contains("have no rights to send a message")
+                    || apiException.Message.Contains("not enough rights to"))
+                {
+                    await _groupsBlacklist.AddGroup(message.Chat.Id);
+                    return;
+                }
+
+                throw;
+            }
+
+            string responseText;
+            switch (e)
+            {
+                case InvalidSettingException:
+                    responseText = "It seems that this setting is not supported";
+                    break;
+                case InvalidSettingValueException:
+                    responseText = "It seems that this value is not supported";
+                    break;
+                case UnauthorizedSettingChangingException:
+                    responseText = "Hey! Only admins can change settings of this bot!";
+                    break;
+                default:
+                    throw;
+            }
+
+            var (ephemeralParams, replyParams) = TelegramUtils.OptionalEphemeralReply(message);
+
+            await _client.SendMessage(
+                message.Chat.Id,
+                responseText,
+                replyParameters: replyParams,
+                ephemeralMessageParameters: ephemeralParams
+            );
         }
-        catch (ApiRequestException exception) when (exception.Message.Contains("message not found", StringComparison.InvariantCultureIgnoreCase)) { }
-        catch (ApiRequestException exception) when (exception.Message.Contains("Too Many Requests", StringComparison.InvariantCultureIgnoreCase)) { }
     }
 
     private async Task OnCallbackQuery(CallbackQuery callbackQuery)

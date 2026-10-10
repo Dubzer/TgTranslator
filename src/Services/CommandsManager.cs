@@ -32,7 +32,9 @@ public class CommandsManager
             ], BotCommandScope.AllPrivateChats(), languageCode: languageCode);
 
             // group chat administrators
-            await _botClient.SetMyCommands([commands.SettingsCommand],
+            var settingsCommand = commands.SettingsCommand;
+            settingsCommand.IsEphemeral = true;
+            await _botClient.SetMyCommands([settingsCommand],
                 BotCommandScope.AllChatAdministrators(), languageCode: languageCode);
         }
     }
@@ -56,9 +58,11 @@ public class CommandsManager
             if (translationMode == TranslationMode.Manual)
             {
                 var commands = new BotCommands(CultureInfo.GetCultureInfo(languageCode));
+                var settingsCommand = commands.SettingsCommand;
+                settingsCommand.IsEphemeral = true;
 
                 await _botClient.SetMyCommands([
-                    commands.SettingsCommand,
+                    settingsCommand,
                     commands.TranslateCommand
                 ], BotCommandScope.ChatAdministrators(chatId), languageCode: languageCode);
 

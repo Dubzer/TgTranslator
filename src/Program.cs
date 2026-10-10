@@ -29,7 +29,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration
     .AddJsonFile("blacklists.json")
-    .AddJsonFile("languages.json");
+    .AddJsonFile("languages.json")
+    .AddJsonFile("appsettings.local.json", optional: true);
 
 builder
     .ConfigureOptionFromSection<KestrelServerOptions>("Kestrel")

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+#nullable enable
 using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Bot;
@@ -9,50 +9,52 @@ namespace TgTranslator.Utils.Extensions;
 
 public static class TelegramExtensions
 {
-    public static bool IsOnlyEntities(this Message message)
+    extension(Message message)
     {
-        if (message.Entities == null)
-            return false;
+        public bool IsOnlyEntities()
+        {
+            var entities = message.TextOrCaptionEntities;
+            var text = message.TextOrCaption;
 
-        IEnumerable<MessageEntity> entitiesArray = message.TextOrCaptionEntities()
-            .Where(e => e.Type 
-                is MessageEntityType.Url 
-                or MessageEntityType.Mention 
-                or MessageEntityType.Cashtag 
-                or MessageEntityType.Email 
-                or MessageEntityType.PhoneNumber 
-                or MessageEntityType.Hashtag
-                or MessageEntityType.Pre
-                or MessageEntityType.Code);
+            if (entities == null || text == null)
+                return false;
 
+            var entitiesArray = entities
+                .Where(e => e.Type 
+                    is MessageEntityType.Url 
+                    or MessageEntityType.Mention 
+                    or MessageEntityType.Cashtag 
+                    or MessageEntityType.Email 
+                    or MessageEntityType.PhoneNumber 
+                    or MessageEntityType.Hashtag
+                    or MessageEntityType.Pre
+                    or MessageEntityType.Code);
             
-        string withoutLinks = entitiesArray.Reverse()
-            .Aggregate(message.TextOrCaption(), (current, e) => current.Remove(e.Offset, e.Length));
+            var withoutLinks = entitiesArray.Reverse().Aggregate(text, (current, e) => current.Remove(e.Offset, e.Length));
+            return !withoutLinks.Any(char.IsLetterOrDigit);
+        }
 
-        return !withoutLinks.Any(char.IsLetterOrDigit);
+        public string? TextOrCaption => message.Text ?? message.Caption;
+        public MessageEntity[]? TextOrCaptionEntities => message.Entities ?? message.CaptionEntities;
+
+        public bool IsCommand => 
+            message is { Entities: [{ Type: MessageEntityType.BotCommand }], Text: not null };
     }
 
-    public static string TextOrCaption(this Message message)
+    extension(User user)
     {
-        return message.Text ?? message.Caption;
-    }
+        /// <summary>
+        /// Checks if user is an administrator
+        /// </summary>
+        public async Task<bool> IsAdministrator(long chatId, TelegramBotClient client)
+        {
+            if (user.IsAnonymousAdmin)
+                return true;
+            
+            var chatAdmins = await client.GetChatAdministrators(chatId);
+            return chatAdmins.Any(x => x.User.Id == user.Id);
+        }
 
-    public static MessageEntity[] TextOrCaptionEntities(this Message message)
-    {
-        return message.Entities ?? message.CaptionEntities;
+        public bool IsAnonymousAdmin => user.Id == 1087968824;
     }
-        
-    /// <summary>
-    /// Checks if user is an administrator
-    /// </summary>
-    public static async Task<bool> IsAdministrator(this User user, long chatId, TelegramBotClient client)
-    {
-        ChatMember[] chatAdmins = await client.GetChatAdministrators(chatId);
-
-        //                                                  Todo: replace with something better when telegram lib will update
-        return chatAdmins.Any(x => x.User.Id == user.Id) || user.Id == 1087968824;
-    }
-
-    public static bool IsCommand(this Message message) => 
-        message.Entities?.Length == 1 && message.Entities[0].Type == MessageEntityType.BotCommand && message.Text != null;
 }

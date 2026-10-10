@@ -37,15 +37,12 @@
     <None Update="languages.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    
-    <None Update="launchSettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+
+    <Content Remove="appsettings.json" />
+    <None Include="appsettings.json">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
 
-    <None Update="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-      
     <None Update="blacklists.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
