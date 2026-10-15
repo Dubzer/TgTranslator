@@ -24,10 +24,15 @@
   <data name="PromoteBotToAdmin" xml:space="preserve">
     <value>⚠️ Жөндөөлөрдү өзгөртүү үчүн адегенде @{0} ботун администратор кылыңыз!</value>
   </data>
+  <data name="OpenSettingsInPrivatePrompt" xml:space="preserve">
+    <value>Бул топтун жөндөөлөрүн өзгөртүү үчүн төмөнкү баскычты басыңыз.</value>
+  </data>
   <data name="GroupSettingsPrompt" xml:space="preserve">
-    <value>Жөндөөлөрдү өзгөртүү үчүн төмөнкү баскычты басыңыз.
-
-Колдонмоңуз менюну колдобосо, [бул жерди басыңыз](https://t.me/{0}?start=s).</value>
+    <value>&lt;b&gt;&lt;u&gt;{1}&lt;/u&gt; тобунун жөндөөлөрүн өзгөртүңүз&lt;/b&gt;
+&lt;i&gt;Колдонмоңуз менюну колдобосо, &lt;a href="https://t.me/{0}?start=s"&gt;бул жерди басыңыз&lt;/a&gt;.&lt;/i&gt;</value>
+  </data>
+  <data name="OpenMenuButton" xml:space="preserve">
+    <value>Менюну ачуу</value>
   </data>
   <data name="ChangeSettingsButton" xml:space="preserve">
     <value>Жөндөөлөрдү өзгөртүү</value>

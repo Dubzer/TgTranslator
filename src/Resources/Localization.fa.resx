@@ -24,10 +24,15 @@
   <data name="PromoteBotToAdmin" xml:space="preserve">
     <value>⚠️ برای تغییر تنظیمات، ابتدا @{0} را به‌عنوان مدیر گروه تعیین کنید!</value>
   </data>
+  <data name="OpenSettingsInPrivatePrompt" xml:space="preserve">
+    <value>برای تغییر تنظیمات این گروه، روی دکمهٔ زیر کلیک کنید.</value>
+  </data>
   <data name="GroupSettingsPrompt" xml:space="preserve">
-    <value>برای تغییر تنظیمات، روی دکمهٔ زیر کلیک کنید.
-
-اگر برنامهٔ شما از منو پشتیبانی نمی‌کند، [اینجا کلیک کنید](https://t.me/{0}?start=s).</value>
+    <value>&lt;b&gt;تنظیمات گروه &lt;u&gt;{1}&lt;/u&gt; را تغییر دهید&lt;/b&gt;
+&lt;i&gt;اگر برنامهٔ شما از منو پشتیبانی نمی‌کند، &lt;a href="https://t.me/{0}?start=s"&gt;اینجا کلیک کنید&lt;/a&gt;.&lt;/i&gt;</value>
+  </data>
+  <data name="OpenMenuButton" xml:space="preserve">
+    <value>باز کردن منو</value>
   </data>
   <data name="ChangeSettingsButton" xml:space="preserve">
     <value>تغییر تنظیمات</value>

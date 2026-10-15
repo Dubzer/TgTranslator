@@ -24,10 +24,15 @@
   <data name="PromoteBotToAdmin" xml:space="preserve">
     <value>⚠️ Барои тағйир додани танзимот, аввал @{0}-ро мудир таъин кунед!</value>
   </data>
+  <data name="OpenSettingsInPrivatePrompt" xml:space="preserve">
+    <value>Барои тағйир додани танзимоти ин гурӯҳ тугмаи поёнро пахш кунед.</value>
+  </data>
   <data name="GroupSettingsPrompt" xml:space="preserve">
-    <value>Барои тағйир додани танзимот тугмаи поёнро пахш кунед.
-
-Агар барномаи шумо менюро дастгирӣ накунад, [ин ҷо пахш кунед](https://t.me/{0}?start=s).</value>
+    <value>&lt;b&gt;Танзимоти гурӯҳи &lt;u&gt;{1}&lt;/u&gt;-ро тағйир диҳед&lt;/b&gt;
+&lt;i&gt;Агар барномаи шумо менюро дастгирӣ накунад, &lt;a href="https://t.me/{0}?start=s"&gt;ин ҷо пахш кунед&lt;/a&gt;.&lt;/i&gt;</value>
+  </data>
+  <data name="OpenMenuButton" xml:space="preserve">
+    <value>Кушодани меню</value>
   </data>
   <data name="ChangeSettingsButton" xml:space="preserve">
     <value>Тағйир додани танзимот</value>

@@ -24,10 +24,15 @@
   <data name="PromoteBotToAdmin" xml:space="preserve">
     <value>⚠️ Կարգավորումները փոխելու համար նախ @{0} բոտին նշանակեք ադմինիստրատոր։</value>
   </data>
+  <data name="OpenSettingsInPrivatePrompt" xml:space="preserve">
+    <value>Այս խմբի կարգավորումները փոխելու համար սեղմեք ներքևի կոճակը։</value>
+  </data>
   <data name="GroupSettingsPrompt" xml:space="preserve">
-    <value>Կարգավորումները փոխելու համար սեղմեք ներքևի կոճակը։
-
-Եթե ձեր հավելվածում ընտրացանկը հասանելի չէ, [սեղմեք այստեղ](https://t.me/{0}?start=s)։</value>
+    <value>&lt;b&gt;Փոխեք &lt;u&gt;{1}&lt;/u&gt; խմբի կարգավորումները&lt;/b&gt;
+&lt;i&gt;Եթե ձեր հավելվածում ընտրացանկը հասանելի չէ, &lt;a href="https://t.me/{0}?start=s"&gt;սեղմեք այստեղ&lt;/a&gt;։&lt;/i&gt;</value>
+  </data>
+  <data name="OpenMenuButton" xml:space="preserve">
+    <value>Բացել ընտրացանկը</value>
   </data>
   <data name="ChangeSettingsButton" xml:space="preserve">
     <value>Փոխել կարգավորումները</value>

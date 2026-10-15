@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
+using Telegram.Bot.Extensions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -70,19 +71,35 @@ public class CommandHandler
                 var (replyParameters, ephemeralParameters) = TelegramUtils.OptionalEphemeralReply(message, isBotAdmin);
 
                 await _client.SendMessage(message.Chat.Id,
-                    string.Format(localization.GroupSettingsPrompt, Static.Username),
-                    parseMode: ParseMode.Markdown,
+                    localization.OpenSettingsInPrivatePrompt,
                     replyParameters: replyParameters,
                     ephemeralMessageParameters: ephemeralParameters,
-                    linkPreviewOptions: TelegramUtils.DisabledLinkPreview,
                     replyMarkup: new InlineKeyboardMarkup(new InlineKeyboardButton(localization.ChangeSettingsButton)
                     {
-                        Url = $"https://t.me/{Static.Username}/settings?startapp=i{message.Chat.Id}"
+                        Url = $"https://t.me/{Static.Username}?start=settings_{message.Chat.Id}"
                     }));
                 break;
             case "settings" when chatType == ChatType.Private:
                 await _client.SendMessage(message.Chat.Id,
                     localization.SettingsOnlyInGroups);
+                break;
+            case "start" when chatType == ChatType.Private
+                              && payload?.StartsWith("settings_") == true
+                              && long.TryParse(payload["settings_".Length..], out var groupId)
+                              && groupId < 0:
+                if (!await message.From.IsAdministrator(groupId, _client))
+                    throw new UnauthorizedSettingChangingException();
+
+                var group = await _client.GetChat(groupId);
+                await _client.SendMessage(message.Chat.Id,
+                    string.Format(localization.GroupSettingsPrompt, Static.Username, HtmlText.Escape(group.Title)),
+                    parseMode: ParseMode.Html,
+                    linkPreviewOptions: TelegramUtils.DisabledLinkPreview,
+                    replyMarkup: new InlineKeyboardMarkup(new InlineKeyboardButton(localization.OpenMenuButton)
+                    {
+                        Style = KeyboardButtonStyle.Primary,
+                        Url = $"https://t.me/{Static.Username}/settings?startapp=i{groupId}"
+                    }));
                 break;
             case "start" when chatType == ChatType.Private && payload == "s":
                 await _botMenu.SendSettings(message.Chat.Id);

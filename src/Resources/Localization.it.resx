@@ -24,10 +24,15 @@
   <data name="PromoteBotToAdmin" xml:space="preserve">
     <value>⚠️ Per modificare le impostazioni, prima rendi @{0} amministratore!</value>
   </data>
+  <data name="OpenSettingsInPrivatePrompt" xml:space="preserve">
+    <value>Tocca il pulsante qui sotto per modificare le impostazioni di questo gruppo.</value>
+  </data>
   <data name="GroupSettingsPrompt" xml:space="preserve">
-    <value>Tocca il pulsante qui sotto per modificare le impostazioni.
-
-Se la tua app non supporta il menu, [clicca qui](https://t.me/{0}?start=s).</value>
+    <value>&lt;b&gt;Modifica le impostazioni del gruppo &lt;u&gt;{1}&lt;/u&gt;&lt;/b&gt;
+&lt;i&gt;Se la tua app non supporta il menu, &lt;a href="https://t.me/{0}?start=s"&gt;clicca qui&lt;/a&gt;.&lt;/i&gt;</value>
+  </data>
+  <data name="OpenMenuButton" xml:space="preserve">
+    <value>Apri menu</value>
   </data>
   <data name="ChangeSettingsButton" xml:space="preserve">
     <value>Modifica impostazioni</value>

@@ -24,10 +24,15 @@
   <data name="PromoteBotToAdmin" xml:space="preserve">
     <value>⚠️ Sozlamalarni oʻzgartirish uchun avval @{0} botini administrator qiling!</value>
   </data>
+  <data name="OpenSettingsInPrivatePrompt" xml:space="preserve">
+    <value>Ushbu guruh sozlamalarini oʻzgartirish uchun quyidagi tugmani bosing.</value>
+  </data>
   <data name="GroupSettingsPrompt" xml:space="preserve">
-    <value>Sozlamalarni oʻzgartirish uchun quyidagi tugmani bosing.
-
-Ilovangiz menyuni qoʻllab-quvvatlamasa, [bu yerga bosing](https://t.me/{0}?start=s).</value>
+    <value>&lt;b&gt;&lt;u&gt;{1}&lt;/u&gt; guruhining sozlamalarini oʻzgartiring&lt;/b&gt;
+&lt;i&gt;Ilovangiz menyuni qoʻllab-quvvatlamasa, &lt;a href="https://t.me/{0}?start=s"&gt;bu yerga bosing&lt;/a&gt;.&lt;/i&gt;</value>
+  </data>
+  <data name="OpenMenuButton" xml:space="preserve">
+    <value>Menyuni ochish</value>
   </data>
   <data name="ChangeSettingsButton" xml:space="preserve">
     <value>Sozlamalarni oʻzgartirish</value>
