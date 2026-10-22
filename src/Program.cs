@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Metrics;
 using Serilog;
+using Serilog.Formatting.Compact;
 using TgTranslator;
 using TgTranslator.Data.Options;
 using TgTranslator.Menu;
@@ -60,6 +61,15 @@ builder.Services.AddSerilog((_, loggerConfig) =>
         ]);
 
     loggerConfig.Enrich.FromLogContext();
+
+    if (builder.Environment.IsProduction())
+    {
+        loggerConfig.WriteTo.Console(new RenderedCompactJsonFormatter());
+    }
+    else
+    {
+        loggerConfig.WriteTo.Console();
+    }
 });
 
 builder.Services
