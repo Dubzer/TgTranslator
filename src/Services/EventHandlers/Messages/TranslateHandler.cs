@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -58,13 +59,19 @@ public partial class TranslateHandler
         if (!originalText.AnyLetters())
             return;
 
+        var messageAgeAtTranslationStartMs = (DateTime.UtcNow - message.Date).TotalMilliseconds;
+        var stageTimer = Stopwatch.StartNew();
         if (groupConfig.Delay != 0 && groupConfig.TranslationMode == TranslationMode.Auto)
             await Task.Delay(TimeSpan.FromSeconds(groupConfig.Delay));
+        var delayMs = stageTimer.ElapsedMilliseconds;
 
+        stageTimer.Restart();
         var translatedText = await TranslateAndFix(message, originalText, groupConfig);
+        var translationMs = stageTimer.ElapsedMilliseconds;
         if (string.IsNullOrWhiteSpace(translatedText))
             return;
 
+        stageTimer.Restart();
         // In case of multiple translation messages, will contain the last one sent
         Message translationMessage;
         if (translatedText.Length <= 4096)
@@ -82,18 +89,24 @@ public partial class TranslateHandler
         {
             translationMessage = await SendLongMessage(message.Chat.Id, translatedText, message.MessageId);
         }
-
+        var telegramSendMs = stageTimer.ElapsedMilliseconds;
 
         // The time between the original message and the translation message
-        var translationMs = ((DateTimeOffset)translationMessage.Date).ToUnixTimeMilliseconds() -
+        var totalMs = ((DateTimeOffset)translationMessage.Date).ToUnixTimeMilliseconds() -
                             ((DateTimeOffset)message.Date).ToUnixTimeMilliseconds();
 
-        _metrics.RecordTranslationResponseTime(translationMs);
-        if (translationMs > 10000)
-            _logger.Warning("Abnormal translation time for {ChatId} | {From} | {Time}ms",
+        _metrics.RecordTranslationResponseTime(totalMs);
+        if (totalMs > 10000)
+            _logger.Warning("Abnormal translation time for {ChatId} | {From} | {Time}ms. " +
+                "Message age before translation: {MessageAgeAtTranslationStartMs}ms, delay: {DelayMs}ms, " +
+                "translation: {TranslationMs}ms, Telegram send: {TelegramSendMs}ms",
                 message.Chat.Id,
                 message.From,
-                translationMs);
+                totalMs,
+                messageAgeAtTranslationStartMs,
+                delayMs,
+                translationMs,
+                telegramSendMs);
 
         _logger.Information("Sent translation to {ChatId} | {From}", message.Chat.Id, message.From);
     }

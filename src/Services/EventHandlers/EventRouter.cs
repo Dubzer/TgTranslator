@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Sentry;
-using Serilog;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
@@ -21,9 +23,9 @@ public class EventRouter
     private readonly MessageRouter _messageRouter;
     private readonly EditedMessageHandler _editedMessageHandler;
     private readonly GroupsBlacklistService _groupsBlacklist;
-    private readonly ILogger _logger;
+    private readonly ILogger<EventRouter> _logger;
 
-    public EventRouter(TelegramBotClient client, MessageRouter messageRouter, ICallbackQueryHandler callbackQueryHandler, MyChatMemberHandler myChatMemberHandler, GroupsBlacklistService groupsBlacklist, ILogger logger, EditedMessageHandler editedMessageHandler)
+    public EventRouter(TelegramBotClient client, MessageRouter messageRouter, ICallbackQueryHandler callbackQueryHandler, MyChatMemberHandler myChatMemberHandler, GroupsBlacklistService groupsBlacklist, ILogger<EventRouter> logger, EditedMessageHandler editedMessageHandler)
     {
         _client = client;
         _messageRouter = messageRouter;
@@ -36,6 +38,20 @@ public class EventRouter
 
     public async Task HandleUpdate(Update update)
     {
+        var message = update.Message ?? update.EditedMessage;
+        var updateDate = update.Message?.Date ?? update.EditedMessage?.EditDate;
+        var updateAgeMs = (DateTime.UtcNow - updateDate)?.TotalMilliseconds;
+        using var scope = _logger.BeginScope(new Dictionary<string, object>
+        {
+            ["UpdateId"] = update.Id,
+            ["UpdateType"] = update.Type,
+            ["UserId"] = message?.From.Id,
+            ["ChatId"] = message?.Chat.Id,
+            ["MessageId"] = message?.MessageId,
+            ["UpdateAgeAtHandlerStartMs"] = updateAgeMs
+        });
+        var processingTimer = Stopwatch.StartNew();
+
         try
         {
             var updateTransaction = SentrySdk.StartTransaction(
@@ -64,8 +80,13 @@ public class EventRouter
         }
         catch (Exception e)
         {
-            _logger.Error(e, "Error while processing update {UpdateId} with type {UpdateType}", update?.Id, update?.Type);
+            _logger.LogError(e, "Error while processing update {UpdateId} with type {UpdateType}", update?.Id, update?.Type);
             SentrySdk.CaptureException(e);
+        }
+        finally
+        {
+            if (processingTimer.ElapsedMilliseconds > 10000)
+                _logger.LogWarning("Slow update processing took {ProcessingMs}ms", processingTimer.ElapsedMilliseconds);
         }
     }
 
@@ -73,7 +94,7 @@ public class EventRouter
     {
         if (message.Date.ToUniversalTime() < DateTime.UtcNow - TimeSpan.FromSeconds(30))
         {
-            _logger.Warning("Skipping update because it's too old! {MessageDate} {CurrentDate}",
+            _logger.LogWarning("Skipping update because it's too old! {MessageDate} {CurrentDate}",
                 message.Date,
                 DateTime.UtcNow);
 
@@ -138,11 +159,11 @@ public class EventRouter
         }
         catch (UnsupportedCommand exception)
         {
-            _logger.Error(exception, "Got a CallbackQuery with unsupported command");
+            _logger.LogError(exception, "Got a CallbackQuery with unsupported command");
         }
         catch (UnsupportedMenuItem exception)
         {
-            _logger.Error(exception, "Got a CallbackQuery with unsupported item");
+            _logger.LogError(exception, "Got a CallbackQuery with unsupported item");
         }
     }
 
