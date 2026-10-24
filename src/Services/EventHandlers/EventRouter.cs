@@ -23,9 +23,10 @@ public class EventRouter
     private readonly MessageRouter _messageRouter;
     private readonly EditedMessageHandler _editedMessageHandler;
     private readonly GroupsBlacklistService _groupsBlacklist;
+    private readonly SlowModeFilter _slowModeFilter;
     private readonly ILogger<EventRouter> _logger;
 
-    public EventRouter(TelegramBotClient client, MessageRouter messageRouter, ICallbackQueryHandler callbackQueryHandler, MyChatMemberHandler myChatMemberHandler, GroupsBlacklistService groupsBlacklist, ILogger<EventRouter> logger, EditedMessageHandler editedMessageHandler)
+    public EventRouter(TelegramBotClient client, MessageRouter messageRouter, ICallbackQueryHandler callbackQueryHandler, MyChatMemberHandler myChatMemberHandler, GroupsBlacklistService groupsBlacklist, ILogger<EventRouter> logger, EditedMessageHandler editedMessageHandler, SlowModeFilter slowModeFilter)
     {
         _client = client;
         _messageRouter = messageRouter;
@@ -34,6 +35,7 @@ public class EventRouter
         _groupsBlacklist = groupsBlacklist;
         _logger = logger;
         _editedMessageHandler = editedMessageHandler;
+        _slowModeFilter = slowModeFilter;
     }
 
     public async Task HandleUpdate(Update update)
@@ -54,6 +56,12 @@ public class EventRouter
 
         try
         {
+            if (message?.Chat.Type == ChatType.Supergroup)
+            {
+                if (await _slowModeFilter.ShouldSkip(message.Chat.Id))
+                    return;
+            }
+
             var updateTransaction = SentrySdk.StartTransaction(
                 "update",
                 $"update-{update.Type.ToString().ToLowerInvariant()}"
@@ -169,6 +177,7 @@ public class EventRouter
 
     private async Task OnMyChatMember(ChatMemberUpdated updateMyChatMember)
     {
+        _slowModeFilter.Invalidate(updateMyChatMember.Chat.Id);
         await _myChatMemberHandler.Handle(updateMyChatMember);
     }
 }

@@ -40,6 +40,7 @@ public static class DiServices
 
         builder.Services.AddSingleton<Metrics>();
         builder.Services.AddSingleton<TranslatedMessagesCache>();
+        builder.Services.AddSingleton<SlowModeFilter>();
         builder.Services.AddSingleton<LanguagesProvider>();
 
         builder.Services.AddTransient<BotMenu>();
