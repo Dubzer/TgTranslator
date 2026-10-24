@@ -41,7 +41,7 @@ public class EditedMessageHandler
         var groupSettings = await _settings.GetSettings(message.Chat.Id);
 
         var translation = await _translateHandler.TranslateAndFix(message, text, groupSettings);
-        if (translation == null || translation.Length > 4096)
+        if (string.IsNullOrWhiteSpace(translation) || translation.Length > 4096)
             return;
 
         await _client.EditMessageText(message.Chat.Id, translationId, translation, ParseMode.Html);
