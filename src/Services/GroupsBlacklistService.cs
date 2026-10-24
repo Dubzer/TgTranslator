@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using TgTranslator.Data;
 using TgTranslator.Data.Options;
+using TgTranslator.Menu;
 using TgTranslator.Models;
 
 namespace TgTranslator.Services;
@@ -22,16 +23,22 @@ public class GroupsBlacklistService
         
     public async Task AddGroup(long groupId)
     {
-        Group group = await _database.Groups.Where(g => g.GroupId == groupId).Include(g => g.GroupBlacklist).FirstOrDefaultAsync();
-        if (group.GroupBlacklist != null)
-        {
-            group.GroupBlacklist.AddedAt = DateTime.UtcNow;
-            await _database.SaveChangesAsync();
-            return;
-        }
-                    
-        await _database.GroupsBlacklist.AddAsync(new GroupBlacklist {GroupId = groupId});
-        await _database.SaveChangesAsync();
+        await _database.Groups.Upsert(new Group
+            {
+                GroupId = groupId,
+                Languages = ["en"],
+                TranslationMode = TranslationMode.Auto,
+                Delay = 0,
+                TranslateWithLinks = true
+            })
+            .On(group => group.GroupId)
+            .NoUpdate()
+            .RunAsync();
+
+        await _database.GroupsBlacklist.Upsert(new GroupBlacklist { GroupId = groupId, AddedAt = DateTime.UtcNow })
+            .On(blacklist => blacklist.GroupId)
+            .WhenMatched((existing, incoming) => new GroupBlacklist { AddedAt = incoming.AddedAt })
+            .RunAsync();
     }
 
     public async Task RemoveGroup(long groupId)

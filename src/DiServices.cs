@@ -35,8 +35,10 @@ public static class DiServices
         builder.Services.AddTransient<UsersDatabaseService>();
         builder.Services.AddTransient<GroupsBlacklistService>();
 
-        builder.Services.AddSingleton(new TelegramBotClient(telegramOptions.BotToken));
-        builder.Services.AddTransient<IStartupFilter, TelegramApiLoggingStartupFilter>();
+        builder.Services.AddSingleton(new TelegramBotClient(new TelegramBotClientOptions(telegramOptions.BotToken)
+        {
+            RetryThreshold = 0
+        }));
 
         builder.Services.AddSingleton<Metrics>();
         builder.Services.AddSingleton<TranslatedMessagesCache>();

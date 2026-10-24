@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Catglobe.ResXFileCodeGenerator" Version="4.1.2" PrivateAssets="all" />
     <PackageReference Include="BitFaster.Caching" Version="2.6.1" />
+    <PackageReference Include="FlexLabs.EntityFrameworkCore.Upsert" Version="10.1.0" />
     <PackageReference Include="FluentValidation" Version="12.1.1" />
     <PackageReference Include="Flurl" Version="4.0.0" />
     <PackageReference Include="Flurl.Http" Version="4.0.2" />

@@ -56,12 +56,6 @@ public class EventRouter
 
         try
         {
-            if (message?.Chat.Type == ChatType.Supergroup)
-            {
-                if (await _slowModeFilter.ShouldSkip(message.Chat.Id))
-                    return;
-            }
-
             var updateTransaction = SentrySdk.StartTransaction(
                 "update",
                 $"update-{update.Type.ToString().ToLowerInvariant()}"
@@ -77,7 +71,7 @@ public class EventRouter
                     await OnCallbackQuery(update.CallbackQuery);
                     break;
                 case UpdateType.MyChatMember:
-                    await OnMyChatMember(update.MyChatMember);
+                    await _myChatMemberHandler.Handle(update.MyChatMember);
                     break;
                 case UpdateType.EditedMessage:
                     await _editedMessageHandler.Handle(update.EditedMessage);
@@ -111,41 +105,23 @@ public class EventRouter
 
         try
         {
-            await _messageRouter.HandleMessage(message);
-        }
-        catch (Exception e)
-        {
-            if (e is ApiRequestException apiException)
-            {
-                if (apiException.Message.Contains("message not found", StringComparison.InvariantCultureIgnoreCase)
-                    || apiException.Message.Contains("Too Many Requests", StringComparison.InvariantCultureIgnoreCase))
-                    return;
-
-                if (apiException.Message.Contains("CHAT_RESTRICTED")
-                    || apiException.Message.Contains("have no rights to send a message")
-                    || apiException.Message.Contains("not enough rights to"))
-                {
-                    await _groupsBlacklist.AddGroup(message.Chat.Id);
-                    return;
-                }
-
-                throw;
-            }
-
             string responseText;
-            switch (e)
+            try
             {
-                case InvalidSettingException:
-                    responseText = "It seems that this setting is not supported";
-                    break;
-                case InvalidSettingValueException:
-                    responseText = "It seems that this value is not supported";
-                    break;
-                case UnauthorizedSettingChangingException:
-                    responseText = "Hey! Only admins can change settings of this bot!";
-                    break;
-                default:
-                    throw;
+                await _messageRouter.HandleMessage(message);
+                return;
+            }
+            catch (InvalidSettingException)
+            {
+                responseText = "It seems that this setting is not supported";
+            }
+            catch (InvalidSettingValueException)
+            {
+                responseText = "It seems that this value is not supported";
+            }
+            catch (UnauthorizedSettingChangingException)
+            {
+                responseText = "Hey! Only admins can change settings of this bot!";
             }
 
             var (replyParams, ephemeralParams) = TelegramUtils.OptionalEphemeralReply(message);
@@ -156,6 +132,42 @@ public class EventRouter
                 replyParameters: replyParams,
                 ephemeralMessageParameters: ephemeralParams
             );
+        }
+        catch (ApiRequestException apiException)
+        {
+            if (apiException.ErrorCode == 429)
+            {
+                _logger.LogWarning("Telegram API rate limited while processing message; retry after {RetryAfterSeconds}s",
+                    apiException.Parameters?.RetryAfter);
+
+                if (message.Chat.Type == ChatType.Supergroup)
+                {
+                    try
+                    {
+                        if (await _slowModeFilter.CheckAfterRateLimit(message.Chat.Id))
+                            await _groupsBlacklist.AddGroup(message.Chat.Id);
+                    }
+                    catch (Exception lookupException)
+                    {
+                        _logger.LogWarning(lookupException, "Could not blacklist slow-mode chat {ChatId}", message.Chat.Id);
+                    }
+                }
+
+                return;
+            }
+
+            if (apiException.Message.Contains("message not found", StringComparison.InvariantCultureIgnoreCase))
+                return;
+
+            if (apiException.Message.Contains("CHAT_RESTRICTED")
+                || apiException.Message.Contains("have no rights to send a message")
+                || apiException.Message.Contains("not enough rights to"))
+            {
+                await _groupsBlacklist.AddGroup(message.Chat.Id);
+                return;
+            }
+
+            throw;
         }
     }
 
@@ -173,11 +185,5 @@ public class EventRouter
         {
             _logger.LogError(exception, "Got a CallbackQuery with unsupported item");
         }
-    }
-
-    private async Task OnMyChatMember(ChatMemberUpdated updateMyChatMember)
-    {
-        _slowModeFilter.Invalidate(updateMyChatMember.Chat.Id);
-        await _myChatMemberHandler.Handle(updateMyChatMember);
     }
 }
