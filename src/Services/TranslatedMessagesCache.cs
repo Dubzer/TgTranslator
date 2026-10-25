@@ -29,6 +29,11 @@ public class TranslatedMessagesCache
         _metrics.TranslationCacheCounterInc();
     }
 
+    public void RemoveTranslation(int messageId, long chatId)
+    {
+        _cache.TryRemove((messageId, chatId));
+    }
+
     /// <returns>
     /// null when does value does not require translation,
     /// otherwise returns the ID of translation message

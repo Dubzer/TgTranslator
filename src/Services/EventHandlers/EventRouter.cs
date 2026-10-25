@@ -12,6 +12,7 @@ using TgTranslator.Exceptions;
 using TgTranslator.Interfaces;
 using TgTranslator.Services.EventHandlers.Messages;
 using TgTranslator.Utils;
+using TgTranslator.Utils.Extensions;
 
 namespace TgTranslator.Services.EventHandlers;
 
@@ -156,12 +157,10 @@ public class EventRouter
                 return;
             }
 
-            if (apiException.Message.Contains("message not found", StringComparison.InvariantCultureIgnoreCase))
+            if (apiException.IsMessageNotFound())
                 return;
 
-            if (apiException.Message.Contains("CHAT_RESTRICTED")
-                || apiException.Message.Contains("have no rights to send a message")
-                || apiException.Message.Contains("not enough rights to"))
+            if (message.Chat.Type is ChatType.Group or ChatType.Supergroup && apiException.IsChatPermissionDenied())
             {
                 await _groupsBlacklist.AddGroup(message.Chat.Id);
                 return;

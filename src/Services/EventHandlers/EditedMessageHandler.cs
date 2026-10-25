@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Telegram.Bot;
+using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TgTranslator.Services.EventHandlers.Messages;
@@ -44,7 +45,16 @@ public class EditedMessageHandler
         if (string.IsNullOrWhiteSpace(translation) || translation.Length > 4096)
             return;
 
-        await _client.EditMessageText(message.Chat.Id, translationId, translation, ParseMode.Html);
+        try
+        {
+            await _client.EditMessageText(message.Chat.Id, translationId, translation, ParseMode.Html);
+        }
+        catch (ApiRequestException exception) when (exception.IsMessageToEditNotFound())
+        {
+            _translatedMessagesCache.RemoveTranslation(message.MessageId, message.Chat.Id);
+            return;
+        }
+
         _metrics.RecordTranslationEdit();
     }
 }
