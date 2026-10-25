@@ -1,4 +1,6 @@
+using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
@@ -17,14 +19,16 @@ public class EditedMessageHandler
     private readonly TranslateHandler _translateHandler;
     private readonly SettingsService _settings;
     private readonly Metrics _metrics;
+    private readonly ILogger<EditedMessageHandler> _logger;
 
-    public EditedMessageHandler(TranslatedMessagesCache translatedMessagesCache, TranslateHandler translateHandler, SettingsService settings, TelegramBotClient client, Metrics metrics)
+    public EditedMessageHandler(TranslatedMessagesCache translatedMessagesCache, TranslateHandler translateHandler, SettingsService settings, TelegramBotClient client, Metrics metrics, ILogger<EditedMessageHandler> logger)
     {
         _translatedMessagesCache = translatedMessagesCache;
         _translateHandler = translateHandler;
         _settings = settings;
         _client = client;
         _metrics = metrics;
+        _logger = logger;
     }
 
     public async Task Handle(Message message)
@@ -56,13 +60,23 @@ public class EditedMessageHandler
             {
                 await _client.EditMessageText(message.Chat.Id, translationId, translation, ParseMode.Html);
             }
+
+            _metrics.RecordTranslationEdit();
+        }
+        catch (ApiRequestException exception) when (exception.ErrorCode == 400 &&
+            exception.Message.StartsWith("Bad Request: message is not modified", StringComparison.OrdinalIgnoreCase))
+        {
+            _logger.LogInformation("Translation {TranslationId} is already up to date: {TelegramErrorCode} {TelegramDescription}",
+                translationId, exception.ErrorCode, exception.Message);
         }
         catch (ApiRequestException exception) when (exception.IsMessageToEditNotFound())
         {
             _translatedMessagesCache.RemoveTranslation(message.MessageId, message.Chat.Id);
+            _logger.LogInformation("Removed cached translation {TranslationId} because Telegram could not find the message to edit: {TelegramErrorCode} {TelegramDescription}",
+                translationId, exception.ErrorCode, exception.Message);
             return;
         }
 
-        _metrics.RecordTranslationEdit();
+        _translatedMessagesCache.UpdateTranslation(message.MessageId, message.Chat.Id, text, translationId);
     }
 }

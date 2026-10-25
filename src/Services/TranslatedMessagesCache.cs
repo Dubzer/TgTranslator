@@ -34,6 +34,11 @@ public class TranslatedMessagesCache
         _cache.TryRemove((messageId, chatId));
     }
 
+    public void UpdateTranslation(int messageId, long chatId, ReadOnlySpan<char> text, int translationId)
+    {
+        _cache.TryUpdate((messageId, chatId), (GetHash(text), translationId));
+    }
+
     /// <returns>
     /// null when does value does not require translation,
     /// otherwise returns the ID of translation message

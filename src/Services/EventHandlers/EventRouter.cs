@@ -158,11 +158,17 @@ public class EventRouter
             }
 
             if (apiException.IsMessageNotFound())
+            {
+                _logger.LogInformation("Skipping message processing because Telegram could not find the message: {TelegramErrorCode} {TelegramDescription}",
+                    apiException.ErrorCode, apiException.Message);
                 return;
+            }
 
             if (message.Chat.Type is ChatType.Group or ChatType.Supergroup && apiException.IsChatPermissionDenied())
             {
                 await _groupsBlacklist.AddGroup(message.Chat.Id);
+                _logger.LogWarning("Blacklisted chat after Telegram denied permission: {TelegramErrorCode} {TelegramDescription}",
+                    apiException.ErrorCode, apiException.Message);
                 return;
             }
 
