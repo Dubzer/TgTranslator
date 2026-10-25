@@ -28,7 +28,7 @@
     <value>Ushbu guruh sozlamalarini oʻzgartirish uchun quyidagi tugmani bosing.</value>
   </data>
   <data name="GroupSettingsPrompt" xml:space="preserve">
-    <value>&lt;b&gt;&lt;u&gt;{1}&lt;/u&gt; guruhining sozlamalarini oʻzgartiring&lt;/b&gt;
+    <value>&lt;b&gt;&lt;u&gt;{1}&lt;/u&gt; uchun sozlamalarni oʻzgartiring&lt;/b&gt;
 &lt;i&gt;Ilovangiz menyuni qoʻllab-quvvatlamasa, &lt;a href="https://t.me/{0}?start=s"&gt;bu yerga bosing&lt;/a&gt;.&lt;/i&gt;</value>
   </data>
   <data name="OpenMenuButton" xml:space="preserve">

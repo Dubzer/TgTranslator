@@ -28,7 +28,7 @@
     <value>Націсніце кнопку ніжэй, каб змяніць налады гэтай групы.</value>
   </data>
   <data name="GroupSettingsPrompt" xml:space="preserve">
-    <value>&lt;b&gt;Змяніце налады ў групе &lt;u&gt;{1}&lt;/u&gt;&lt;/b&gt;
+    <value>&lt;b&gt;Змяніце налады ў &lt;u&gt;{1}&lt;/u&gt;&lt;/b&gt;
 &lt;i&gt;Калі ваша праграма не падтрымлівае меню, &lt;a href="https://t.me/{0}?start=s"&gt;націсніце тут&lt;/a&gt;.&lt;/i&gt;</value>
   </data>
   <data name="OpenMenuButton" xml:space="preserve">

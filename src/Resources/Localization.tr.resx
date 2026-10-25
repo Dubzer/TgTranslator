@@ -28,7 +28,7 @@
     <value>Bu grubun ayarlarını değiştirmek için aşağıdaki düğmeye dokunun.</value>
   </data>
   <data name="GroupSettingsPrompt" xml:space="preserve">
-    <value>&lt;b&gt;&lt;u&gt;{1}&lt;/u&gt; grubunun ayarlarını değiştirin&lt;/b&gt;
+    <value>&lt;b&gt;&lt;u&gt;{1}&lt;/u&gt; için ayarları değiştirin&lt;/b&gt;
 &lt;i&gt;Uygulamanız menüyü desteklemiyorsa &lt;a href="https://t.me/{0}?start=s"&gt;buraya tıklayın&lt;/a&gt;.&lt;/i&gt;</value>
   </data>
   <data name="OpenMenuButton" xml:space="preserve">

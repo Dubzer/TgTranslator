@@ -28,7 +28,7 @@
     <value>Այս խմբի կարգավորումները փոխելու համար սեղմեք ներքևի կոճակը։</value>
   </data>
   <data name="GroupSettingsPrompt" xml:space="preserve">
-    <value>&lt;b&gt;Փոխեք &lt;u&gt;{1}&lt;/u&gt; խմբի կարգավորումները&lt;/b&gt;
+    <value>&lt;b&gt;Փոխեք կարգավորումները &lt;u&gt;{1}&lt;/u&gt;-ում&lt;/b&gt;
 &lt;i&gt;Եթե ձեր հավելվածում ընտրացանկը հասանելի չէ, &lt;a href="https://t.me/{0}?start=s"&gt;սեղմեք այստեղ&lt;/a&gt;։&lt;/i&gt;</value>
   </data>
   <data name="OpenMenuButton" xml:space="preserve">

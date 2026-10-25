@@ -28,7 +28,7 @@
     <value>اضغط على الزر أدناه لتغيير إعدادات هذه المجموعة.</value>
   </data>
   <data name="GroupSettingsPrompt" xml:space="preserve">
-    <value>&lt;b&gt;غيّر الإعدادات في مجموعة &lt;u&gt;{1}&lt;/u&gt;&lt;/b&gt;
+    <value>&lt;b&gt;غيّر الإعدادات في &lt;u&gt;{1}&lt;/u&gt;&lt;/b&gt;
 &lt;i&gt;إذا كان تطبيقك لا يدعم القائمة، &lt;a href="https://t.me/{0}?start=s"&gt;اضغط هنا&lt;/a&gt;.&lt;/i&gt;</value>
   </data>
   <data name="OpenMenuButton" xml:space="preserve">

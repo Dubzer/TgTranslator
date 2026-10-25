@@ -28,7 +28,7 @@
     <value>Press the button below to change this group’s settings.</value>
   </data>
   <data name="GroupSettingsPrompt" xml:space="preserve">
-    <value>&lt;b&gt;Change the settings in group &lt;u&gt;{1}&lt;/u&gt;&lt;/b&gt;
+    <value>&lt;b&gt;Change the settings in &lt;u&gt;{1}&lt;/u&gt;&lt;/b&gt;
 &lt;i&gt;If your client doesn't support the menu, &lt;a href="https://t.me/{0}?start=s"&gt;click here&lt;/a&gt;.&lt;/i&gt;</value>
   </data>
   <data name="OpenMenuButton" xml:space="preserve">

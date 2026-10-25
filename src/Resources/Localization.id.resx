@@ -28,7 +28,7 @@
     <value>Tekan tombol di bawah untuk mengubah pengaturan grup ini.</value>
   </data>
   <data name="GroupSettingsPrompt" xml:space="preserve">
-    <value>&lt;b&gt;Ubah pengaturan grup &lt;u&gt;{1}&lt;/u&gt;&lt;/b&gt;
+    <value>&lt;b&gt;Ubah pengaturan di &lt;u&gt;{1}&lt;/u&gt;&lt;/b&gt;
 &lt;i&gt;Jika aplikasi Anda tidak mendukung menu, &lt;a href="https://t.me/{0}?start=s"&gt;klik di sini&lt;/a&gt;.&lt;/i&gt;</value>
   </data>
   <data name="OpenMenuButton" xml:space="preserve">
