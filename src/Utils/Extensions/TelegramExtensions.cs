@@ -39,6 +39,7 @@ public static class TelegramExtensions
         ["Bad Request: have no write access to the chat"] = 400,
         ["Bad Request: have no rights to send a message"] = 400,
         ["Bad Request: not enough rights to send text messages to the chat"] = 400,
+        ["Bad Request: not enough rights to send the rich message to the chat"] = 400,
         ["Forbidden: the group chat was deleted"] = 403,
         ["Forbidden: bot was kicked from the group chat"] = 403,
         ["Forbidden: bot was kicked from the supergroup chat"] = 403,

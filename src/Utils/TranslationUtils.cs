@@ -1,5 +1,8 @@
 #nullable enable
+using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Telegram.Bot.Extensions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
@@ -7,6 +10,23 @@ namespace TgTranslator.Utils;
 
 public static class TranslationUtils
 {
+    public static bool TryCreateRichMessage(string translation, [NotNullWhen(true)] out InputRichMessage? richMessage)
+    {
+        translation = translation.ReplaceLineEndings("\n");
+        var length = HtmlText.ToPlain(translation).EnumerateRunes().Count();
+        if (length <= 4096)
+        {
+            richMessage = null;
+            return false;
+        }
+
+        if (length > 32768)
+            throw new InvalidOperationException($"Translation is too long: {length} characters (maximum 32768).");
+
+        richMessage = new InputRichMessage { Html = $"<p>{translation.Replace("\n", "<br>")}</p>" };
+        return true;
+    }
+
     public static string FixEntities(string messageText, string translation, MessageEntity[]? entities)
     {
         if (entities == null || entities.Length == 0)

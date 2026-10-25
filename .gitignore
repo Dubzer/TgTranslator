@@ -365,3 +365,4 @@ gen
 vcs.xml
 .DS_Store
 appsettings.local.json
+.codex

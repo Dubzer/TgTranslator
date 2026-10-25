@@ -5,6 +5,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TgTranslator.Services.EventHandlers.Messages;
 using TgTranslator.Stats;
+using TgTranslator.Utils;
 using TgTranslator.Utils.Extensions;
 
 namespace TgTranslator.Services.EventHandlers;
@@ -42,12 +43,19 @@ public class EditedMessageHandler
         var groupSettings = await _settings.GetSettings(message.Chat.Id);
 
         var translation = await _translateHandler.TranslateAndFix(message, text, groupSettings);
-        if (string.IsNullOrWhiteSpace(translation) || translation.Length > 4096)
+        if (string.IsNullOrWhiteSpace(translation))
             return;
 
         try
         {
-            await _client.EditMessageText(message.Chat.Id, translationId, translation, ParseMode.Html);
+            if (TranslationUtils.TryCreateRichMessage(translation, out var richMessage))
+            {
+                await _client.EditMessageText(message.Chat.Id, translationId, text: null, richMessage: richMessage);
+            }
+            else
+            {
+                await _client.EditMessageText(message.Chat.Id, translationId, translation, ParseMode.Html);
+            }
         }
         catch (ApiRequestException exception) when (exception.IsMessageToEditNotFound())
         {
